@@ -261,9 +261,13 @@ $\{[^}]*\} {
 }
 
  /* an unquoted string
+  * a slash can't be followed by another slash (c++
+  * comment) or an asterisk (C multi-line comment)
   */
-  /*[^ \"\'\t\n\r={}()+,]+*/
-[[:alnum:]!?$%&/.<>-]+  cfg_yylval = yytext; return CFGT_STR;
+(\/[^ #\"\'\t\n\r={}()+,\/*]|[^ \/#\"\'\t\n\r={}()+,])+ {
+    cfg_yylval = yytext;
+    return CFGT_STR;
+ }
 
 %%
 
