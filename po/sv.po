@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: GNU libcfg 1.2\n"
-"POT-Creation-Date: 2003-04-05 22:24+0200\n"
+"POT-Creation-Date: 2003-04-29 13:59+0200\n"
 "PO-Revision-Date: 2003-01-26 14:10+0100\n"
 "Last-Translator: Martin Hedenfalk <mhe@home.se>\n"
 "Language-Team: None <mhe@home.se>\n"
@@ -16,108 +16,102 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/confuse.c:146
+#: src/confuse.c:148
 #, c-format
 msgid "no such option '%s'"
 msgstr "ingen flagga '%s' finns"
 
-#: src/confuse.c:437
+#: src/confuse.c:432
 #, c-format
 msgid "invalid integer value for option '%s'"
 msgstr "felaktigt heltalsvärde för flaggan '%s'"
 
-#: src/confuse.c:443
+#: src/confuse.c:438
 #, c-format
 msgid "integer value for option '%s' is out of range"
 msgstr "heltalsvärdet för flaggan '%s' är för stort"
 
-#: src/confuse.c:458
+#: src/confuse.c:453
 #, c-format
 msgid "invalid floating point value for option '%s'"
 msgstr "felaktigt flyttalsvärde för flaggan '%s'"
 
-#: src/confuse.c:464
+#: src/confuse.c:459
 #, c-format
 msgid "floating point value for option '%s' is out of range"
 msgstr "flyttalsvärdet för flaggan '%s' är utanför tillåten gräns"
 
-#: src/confuse.c:501
+#: src/confuse.c:496
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr "felaktigt boolskt värde för flaggan '%s'"
 
-#: src/confuse.c:610
+#: src/confuse.c:605
 msgid "premature end of file"
 msgstr "för tidigt filslut"
 
-#: src/confuse.c:620
+#: src/confuse.c:615
 msgid "unexpected closing brace"
 msgstr "oväntad avslutande måsvinge"
 
-#: src/confuse.c:626 src/confuse.c:671 src/confuse.c:697
+#: src/confuse.c:621 src/confuse.c:666 src/confuse.c:692
 #, c-format
 msgid "unexpected token '%s'"
 msgstr "oväntat värde '%s'"
 
-#: src/confuse.c:646
+#: src/confuse.c:641
 #, c-format
 msgid "attempt to append to non-list option %s"
 msgstr "försök att lägga till värden till en icke-lista (%s)"
 
-#: src/confuse.c:655
+#: src/confuse.c:650
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr "saknar likamed-tecken efter '%s'"
 
-#: src/confuse.c:684
+#: src/confuse.c:679
 #, c-format
 msgid "missing opening brace for option '%s'"
 msgstr "öppningsparentes saknas för flaggan '%s'"
 
-#: src/confuse.c:703
+#: src/confuse.c:698
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr "öppningsparentes saknas för sektion '%s'"
 
-#: src/confuse.c:720
+#: src/confuse.c:715
 #, c-format
 msgid "missing title for section '%s'"
 msgstr "titel till sektion '%s' saknas"
 
-#: src/confuse.c:729
+#: src/confuse.c:724
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr "parentes saknas i anropet till funktionen '%s'"
 
-#: src/confuse.c:746 src/confuse.c:760
-#, fuzzy, c-format
+#: src/confuse.c:741 src/confuse.c:755
+#, c-format
 msgid "syntax error in call of function '%s'"
-msgstr "Komma saknas för funktionen '%s'"
+msgstr "syntaktiskt fel i anrop till funktionen '%s'"
 
-#: src/confuse.c:914
+#: src/confuse.c:909
 msgid "wrong number of arguments to cfg_include()"
 msgstr "fel antal argument till cfg_include()"
 
-#: src/lexer.l:135
+#: src/lexer.l:139
 #, c-format
 msgid "invalid octal number '%s'"
 msgstr "otillåtet oktalt nummer '%s'"
 
-#: src/lexer.l:141
+#: src/lexer.l:145
 #, c-format
 msgid "bad escape sequence '%s'"
 msgstr "felaktig sekvens '%s'"
 
-#: src/lexer.l:196
+#: src/lexer.l:200
 msgid "unterminated string constant"
 msgstr "oavslutad teckensträng"
 
-#: src/lexer.l:254
+#: src/lexer.l:258
 msgid "includes nested too deeply"
 msgstr "inkluderingsfiler för djupt nästlade"
-
-#~ msgid "missing parameter for function '%s'"
-#~ msgstr "parameter saknas till funktionen '%s'"
-
-#~ msgid "%s: can't expand home directory"
-#~ msgstr "%s: kan inte expandera hemkatalogen"
