@@ -1,7 +1,7 @@
 # English translations for libConfuse package.
-# Copyright (C) 2003 Martin Hedenfalk
+# Copyright (C) 2004 Martin Hedenfalk
 # This file is distributed under the same license as the libConfuse package.
-# Automatically generated, 2003.
+# Automatically generated, 2004.
 #
 # All this catalog "translates" are quotation characters.
 # The msgids must be ASCII and therefore cannot contain real quotation
@@ -27,10 +27,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libConfuse 2.2\n"
+"Project-Id-Version: libConfuse 2.3\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2003-09-23 17:10+0200\n"
-"PO-Revision-Date: 2003-09-23 17:10+0200\n"
+"POT-Creation-Date: 2004-05-20 20:59+0200\n"
+"PO-Revision-Date: 2004-05-20 20:59+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -38,102 +38,102 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/confuse.c:151 src/confuse.c:171
+#: src/confuse.c:154 src/confuse.c:180
 #, c-format
 msgid "no such option '%s'"
-msgstr "no such option ‘%s’"
+msgstr "no such option ‘%s’\n"
 
-#: src/confuse.c:524
+#: src/confuse.c:589
 #, c-format
 msgid "invalid integer value for option '%s'"
-msgstr "invalid integer value for option ‘%s’"
+msgstr "invalid integer value for option ‘%s’\n"
 
-#: src/confuse.c:530
+#: src/confuse.c:596
 #, c-format
 msgid "integer value for option '%s' is out of range"
-msgstr "integer value for option ‘%s’ is out of range"
+msgstr "integer value for option ‘%s’ is out of range\n"
 
-#: src/confuse.c:545
+#: src/confuse.c:616
 #, c-format
 msgid "invalid floating point value for option '%s'"
-msgstr "invalid floating point value for option ‘%s’"
+msgstr "invalid floating point value for option ‘%s’\n"
 
-#: src/confuse.c:551
+#: src/confuse.c:623
 #, c-format
 msgid "floating point value for option '%s' is out of range"
-msgstr "floating point value for option ‘%s’ is out of range"
+msgstr "floating point value for option ‘%s’ is out of range\n"
 
-#: src/confuse.c:593
+#: src/confuse.c:675
 #, c-format
 msgid "invalid boolean value for option '%s'"
-msgstr "invalid boolean value for option ‘%s’"
+msgstr "invalid boolean value for option ‘%s’\n"
 
-#: src/confuse.c:706
+#: src/confuse.c:798
 msgid "premature end of file"
-msgstr "premature end of file"
+msgstr "premature end of file\n"
 
-#: src/confuse.c:716
+#: src/confuse.c:811
 msgid "unexpected closing brace"
-msgstr "unexpected closing brace"
+msgstr "unexpected closing brace\n"
 
-#: src/confuse.c:722 src/confuse.c:777 src/confuse.c:808
+#: src/confuse.c:818 src/confuse.c:888 src/confuse.c:927
 #, c-format
 msgid "unexpected token '%s'"
-msgstr "unexpected token ‘%s’"
+msgstr "unexpected token ‘%s’\n"
 
-#: src/confuse.c:742
+#: src/confuse.c:845
 #, c-format
 msgid "attempt to append to non-list option %s"
-msgstr "attempt to append to non-list option %s"
+msgstr "attempt to append to non-list option %s\n"
 
-#: src/confuse.c:756
+#: src/confuse.c:863
 #, c-format
 msgid "missing equal sign after option '%s'"
-msgstr "missing equal sign after option ‘%s’"
+msgstr "missing equal sign after option ‘%s’\n"
 
-#: src/confuse.c:793
+#: src/confuse.c:908
 #, c-format
 msgid "missing opening brace for option '%s'"
-msgstr "missing opening brace for option ‘%s’"
+msgstr "missing opening brace for option ‘%s’\n"
 
-#: src/confuse.c:814
+#: src/confuse.c:935
 #, c-format
 msgid "missing opening brace for section '%s'"
-msgstr "missing opening brace for section ‘%s’"
+msgstr "missing opening brace for section ‘%s’\n"
 
-#: src/confuse.c:835
+#: src/confuse.c:958
 #, c-format
 msgid "missing title for section '%s'"
-msgstr "missing title for section ‘%s’"
+msgstr "missing title for section ‘%s’\n"
 
-#: src/confuse.c:844
+#: src/confuse.c:970
 #, c-format
 msgid "missing parenthesis for function '%s'"
-msgstr "missing parenthesis for function ‘%s’"
+msgstr "missing parenthesis for function ‘%s’\n"
 
-#: src/confuse.c:861 src/confuse.c:875
+#: src/confuse.c:993 src/confuse.c:1011
 #, c-format
 msgid "syntax error in call of function '%s'"
-msgstr "syntax error in call of function ‘%s’"
+msgstr "syntax error in call of function ‘%s’\n"
 
-#: src/confuse.c:1030
+#: src/confuse.c:1188
 msgid "wrong number of arguments to cfg_include()"
-msgstr "wrong number of arguments to cfg_include()"
+msgstr "wrong number of arguments to cfg_include()\n"
 
 #: src/lexer.l:143
 #, c-format
 msgid "invalid octal number '%s'"
-msgstr "invalid octal number ‘%s’"
+msgstr "invalid octal number ‘%s’\n"
 
 #: src/lexer.l:149
 #, c-format
 msgid "bad escape sequence '%s'"
-msgstr "bad escape sequence ‘%s’"
+msgstr "bad escape sequence ‘%s’\n"
 
 #: src/lexer.l:224
 msgid "unterminated string constant"
-msgstr "unterminated string constant"
+msgstr "unterminated string constant\n"
 
 #: src/lexer.l:290
 msgid "includes nested too deeply"
-msgstr "includes nested too deeply"
+msgstr "includes nested too deeply\n"
