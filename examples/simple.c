@@ -3,13 +3,13 @@
 
 int main(void)
 {
-	cfgbool_t verbose = cfg_false;
+	cfg_bool_t verbose = cfg_false;
 	char *server = strdup("gazonk");
 	double delay = 1.356e-32;
 	char *username = NULL;
 	int debug = 1;
 
-	cfgopt_t opts[] = {
+	cfg_opt_t opts[] = {
 		CFG_SIMPLE_BOOL("verbose", &verbose),
 		CFG_SIMPLE_STR("server", &server),
 		CFG_SIMPLE_STR("user", &username),
@@ -31,9 +31,8 @@ int main(void)
 	printf("setting username to 'foo'\n");
 	/* using cfg_setstr here is not necessary at all, the equivalent
 	 * code is:
-	 * if(username)
-	 *     free(username);
-	 * username = strdup("foo");
+	 *   free(username);
+	 *   username = strdup("foo");
 	 */
 	cfg_setstr(cfg, "user", "foo");
 	printf("username: %s\n", username);

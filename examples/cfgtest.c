@@ -3,7 +3,7 @@
 
 /* function callback
  */
-int cb_func(cfg_t *cfg, cfgopt_t *opt, int argc, const char **argv)
+int cb_func(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
 {
 	int i;
 
@@ -25,7 +25,7 @@ int cb_func(cfg_t *cfg, cfgopt_t *opt, int argc, const char **argv)
  * VALUE must be "yes", "no" or "maybe", and the corresponding results
  * are the integers 1, 2 and 3.
  */
-int cb_verify_ask(cfg_t *cfg, cfgopt_t *opt, const char *value, void *result)
+int cb_verify_ask(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
 	if(strcmp(value, "yes") == 0)
 		*(long int *)result = 1;
@@ -42,45 +42,50 @@ int cb_verify_ask(cfg_t *cfg, cfgopt_t *opt, const char *value, void *result)
 
 int main(void)
 {
-	cfgopt_t proxy_opts[] = {
-		CFG_INT("type", "0", CFGF_NONE),
-		CFG_STR("host", 0, CFGF_NONE),
-		CFG_STR("exclude", "{localhost, .localnet}", CFGF_LIST),
-		CFG_INT("port", 0, CFGF_NONE),
-		CFG_END()
-	};
-	cfgopt_t bookmark_opts[] = {
-		CFG_STR("machine", "", CFGF_NONE),
-		CFG_INT("port", "21", CFGF_NONE),
-		CFG_STR("login", "", CFGF_NONE),
-		CFG_STR("password", "", CFGF_NONE),
-		CFG_STR("directory", "", CFGF_NONE),
-		CFG_BOOL("passive-mode", "false", CFGF_NONE),
-		CFG_SEC("proxy", proxy_opts, CFGF_NONE),
-		CFG_END()
-	};
-	cfgopt_t opts[] = {
-		CFG_INT("backlog", "42", CFGF_NONE),
-		CFG_STR("probe-device", "eth2", CFGF_NONE),
-		CFG_SEC("bookmark", bookmark_opts, CFGF_MULTI | CFGF_TITLE),
-		CFG_FLOAT("delays", "{3.567e2, .2}", CFGF_LIST),
-		CFG_FUNC("func", &cb_func),
-		CFG_INT_CB("ask-quit", "maybe", CFGF_NONE, &cb_verify_ask),
-		CFG_END()
-	};
-	int i;
+	unsigned int i;
 	cfg_t *cfg;
 	unsigned n;
 	int ret;
-	cfgval_t x = {string: 3};
+	static cfg_opt_t proxy_opts[] = {
+		CFG_INT("type", 0, CFGF_NONE),
+		CFG_STR("host", 0, CFGF_NONE),
+		CFG_STR_LIST("exclude", "{localhost, .localnet}", CFGF_NONE),
+		CFG_INT("port", 0, CFGF_NONE),
+		CFG_END()
+	};
+	static cfg_opt_t bookmark_opts[] = {
+		CFG_STR("machine", 0, CFGF_NONE),
+		CFG_INT("port", 21, CFGF_NONE),
+		CFG_STR("login", 0, CFGF_NONE),
+		CFG_STR("password", 0, CFGF_NONE),
+		CFG_STR("directory", 0, CFGF_NONE),
+		CFG_BOOL("passive-mode", cfg_false, CFGF_NONE),
+		CFG_SEC("proxy", proxy_opts, CFGF_NONE),
+		CFG_END()
+	};
+	cfg_opt_t opts[] = {
+		CFG_INT("backlog", 42, CFGF_NONE),
+		CFG_STR("probe-device", "eth2", CFGF_NONE),
+		CFG_SEC("bookmark", bookmark_opts, CFGF_MULTI | CFGF_TITLE),
+		CFG_FLOAT_LIST("delays", "{3.567e2, 0.2, -47.11}", CFGF_NONE),
+		{"func",CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,"func(default, value) func(second,default)"},&cb_func,0,0},
+/*		CFG_FUNC("func", &cb_func),*/
+		CFG_INT_CB("ask-quit", 3, CFGF_NONE, &cb_verify_ask),
+		CFG_INT_LIST_CB("ask-quit-array", "{maybe, yes, no}",
+						CFGF_NONE, &cb_verify_ask),
+		CFG_END()
+	};
 
+#ifndef _WIN32
+	/* for some reason, MS Visual C++ chokes on this (?) */
 	printf("Using %s\n\n", confuse_copyright);
+#endif
 
-	cfg = cfg_init(opts, 0);
-	cfg_output(cfg, "test.conf.default");
+	cfg = cfg_init(opts, CFGF_NOCASE);
 	ret = cfg_parse(cfg, "test.conf");
+	printf("ret == %d\n", ret);
 	if(ret == CFG_FILE_ERROR) {
-		perror("./test.conf");
+		perror("test.conf");
 		return 1;
 	} else if(ret == CFG_PARSE_ERROR) {
 		fprintf(stderr, "parse error\n");
@@ -92,7 +97,6 @@ int main(void)
 	printf("probe device is %s\n", cfg_getstr(cfg, "probe-device"));
 	cfg_setstr(cfg, "probe-device", "lo");
 	printf("probe device is %s\n", cfg_getstr(cfg, "probe-device"));
-
 
 	n = cfg_size(cfg, "bookmark");
 	printf("%d configured bookmarks:\n", n);
@@ -110,20 +114,13 @@ int main(void)
 		if(cfg_size(bm, "proxy")) {
 			int j, m;
 			cfg_t *pxy = cfg_getsec(bm, "proxy");
-			if(cfg_size(pxy, "host") == 0) {
-				printf("    no proxy host is set, setting it to 'localhost'...\n");
+			if(cfg_getstr(pxy, "host") == 0) {
+				printf("no proxy host is set, setting it to 'localhost'...\n");
 				cfg_setstr(pxy, "host", "localhost");
 			}
 			printf("      proxy host is %s\n", cfg_getstr(pxy, "host"));
 			printf("      proxy type is %ld\n", cfg_getint(pxy, "type"));
-			
-			/* we don't have a default for the proxy port, so we must check if
-			 * there is a value for the port option
-			 */
-			if(cfg_size(pxy, "port") == 0)
-				printf("      no proxy port is set\n");
-			else
-				printf("      proxy port is %ld\n", cfg_getint(pxy, "port"));
+			printf("      proxy port is %ld\n", cfg_getint(pxy, "port"));
 
 			m = cfg_size(pxy, "exclude");
 			printf("      got %d hosts to exclude from proxying:\n", m);
@@ -141,16 +138,17 @@ int main(void)
 	printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
 
 	/* Using cfg_setint(), the integer value for the option ask-quit
-	 * is not verified by the value parsing callback. Alternatively,
-	 * you could use the commented out call instead (which uses the
-	 * callback).
+	 * is not verified by the value parsing callback.
 	 */
 	cfg_setint(cfg, "ask-quit", 4);
-/*	cfg_setopt(cfg, cfg_getopt(cfg, "ask-quit"), "yes");*/
 
 	printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
 
-	cfg_output(cfg, "test.conf.new");
+	cfg_addlist(cfg, "ask-quit-array", 2, -1, -2);
+
+	for(i = 0; i < cfg_size(cfg, "ask-quit-array"); i++)
+		printf("ask-quit-array[%d] == %ld\n",
+			   i, cfg_getnint(cfg, "ask-quit-array", i));
 
 	cfg_free(cfg);
 	return 0;
