@@ -32,7 +32,7 @@
  * Copyright &copy; 2002-2003 Martin Hedenfalk &lt;mhe@home.se&gt;
  *
  * The latest versions of this manual and the libConfuse software are
- * available at http://www.e.kth.se/~e97_mhe/confuse.shtml
+ * available at http://www.nongnu.org/confuse/
  *
  *
  * <em>If you can't convince, confuse.</em>
