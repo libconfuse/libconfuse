@@ -377,6 +377,7 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
     int i;
     cfg_opt_t *dupopts;
     int n = cfg_numopts(opts);
+
     dupopts = (cfg_opt_t *)malloc((n+1) * sizeof(cfg_opt_t));
     memset(dupopts, 0, (n+1) * sizeof(cfg_opt_t));
     memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
@@ -384,7 +385,7 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
     for(i = 0; i < n; i++)
     {
         dupopts[i].name = strdup(opts[i].name);
-        if(opts[i].subopts)
+        if(opts[i].type == CFGT_SEC && opts[i].subopts)
             dupopts[i].subopts = cfg_dupopt_array(opts[i].subopts);
 
         if(is_set(CFGF_LIST, opts[i].flags) || opts[i].type == CFGT_FUNC)
@@ -416,7 +417,7 @@ static void cfg_init_defaults(cfg_t *cfg)
     for(i = 0; cfg->opts[i].name; i++)
     {
         /* libConfuse doesn't handle default values for "simple" options */
-        if(cfg->opts[i].simple_value)
+        if(cfg->opts[i].simple_value || is_set(CFGF_NODEFAULT, cfg->opts[i].flags))
             continue;
 
         if(cfg->opts[i].type != CFGT_SEC)
@@ -508,7 +509,7 @@ static void cfg_init_defaults(cfg_t *cfg)
              * will be freed and the flag unset.
              */
             cfg->opts[i].flags |= CFGF_RESET;
-        }
+        } /* end if cfg->opts[i].type != CFGT_SEC */
         else if(!is_set(CFGF_MULTI, cfg->opts[i].flags))
         {
             cfg_setopt(cfg, &cfg->opts[i], 0);
@@ -825,7 +826,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     if(!is_set(CFGF_LIST, opt->flags))
                     {
                         cfg_error(cfg,
-                                  _("attempt to append to non-list option %s"),
+                                  _("attempt to append to non-list option '%s'"),
                                   opt->name);
                         return STATE_ERROR;
                     }
@@ -1204,7 +1205,7 @@ DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc,
     return cfg_lexer_include(cfg, argv[0]);
 }
 
-static cfg_value_t *cfg_getval(cfg_opt_t *opt, unsigned int index)
+static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 {
     cfg_value_t *val = 0;
 
@@ -1233,7 +1234,7 @@ DLLIMPORT void cfg_opt_setnint(cfg_opt_t *opt, long int value,
 {
     cfg_value_t *val;
     assert(opt && opt->type == CFGT_INT);
-    val = cfg_getval(opt, index);
+    val = cfg_opt_getval(opt, index);
     val->number = value;
 }
 
@@ -1253,7 +1254,7 @@ DLLIMPORT void cfg_opt_setnfloat(cfg_opt_t *opt, double value,
 {
     cfg_value_t *val;
     assert(opt && opt->type == CFGT_FLOAT);
-    val = cfg_getval(opt, index);
+    val = cfg_opt_getval(opt, index);
     val->fpnumber = value;
 }
 
@@ -1273,7 +1274,7 @@ DLLIMPORT void cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value,
 {
     cfg_value_t *val;
     assert(opt && opt->type == CFGT_BOOL);
-    val = cfg_getval(opt, index);
+    val = cfg_opt_getval(opt, index);
     val->boolean = value;
 }
 
@@ -1293,7 +1294,7 @@ DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value,
 {
     cfg_value_t *val;
     assert(opt && opt->type == CFGT_STR);
-    val = cfg_getval(opt, index);
+    val = cfg_opt_getval(opt, index);
     free(val->string);
     val->string = value ? strdup(value) : 0;
 }
@@ -1518,11 +1519,71 @@ DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
     return cfg_opt_set_print_func(cfg_getopt(cfg, name), pf);
 }
 
+static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const char *name)
+{
+    unsigned int i;
+    cfg_opt_t *opts = rootopts;
+
+    assert(rootopts && name);
+
+    while(name && *name)
+    {
+        cfg_t *seccfg;
+        char *secname;
+        size_t len = strcspn(name, "|");
+        if(name[len] == 0 /*len == strlen(name)*/)
+            /* no more subsections */
+            break;
+        if(len)
+        {
+            secname = strndup(name, len);
+            cfg_opt_t *secopt = cfg_getopt_array(opts, cfg_flags, secname);
+            free(secname);
+            if(secopt == 0)
+            {
+                /*fprintf(stderr, "section not found\n");*/
+                return 0;
+            }
+            if(secopt->type != CFGT_SEC)
+            {
+                /*fprintf(stderr, "not a section!\n");*/
+                return 0;
+            }
+            if(!is_set(CFGF_MULTI, secopt->flags) && (seccfg = cfg_opt_getnsec(secopt, 0)) != 0)
+                opts = seccfg->opts;
+            else
+                opts = secopt->subopts;
+            if(opts == 0)
+            {
+                /*fprintf(stderr, "section have no subopts!?\n");*/
+                return 0;
+            }
+        }
+        name += len;
+        name += strspn(name, "|");
+    }
+
+    for(i = 0; opts[i].name; i++)
+    {
+        if(is_set(CFGF_NOCASE, cfg_flags))
+        {
+            if(strcasecmp(opts[i].name, name) == 0)
+                return &opts[i];
+        }
+        else
+        {
+            if(strcmp(opts[i].name, name) == 0)
+                return &opts[i];
+        }
+    }
+    return 0;
+}
+
 DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
                                                         const char *name,
                                                         cfg_validate_callback_t vf)
 {
-    cfg_opt_t *opt = cfg_getopt(cfg, name);
+    cfg_opt_t *opt = cfg_getopt_array(cfg->opts, cfg->flags, name);
     cfg_validate_callback_t oldvf;
     assert(opt);
     oldvf = opt->validcb;
