@@ -368,7 +368,34 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
     <sect1>
         <title>Functions</title>
         <para>
+            libConfuse supports functions to parse options that does not fit
+            well in the general syntax. Functions can be called with a variable
+            number of arguments.
         </para>
+
+        <sect2>
+            <title>Predefined functions</title>
+            <para>
+                Currently there is only one pre-defined function:
+                <function>cfg_include()</function>. This function includes
+                another configuration file. Configuration data is immediately
+                read from the included file, and is returned to the position
+                right after the include() statement upon end of file.
+            </para>
+            <para>
+                To use this function, include a <function>CFG_FUNC()</function>
+                entry in your options:
+            </para>
+            <programlisting>
+CFG_FUNC("include", cfg_include),
+            </programlisting>
+            <para>
+                In the configuration file, it is used in the following way:
+            </para>
+            <programlisting>
+include("included.conf")
+            </programlisting>
+        </sect2>
     </sect1>
 
     <sect1>
