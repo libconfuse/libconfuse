@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2004-10-03 20:16+0200\n"
+"POT-Creation-Date: 2004-10-17 17:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,80 +21,80 @@ msgstr ""
 msgid "no such option '%s'"
 msgstr ""
 
-#: src/confuse.c:593
+#: src/confuse.c:607
 #, c-format
 msgid "invalid integer value for option '%s'"
 msgstr ""
 
-#: src/confuse.c:600
+#: src/confuse.c:614
 #, c-format
 msgid "integer value for option '%s' is out of range"
 msgstr ""
 
-#: src/confuse.c:620
+#: src/confuse.c:634
 #, c-format
 msgid "invalid floating point value for option '%s'"
 msgstr ""
 
-#: src/confuse.c:627
+#: src/confuse.c:641
 #, c-format
 msgid "floating point value for option '%s' is out of range"
 msgstr ""
 
-#: src/confuse.c:677
+#: src/confuse.c:691
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr ""
 
-#: src/confuse.c:782
+#: src/confuse.c:796
 msgid "premature end of file"
 msgstr ""
 
-#: src/confuse.c:795
+#: src/confuse.c:809
 msgid "unexpected closing brace"
 msgstr ""
 
-#: src/confuse.c:802 src/confuse.c:872 src/confuse.c:911
+#: src/confuse.c:816 src/confuse.c:886 src/confuse.c:925
 #, c-format
 msgid "unexpected token '%s'"
 msgstr ""
 
-#: src/confuse.c:829
+#: src/confuse.c:843
 #, c-format
 msgid "attempt to append to non-list option '%s'"
 msgstr ""
 
-#: src/confuse.c:847
+#: src/confuse.c:861
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr ""
 
-#: src/confuse.c:892
+#: src/confuse.c:906
 #, c-format
 msgid "missing opening brace for option '%s'"
 msgstr ""
 
-#: src/confuse.c:919
+#: src/confuse.c:933
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr ""
 
-#: src/confuse.c:942
+#: src/confuse.c:956
 #, c-format
 msgid "missing title for section '%s'"
 msgstr ""
 
-#: src/confuse.c:954
+#: src/confuse.c:968
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr ""
 
-#: src/confuse.c:977 src/confuse.c:995
+#: src/confuse.c:991 src/confuse.c:1009
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr ""
 
-#: src/confuse.c:1202
+#: src/confuse.c:1216
 msgid "wrong number of arguments to cfg_include()"
 msgstr ""
 
