@@ -1,8 +1,7 @@
 #!/bin/sh
 
 echo -n "Running autopoint..."
-autopoint || exit
-echo " done"
+autopoint && echo " done"
 
 echo -n "Running aclocal..."
 aclocal -I m4 || exit
