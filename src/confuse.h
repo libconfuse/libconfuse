@@ -92,6 +92,7 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_LIST 2        /**< option is a list */
 #define CFGF_NOCASE 4      /**< configuration file is case insensitive */
 #define CFGF_TITLE 8       /**< option has a title (only applies to section) */
+#define CFGF_NODEFAULT 16  /**< option has no default value */
 #define CFGF_RESET 32
 #define CFGF_DEFINIT 64
 
