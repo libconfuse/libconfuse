@@ -8,6 +8,7 @@ New in 2.2
 * added print callback function per option
 * simple options can be retrieved with the cfg_get functions (allows
   using the cfg_print function for simple values)
+* added validating callback function per option
 
 
 New in 2.1
