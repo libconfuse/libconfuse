@@ -7,6 +7,7 @@ New in 2.5
 * updated autoconf stuff, libconfuse installs with appropriate suffix now
 * added data file for pkg-config (try 'pkg-config --libs libconfuse')
 * updated confuse-config script (now only installed if pkg-config not found)
+* added cfg_name() and cfg_opt_name() functions
 
 
 New in 2.4
