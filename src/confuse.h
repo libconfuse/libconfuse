@@ -93,6 +93,7 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_TITLE 8       /**< option has a title (only applies to section) */
 #define CFGF_ALLOCATED 16
 #define CFGF_RESET 32
+#define CFGF_DEFINIT 64
 
 /** Return codes from cfg_parse(). */
 #define CFG_SUCCESS 0

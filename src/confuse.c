@@ -322,6 +322,8 @@ static void cfg_init_defaults(cfg_t *cfg)
 	int i;
 
 	for(i = 0; cfg->opts[i].name; i++) {
+		cfg->opts[i].flags |= CFGF_DEFINIT;
+
 		if(cfg->opts[i].type != CFGT_SEC) {
 
 			if(is_set(CFGF_LIST, cfg->opts[i].flags) ||
@@ -521,7 +523,8 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
 			val->section->title = value;
-			cfg_init_defaults(val->section);
+			if(!is_set(CFGF_DEFINIT, opt->flags))
+				cfg_init_defaults(val->section);
 			break;
 		case CFGT_BOOL:
 			if(opt->cb) {
@@ -846,7 +849,7 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 	if(fp == 0)
 		return CFG_FILE_ERROR;
 	ret = cfg_parse_fp(cfg, fp);
-	fclose(cfg_yyin);
+	fclose(fp);
 	return ret;
 }
 
