@@ -63,19 +63,19 @@
 #define PACKAGE_NAME "libConfuse"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libConfuse 2.0"
+#define PACKAGE_STRING "libConfuse 2.5"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "confuse"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.0"
+#define PACKAGE_VERSION "2.5"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2.0"
+#define VERSION "2.5"
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
