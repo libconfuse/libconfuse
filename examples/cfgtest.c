@@ -68,11 +68,12 @@ int main(void)
 		CFG_STR("probe-device", "eth2", CFGF_NONE),
 		CFG_SEC("bookmark", bookmark_opts, CFGF_MULTI | CFGF_TITLE),
 		CFG_FLOAT_LIST("delays", "{3.567e2, 0.2, -47.11}", CFGF_NONE),
-		{"func",CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,"func(default, value) func(second,default)"},&cb_func,0,0},
-/*		CFG_FUNC("func", &cb_func),*/
+		/*{"func",CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,"func(default, value) func(second,default)"},&cb_func,0,0},*/
+		CFG_FUNC("func", &cb_func),
 		CFG_INT_CB("ask-quit", 3, CFGF_NONE, &cb_verify_ask),
 		CFG_INT_LIST_CB("ask-quit-array", "{maybe, yes, no}",
 						CFGF_NONE, &cb_verify_ask),
+		CFG_FUNC("include", &cfg_include),
 		CFG_END()
 	};
 
@@ -116,8 +117,12 @@ int main(void)
 		if(pxy) {
 			int j, m;
 			if(cfg_getstr(pxy, "host") == 0) {
-				printf("no proxy host is set, setting it to 'localhost'...\n");
-				cfg_setstr(pxy, "host", "localhost");
+				printf("      no proxy host is set, setting it to 'localhost'...\n");
+				/* For sections without CFGF_MULTI flag set, there is
+				 * also an extended syntax to get an option in a
+				 * subsection:
+				 */
+				cfg_setstr(bm, "proxy|host", "localhost");
 			}
 			printf("      proxy host is %s\n", cfg_getstr(pxy, "host"));
 			printf("      proxy type is %ld\n", cfg_getint(pxy, "type"));
