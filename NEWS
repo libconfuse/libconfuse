@@ -9,6 +9,8 @@ New in 2.1
   option name, try cfg_getxxx(cfg, "sectionname|optionname"). This way
   one doesn't have to first get the section with cfg_getsec().
 * Fixed two more memory leaks. (val->section and cfg->filename)
+* Added project files for MS Visual C++ 6.0
+* Includes io.h on windows
 
 
 New in 2.0
