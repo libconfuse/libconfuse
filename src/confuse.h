@@ -511,70 +511,11 @@ DLLIMPORT cfg_errfunc_t __export cfg_set_error_function(cfg_t *cfg,
  */
 DLLIMPORT void __export cfg_error(cfg_t *cfg, const char *fmt, ...);
 
-/** Returns the value of an integer option. This is the same as
- * calling cfg_getnint with index 0.
- * @param cfg The configuration file context.
- * @param name The name of the option.
- * @return The requested value is returned. If the option was not set
- * in the configuration file, the default value given in the
- * corresponding cfg_opt_t structure is returned. It is an error to
- * try to get an option that isn't declared.
+/** Returns the value of an integer option, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @see cfg_getnint
  */
-DLLIMPORT long int __export cfg_getint(cfg_t *cfg, const char *name);
-
-/** Returns the value of a floating point option.
- * @param cfg The configuration file context.
- * @param name The name of the option.
- * @return The requested value is returned. If the option was not set
- * in the configuration file, the default value given in the
- * corresponding cfg_opt_t structure is returned. It is an error to
- * try to get an option that isn't declared.
- */
-DLLIMPORT double __export cfg_getfloat(cfg_t *cfg, const char *name);
-
-/** Returns the value of a string option.
- * @param cfg The configuration file context.
- * @param name The name of the option.
- * @return The requested value is returned. If the option was not set
- * in the configuration file, the default value given in the
- * corresponding cfg_opt_t structure is returned. It is an error to
- * try to get an option that isn't declared.
- */
-DLLIMPORT char * __export cfg_getstr(cfg_t *cfg, const char *name);
-
-/** Returns the value of a boolean option.
- * @param cfg The configuration file context.
- * @param name The name of the option.
- * @return The requested value is returned. If the option was not set
- * in the configuration file, the default value given in the
- * corresponding cfg_opt_t structure is returned. It is an error to
- * try to get an option that isn't declared.
- */
-DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
-
-/** Returns the value of a section option. The returned value is
- * another cfg_t structure that can be used in following calls to
- * cfg_getint, cfg_getstr or other get-functions.
- * @param cfg The configuration file context.
- * @param name The name of the option.
- * @return The requested section is returned. If no section is found
- * with that name, 0 is returned. There can only be default values for
- * section without the CFGF_MULTI flag set. It is an error to try to
- * get a section that isn't declared.
- */
-DLLIMPORT cfg_t * __export cfg_getsec(cfg_t *cfg, const char *name);
-
-DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt);
-
-/** Return the number of values this option has. If no default value
- * is given for the option and no value was found in the config file,
- * 0 will be returned (ie, the option value is not set at all).
- *
- * @param cfg The configuration file context.
- * @param name The name of the option.
- */
-DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
-
 DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getint(), used for lists.
@@ -586,6 +527,22 @@ DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT long int __export cfg_getnint(cfg_t *cfg, const char *name,
 										unsigned int index);
 
+/** Returns the value of an integer option. This is the same as
+ * calling cfg_getnint with index 0.
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested value is returned. If the option was not set
+ * in the configuration file, the default value given in the
+ * corresponding cfg_opt_t structure is returned. It is an error to
+ * try to get an option that isn't declared.
+ */
+DLLIMPORT long int __export cfg_getint(cfg_t *cfg, const char *name);
+
+/** Returns the value of a floating point option, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @see cfg_getnfloat
+ */
 DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getfloat(), used for lists.
@@ -597,6 +554,21 @@ DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT double __export cfg_getnfloat(cfg_t *cfg, const char *name,
 										unsigned int index);
 
+/** Returns the value of a floating point option.
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested value is returned. If the option was not set
+ * in the configuration file, the default value given in the
+ * corresponding cfg_opt_t structure is returned. It is an error to
+ * try to get an option that isn't declared.
+ */
+DLLIMPORT double __export cfg_getfloat(cfg_t *cfg, const char *name);
+
+/** Returns the value of a string option, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @see cfg_getnstr
+ */
 DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getstr(), used for lists.
@@ -608,6 +580,21 @@ DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT char * __export cfg_getnstr(cfg_t *cfg, const char *name,
 									  unsigned int index);
 
+/** Returns the value of a string option.
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested value is returned. If the option was not set
+ * in the configuration file, the default value given in the
+ * corresponding cfg_opt_t structure is returned. It is an error to
+ * try to get an option that isn't declared.
+ */
+DLLIMPORT char * __export cfg_getstr(cfg_t *cfg, const char *name);
+
+/** Returns the value of a boolean option, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @see cfg_getnbool
+ */
 DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index);
 	
 /** Indexed version of cfg_getbool(), used for lists.
@@ -620,6 +607,21 @@ DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT cfg_bool_t __export cfg_getnbool(cfg_t *cfg, const char *name,
 										   unsigned int index);
 
+/** Returns the value of a boolean option.
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested value is returned. If the option was not set
+ * in the configuration file, the default value given in the
+ * corresponding cfg_opt_t structure is returned. It is an error to
+ * try to get an option that isn't declared.
+ */
+DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
+
+/** Returns the value of a section option, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @see cfg_getnsec
+ */
 DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getsec(), used for sections with the
@@ -633,6 +635,15 @@ DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT cfg_t * __export cfg_getnsec(cfg_t *cfg, const char *name,
 									   unsigned int index);
 
+/** Returns the value of a section option, given a cfg_opt_t pointer
+ * and the title.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param title The title of this section. The CFGF_TITLE flag must
+ * have been set for this option.
+ * @see cfg_gettsec
+ */
+DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title);
+
 /** Return a section given the title, used for section with the
  * CFGF_TITLE flag set.
  *
@@ -640,9 +651,38 @@ DLLIMPORT cfg_t * __export cfg_getnsec(cfg_t *cfg, const char *name,
  * @param name The name of the option.
  * @param title The title of this section. The CFGF_TITLE flag must
  * have been set for this option.
+ * @see cfg_getsec
  */
 DLLIMPORT cfg_t * __export cfg_gettsec(cfg_t *cfg, const char *name,
 									   const char *title);
+
+/** Returns the value of a section option. The returned value is
+ * another cfg_t structure that can be used in following calls to
+ * cfg_getint, cfg_getstr or other get-functions.
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested section is returned. If no section is found
+ * with that name, 0 is returned. There can only be default values for
+ * section without the CFGF_MULTI flag set. It is an error to try to
+ * get a section that isn't declared.
+ */
+DLLIMPORT cfg_t * __export cfg_getsec(cfg_t *cfg, const char *name);
+
+/** Return the number of values this option has. If no default value
+ * is given for the option and no value was found in the config file,
+ * 0 will be returned (ie, the option value is not set at all).
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ */
+DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt);
+
+/** Return the number of values this option has. If no default value
+ * is given for the option and no value was found in the config file,
+ * 0 will be returned (ie, the option value is not set at all).
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ */
+DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
 
 /** Return the title of a section.
  *
@@ -788,7 +828,7 @@ DLLIMPORT void __export cfg_setnbool(cfg_t *cfg, const char *name,
  *
  * @param opt The option structure (eg, as returned from cfg_getopt())
  * @param value The value to set. Memory for the string is allocated
- * and the value is copied. Any privious string value is freed.
+ * and the value is copied. Any previous string value is freed.
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
