@@ -81,7 +81,8 @@ enum cfg_type_t {
     CFGT_STR,     /**< string */
     CFGT_BOOL,    /**< boolean value */
     CFGT_SEC,     /**< section */
-    CFGT_FUNC     /**< function */
+    CFGT_FUNC,    /**< function */
+    CFGT_PTR      /**< pointer to user-defined value */
 };
 typedef enum cfg_type_t cfg_type_t;
 
@@ -194,6 +195,16 @@ typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt,
  */
 typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
 
+/** User-defined memory release function for CFG_PTR values
+ *
+ * This callback is used to free memory allocated in a value parsing callback
+ * function. Especially useful for CFG_PTR options, since libConfuse will not
+ * itself release such values. If the values are simply allocated with a
+ * malloc(3), one can use the standard free(3) function here.
+ *
+ */
+typedef void (*cfg_free_func_t)(void *value);
+
 /** Boolean values. */
 typedef enum {cfg_false, cfg_true} cfg_bool_t;
 
@@ -227,10 +238,11 @@ union cfg_value_t {
     cfg_bool_t boolean;     /**< boolean value */
     char *string;           /**< string value */
     cfg_t *section;         /**< section value */
+    void *ptr;              /**< user-defined value */
 };
 
 /** Data structure holding the default value given by the
- * initialization macros.
+ *  initialization macros.
  */
 struct cfg_defvalue_t {
     long int number;        /**< default integer value */
@@ -261,6 +273,7 @@ struct cfg_opt_t {
     cfg_callback_t parsecb; /**< Value parsing callback function */
     cfg_validate_callback_t validcb; /**< Value validating callback function */
     cfg_print_func_t pf;    /**< print callback function */
+    cfg_free_func_t freecb; /***< user-defined memory release function */
 };
 
 extern const char __export confuse_copyright[];
@@ -268,9 +281,9 @@ extern const char __export confuse_version[];
 extern const char __export confuse_author[];
 
 #define __CFG_STR(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,svalue,cb,0,0}
+  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,svalue,cb,0,0,0}
 #define __CFG_STR_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
+  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0,0}
 
 /** Initialize a string option
  */
@@ -349,9 +362,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_INT(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,svalue,cb,0,0}
+  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,svalue,cb,0,0,0}
 #define __CFG_INT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
+  {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0,0}
 
 /** Initialize an integer option
  */
@@ -382,9 +395,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_FLOAT(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,svalue,cb,0,0}
+  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,svalue,cb,0,0,0}
 #define __CFG_FLOAT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
+  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0,0}
 
 /** Initialize a floating point option
  */
@@ -415,9 +428,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_BOOL(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,svalue,cb,0,0}
+  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,svalue,cb,0,0,0}
 #define __CFG_BOOL_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
+  {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0,0}
 
 /** Initialize a boolean option
  */
@@ -459,7 +472,7 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SEC(name, opts, flags) \
-  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,0,0,0,0}
+  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,0,0,0,0,0}
 
 
 
@@ -470,15 +483,32 @@ extern const char __export confuse_author[];
  * @see cfg_func_t
  */
 #define CFG_FUNC(name, func) \
-  {name,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,0,0,0,0}
+  {name,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,0,0,0,0,0}
 
+
+#define __CFG_PTR(name, def, flags, svalue, parsecb, freecb) \
+  {name,CFGT_PTR,0,0,flags,0,{0,0,cfg_false,0,def},0,svalue,parsecb,0,0,freecb}
+#define __CFG_PTR_LIST(name, def, flags, svalue, parsecb, freecb) \
+  {name,CFGT_PTR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,parsecb,0,0,freecb}
+
+/** Initialize a user-defined option
+ *
+ */
+#define CFG_PTR_CB(name, def, flags, parsecb, freecb) \
+  __CFG_PTR(name, def, flags, 0, parsecb, freecb)
+
+#define CFG_PTR_LIST_CB(name, def, flags, parsecb, freecb) \
+  __CFG_PTR(name, def, flags | CFGF_LIST, 0, parsecb, freecb)
+
+/*#define CFG_SIMPLE_PTR(name, svalue, cb) \
+  __CFG_PTR(name, 0, 0, svalue, cb)*/
 
 
 /** Terminate list of options. This must be the last initializer in
  * the option list.
  */
 #define CFG_END() \
-   {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,0,0,0,0}
+   {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,0,0,0,0,0}
 
 
 
@@ -665,6 +695,12 @@ DLLIMPORT cfg_bool_t __export cfg_getnbool(cfg_t *cfg, const char *name,
  * try to get an option that isn't declared.
  */
 DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
+
+
+DLLIMPORT void *cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT void *cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
+DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name);
+
 
 /** Returns the value of a section option, given a cfg_opt_t pointer.
  * @param opt The option structure (eg, as returned from cfg_getopt())

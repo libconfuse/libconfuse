@@ -1,7 +1,42 @@
 #include <check.h>
-#include "confuse.h"
+#include "../src/confuse.h"
 
-cfg_t *cfg;
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/ethernet.h>
+
+static cfg_t *cfg;
+
+int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
+{
+    struct in_addr *addr = (struct in_addr *)malloc(sizeof(struct in_addr));
+    if(inet_aton(value, addr) == 0)
+    {
+        cfg_error(cfg, "invalid IP address %s in section %s", value, cfg->name);
+        free(addr);
+        return 1;
+    }
+    *(void **)result = (void *)addr;
+    return 0;
+}
+
+int parse_ether_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
+{
+    struct ether_addr *tmp;
+
+    tmp = ether_aton(value);
+    if(tmp == 0)
+    {
+        cfg_error(cfg, "invalid Ethernet address %s in section %s", value, cfg->name);
+        return 1;
+    }
+    *(void **)result = malloc(sizeof(struct ether_addr));
+    memcpy(*(void **)result, tmp, sizeof(struct ether_addr));
+    return 0;
+}
 
 void single_setup(void)
 {
@@ -30,6 +65,8 @@ void single_setup(void)
         CFG_INT("integer", 4711, CFGF_NONE),
         CFG_FLOAT("float", 0.42, CFGF_NONE),
         CFG_BOOL("bool", cfg_false, CFGF_NONE),
+        CFG_PTR_CB("ip-address", 0, CFGF_NONE, parse_ip_address, free),
+        CFG_PTR_CB("ethernet-address", 0, CFGF_NONE, parse_ether_address, free),
         CFG_SEC("section", sec_opts, CFGF_NONE),
         CFG_END()
     };
@@ -53,6 +90,8 @@ START_TEST(single_string_test)
     fail_unless(cfg_size(cfg, "string") == 1, "size of single option should be 1");
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "string")) == 1, "size of single option should be 1");
     fail_unless(strcmp(cfg_getstr(cfg, "string"), "default") == 0, "default string value");
+    fail_unless(cfg_getnstr(cfg, "string", 0) == cfg_getstr(cfg, "string"), 0);
+    fail_unless(cfg_getnstr(cfg, "string", 1) == 0, 0);
     buf = "string = 'set'";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
     fail_unless(strcmp(cfg_getstr(cfg, "string"), "set") == 0, "set string after parse_buf");
@@ -68,6 +107,8 @@ START_TEST(single_integer_test)
     fail_unless(cfg_size(cfg, "integer") == 1, "size of single option should be 1");
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "integer")) == 1, "size of single option should be 1");
     fail_unless(cfg_getint(cfg, "integer") == 4711, "default integer value");
+    fail_unless(cfg_getnint(cfg, "integer", 0) == cfg_getint(cfg, "integer"), 0);
+    fail_unless(cfg_getnint(cfg, "integer", 1) == 0, 0);
     buf = "integer = -46";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
     fail_unless(cfg_getint(cfg, "integer") == -46, "set integer after parse_buf");
@@ -83,6 +124,8 @@ START_TEST(single_float_test)
     fail_unless(cfg_size(cfg, "float") == 1, "size of single option should be 1");
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "float")) == 1, "size of single option should be 1");
     fail_unless(cfg_getfloat(cfg, "float") == 0.42, "default float value");
+    fail_unless(cfg_getnfloat(cfg, "float", 0) == cfg_getfloat(cfg, "float"), 0);
+    fail_unless(cfg_getnfloat(cfg, "float", 1) == 0, 0);
     buf = "float = -46.777";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
     fail_unless(cfg_getfloat(cfg, "float") == -46.777, "set float after parse_buf");
@@ -147,6 +190,9 @@ START_TEST(single_section_test)
     fail_unless(sec != 0, "unable to get static subsection with |-syntax");
     fail_unless(cfg_getint(sec, "subsubinteger") == -42, "wrong default value in subsubsection");
 
+    fail_unless(cfg_getnsec(cfg, "section", 0) == cfg_getsec(cfg, "section"), 0);
+    fail_unless(cfg_getnsec(cfg, "section", 1) == 0, 0);
+
     sec = cfg_getsec(cfg, "section");
     fail_unless(sec != 0, "unable to get section with cfg_getsec");
     subsec = cfg_getsec(sec, "subsection");
@@ -155,6 +201,37 @@ START_TEST(single_section_test)
     
     buf = "section { substring = \"foo\" subsection { subsubstring = \"bar\"} }"; 
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
+}
+END_TEST
+
+START_TEST(single_ptr_test)
+{
+    char *buf;
+    struct in_addr *ipaddr;
+    struct ether_addr *etheraddr, *cmpether;
+
+    fail_unless(cfg_size(cfg, "ip-address") == 0, "size should be 0");
+
+    buf = "ip-address = 192.168.0.1";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
+    ipaddr = cfg_getptr(cfg, "ip-address");
+    fail_unless(ipaddr != 0, 0);
+    fail_unless(strcmp("192.168.0.1", inet_ntoa(*ipaddr)) == 0, 0);
+
+    buf = "ip-address = 192.168.0.325";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "unable to parse_buf");
+
+    buf = "ethernet-address = '00:03:93:d4:05:58'";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "unable to parse_buf");
+    etheraddr = cfg_getptr(cfg, "ethernet-address");
+    fail_unless(etheraddr != 0, 0);
+    fail_unless(ether_ntoa(etheraddr) != 0, 0);
+
+    cmpether = ether_aton("00:03:93:d4:05:58");
+    fail_unless(memcmp(etheraddr, cmpether, sizeof(struct ether_addr)) == 0, 0);
+
+    buf = "ethernet-address = '00:03:93:d4:05'";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "unable to parse_buf");
 }
 END_TEST
 
@@ -167,7 +244,11 @@ START_TEST(parse_buf_test)
 
     buf = "bool = wrong";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "parse_buf should return CFG_PARSE_ERROR");
+
     buf = "string = ";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "parse_buf should return CFG_PARSE_ERROR");
+
+    buf = "option = 'value'";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "parse_buf should return CFG_PARSE_ERROR");
 }
 END_TEST
@@ -191,6 +272,7 @@ Suite *single_suite(void)
     tcase_add_test(tc_single, single_float_test); 
     tcase_add_test(tc_single, single_bool_test); 
     tcase_add_test(tc_single, single_section_test); 
+    tcase_add_test(tc_single, single_ptr_test); 
     tcase_add_test(tc_single, parse_buf_test); 
     tcase_add_test(tc_single, nonexistent_option_test);
 

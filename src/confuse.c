@@ -283,6 +283,27 @@ DLLIMPORT char *cfg_getstr(cfg_t *cfg, const char *name)
     return cfg_getnstr(cfg, name, 0);
 }
 
+DLLIMPORT void *cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index)
+{
+    assert(opt && opt->type == CFGT_PTR);
+    if(opt->values && index < opt->nvalues)
+        return opt->values[index]->ptr;
+    else if(opt->simple_value)
+        return *(void **)opt->simple_value;
+    else
+        return 0;
+}
+
+DLLIMPORT void *cfg_getnptr(cfg_t *cfg, const char *name, unsigned int index)
+{
+    return cfg_opt_getnptr(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name)
+{
+    return cfg_getnptr(cfg, name, 0);
+}
+
 DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index)
 {
     assert(opt && opt->type == CFGT_SEC);
@@ -418,11 +439,11 @@ static void cfg_init_defaults(cfg_t *cfg)
                  * "default" value, force the correct state and option
                  */
 
-                if(cfg->opts[i].type == CFGT_FUNC)
-                    xstate = 0;
-                else if(is_set(CFGF_LIST, cfg->opts[i].flags))
+                if(is_set(CFGF_LIST, cfg->opts[i].flags))
                     /* lists must be surrounded by {braces} */
                     xstate = 3;
+                else if(cfg->opts[i].type == CFGT_FUNC)
+                    xstate = 0;
                 else
                     xstate = 2;
 
@@ -471,6 +492,7 @@ static void cfg_init_defaults(cfg_t *cfg)
                                         cfg->opts[i].def.string, 0);
                         break;
                     case CFGT_FUNC:
+                    case CFGT_PTR:
                         break;
                     default:
                         cfg_error(cfg,
@@ -502,6 +524,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
     char *s;
     double f;
     long int i;
+    void *p;
     char *endptr;
 
     assert(cfg && opt);
@@ -656,6 +679,13 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 }
             }
             val->boolean = (cfg_bool_t)b;
+            break;
+
+        case CFGT_PTR:
+            assert(opt->parsecb);
+            if((*opt->parsecb)(cfg, opt, value, &p) != 0)
+                return 0;
+            val->ptr = p;
             break;
 
         default:
@@ -1117,6 +1147,8 @@ DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
                 free(opt->values[i]->string);
             else if(opt->type == CFGT_SEC)
                 cfg_free(opt->values[i]->section);
+            else if(opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr)
+                (opt->freecb)(opt->values[i]->ptr);
             free(opt->values[i]);
         }
         free(opt->values);

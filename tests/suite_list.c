@@ -1,5 +1,5 @@
 #include <check.h>
-#include "confuse.h"
+#include "../src/confuse.h"
 
 cfg_t *cfg;
 int numopts = 0;

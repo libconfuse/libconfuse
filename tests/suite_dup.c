@@ -1,5 +1,5 @@
 #include <check.h>
-#include "confuse.h"
+#include "../src/confuse.h"
 
 static cfg_t *create_config(void)
 {

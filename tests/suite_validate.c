@@ -1,5 +1,5 @@
 #include <check.h>
-#include "confuse.h"
+#include "../src/confuse.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>

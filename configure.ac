@@ -3,7 +3,7 @@ dnl $Id$
 
 AC_PREREQ(2.50)
 
-AC_INIT(libConfuse, 2.3, confuse-devel@nongnu.org, confuse)
+AC_INIT(libConfuse, 2.4, confuse-devel@nongnu.org, confuse)
 AC_CONFIG_AUX_DIR(support)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -12,7 +12,7 @@ AC_CONFIG_SRCDIR(src/confuse.c)
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_LEX
-AC_ENABLE_SHARED(no)
+AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 # Checks for libraries.
 
