@@ -324,8 +324,17 @@ static void cfg_init_defaults(cfg_t *cfg)
 	for(i = 0; cfg->opts[i].name; i++) {
 		if(cfg->opts[i].type != CFGT_SEC) {
 
-			if(cfg->opts[i].def.parsed) {
+			if(is_set(CFGF_LIST, cfg->opts[i].flags) ||
+			   cfg->opts[i].def.parsed)
+			{
 				int xstate, ret;
+
+				/* If it's a list, but no default value was given,
+				 * keep the option uninitialized.
+				 */
+				if(cfg->opts[i].def.parsed == 0 ||
+				   cfg->opts[i].def.parsed[0] == 0)
+					continue;
 
 				/* setup scanning from the string specified for the
 				 * "default" value, force the correct state and option
