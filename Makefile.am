@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ## $Id$
 
-#AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign
 CLEANFILES=*~ \#*\#
 EXTRA_DIST=Doxyfile.in Doxyfile libconfuse.spec.in libconfuse.spec
 SUBDIRS = m4 po src examples
