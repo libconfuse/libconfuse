@@ -182,6 +182,23 @@ typedef void (*cfg_print_func_t)(cfg_opt_t *opt, unsigned int index, FILE *fp);
 typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt,
 							  const char *value, void *result);
 
+/** Validating callback prototype
+ *
+ * This callback function is called after an option has been parsed
+ * and set. The function is called for both fundamental values
+ * (strings, integers etc) as well as lists and sections. Can for
+ * example be used to validate that all required options in a section
+ * has been set to sane values.
+ *
+ * @return On success, 0 should be returned. All other values
+ * indicates an error, and the parsing is aborted. The callback
+ * function should notify the error itself, for example by calling
+ * cfg_error().
+ *
+ * @see cfg_set_validate_func
+ */
+typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
+
 /** Boolean values. */
 typedef enum {cfg_false, cfg_true} cfg_bool_t;
 
@@ -246,7 +263,8 @@ struct cfg_opt_t {
 	void *simple_value;     /**< Pointer to user-specified variable to
 							 * store simple values (created with the
 							 * CFG_SIMPLE_* initializers) */
-	cfg_callback_t cb;      /**< Value parsing callback function */
+	cfg_callback_t parsecb; /**< Value parsing callback function */
+	cfg_validate_callback_t validcb; /**< Value validating callback function */
 	cfg_print_func_t pf;    /**< print callback function */
 };
 
@@ -255,9 +273,9 @@ extern const char __export confuse_version[];
 extern const char __export confuse_author[];
 
 #define __CFG_STR(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,svalue,cb}
+  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,svalue,cb,0,0}
 #define __CFG_STR_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb}
+  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
 
 /** Initialize a string option
  */
@@ -336,9 +354,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_INT(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,svalue,cb}
+  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,svalue,cb,0,0}
 #define __CFG_INT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb}
+  {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
 
 /** Initialize an integer option
  */
@@ -369,9 +387,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_FLOAT(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,svalue,cb}
+  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,svalue,cb,0,0}
 #define __CFG_FLOAT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb}
+  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
 
 /** Initialize a floating point option
  */
@@ -402,9 +420,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_BOOL(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,svalue,cb}
+  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,svalue,cb,0,0}
 #define __CFG_BOOL_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb}
+  {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,svalue,cb,0,0}
 
 /** Initialize a boolean option
  */
@@ -446,7 +464,7 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SEC(name, opts, flags) \
-  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,0,0}
+  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,0,0,0,0}
 
 
 
@@ -457,7 +475,7 @@ extern const char __export confuse_author[];
  * @see cfg_func_t
  */
 #define CFG_FUNC(name, func) \
-  {name,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,0,0}
+  {name,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,0,0,0,0}
 
 
 
@@ -465,7 +483,7 @@ extern const char __export confuse_author[];
  * the option list.
  */
 #define CFG_END() \
-   {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,0,0}
+   {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,0,0,0,0}
 
 
 
@@ -992,12 +1010,24 @@ DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
- * @param pf The print function callback.
+ * @param pf The print callback function.
  *
  * @see cfg_print_func_t
  */
 DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
 											  cfg_print_func_t pf);
+
+/** Register a validating callback function for an option.
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param vf The validating callback function.
+ *
+ * @see cfg_validate_callback_t
+ */
+DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
+														const char *name,
+												   cfg_validate_callback_t vf);
 
 #ifdef __cplusplus
 }

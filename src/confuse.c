@@ -514,8 +514,8 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 
 	switch(opt->type) {
 		case CFGT_INT:
-			if(opt->cb) {
-				if((*opt->cb)(cfg, opt, value, &i) != 0)
+			if(opt->parsecb) {
+				if((*opt->parsecb)(cfg, opt, value, &i) != 0)
 					return 0;
 				val->number = i;
 			} else {
@@ -534,8 +534,8 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 			}
 			break;
 		case CFGT_FLOAT:
-			if(opt->cb) {
-				if((*opt->cb)(cfg, opt, value, &f) != 0)
+			if(opt->parsecb) {
+				if((*opt->parsecb)(cfg, opt, value, &f) != 0)
 					return 0;
 				val->fpnumber = f;
 			} else {
@@ -556,9 +556,9 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 			break;
 		case CFGT_STR:
 			free(val->string);
-			if(opt->cb) {
+			if(opt->parsecb) {
 				s = 0;
-				if((*opt->cb)(cfg, opt, value, &s) != 0)
+				if((*opt->parsecb)(cfg, opt, value, &s) != 0)
 					return 0;
 				val->string = strdup(s);
 			} else
@@ -584,8 +584,8 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 				cfg_init_defaults(val->section);
 			break;
 		case CFGT_BOOL:
-			if(opt->cb) {
-				if((*opt->cb)(cfg, opt, value, &b) != 0)
+			if(opt->parsecb) {
+				if((*opt->parsecb)(cfg, opt, value, &b) != 0)
 					return 0;
 			} else {
 				b = cfg_parse_boolean(value);
@@ -686,6 +686,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 	cfg_value_t *val = 0;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
 	int num_values = 0; /* number of values found for a list option */
+	int rc;
 
 	if(force_state != -1)
 		state = force_state;
@@ -779,6 +780,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 
 				if(cfg_setopt(cfg, opt, cfg_yylval) == 0)
 					return STATE_ERROR;
+				if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
+					return STATE_ERROR;
 				if(is_set(CFGF_LIST, opt->flags)) {
 					state = 4;
 					++num_values;
@@ -797,9 +800,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 					 * closing (list) brace */
 				if(tok == ',')
 					state = 2;
-				else if(tok == '}')
+				else if(tok == '}') {
 					state = 0;
-				else {
+					if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
+						return STATE_ERROR;
+				} else {
 					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 					return STATE_ERROR;
 				}
@@ -816,9 +821,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 				if(!val)
 					return STATE_ERROR;
 
-				if(cfg_parse_internal(val->section, level+1,-1,0) != STATE_EOF)
-					return STATE_ERROR;
+				val->section->line = cfg->line;
+				rc = cfg_parse_internal(val->section, level+1,-1,0);
 				cfg->line = val->section->line;
+				if(rc != STATE_EOF)
+					return STATE_ERROR;
+				if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
+					return STATE_ERROR;
 				state = 0;
 				break;
 			case 6: /* expecting a title for a section */
@@ -1257,10 +1266,16 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 			fprintf(fp, "}");
 		} else {
 			cfg_indent(fp, indent);
-			if(cfg_opt_size(opt) == 0 || (
-				   opt->type == CFGT_STR && (opt->values[0]->string == 0 ||
+			/* comment out the option if is not set */
+			if(opt->simple_value) {
+				if(opt->type == CFGT_STR && *((char **)opt->simple_value) == 0)
+					fprintf(fp, "# ");
+			} else {
+				if(cfg_opt_size(opt) == 0 || (
+					   opt->type == CFGT_STR && (opt->values[0]->string == 0 ||
 											 opt->values[0]->string[0] == 0)))
-				fprintf(fp, "# ");
+					fprintf(fp, "# ");
+			}
 			fprintf(fp, "%s = ", opt->name);
 			if(opt->pf)
 				opt->pf(opt, 0, fp);
@@ -1310,4 +1325,15 @@ DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
 											  cfg_print_func_t pf)
 {
 	return cfg_opt_set_print_func(cfg_getopt(cfg, name), pf);
+}
+
+DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
+														const char *name,
+												   cfg_validate_callback_t vf)
+{
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	assert(opt);
+	cfg_validate_callback_t oldvf = opt->validcb;
+	opt->validcb = vf;
+	return oldvf;
 }
