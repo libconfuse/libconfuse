@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2003-08-14 16:18+0200\n"
+"POT-Creation-Date: 2003-09-23 17:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,77 +41,77 @@ msgstr ""
 msgid "floating point value for option '%s' is out of range"
 msgstr ""
 
-#: src/confuse.c:590
+#: src/confuse.c:593
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr ""
 
-#: src/confuse.c:702
+#: src/confuse.c:706
 msgid "premature end of file"
 msgstr ""
 
-#: src/confuse.c:712
+#: src/confuse.c:716
 msgid "unexpected closing brace"
 msgstr ""
 
-#: src/confuse.c:718 src/confuse.c:773 src/confuse.c:800
+#: src/confuse.c:722 src/confuse.c:777 src/confuse.c:808
 #, c-format
 msgid "unexpected token '%s'"
 msgstr ""
 
-#: src/confuse.c:738
+#: src/confuse.c:742
 #, c-format
 msgid "attempt to append to non-list option %s"
 msgstr ""
 
-#: src/confuse.c:752
+#: src/confuse.c:756
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr ""
 
-#: src/confuse.c:787
+#: src/confuse.c:793
 #, c-format
 msgid "missing opening brace for option '%s'"
 msgstr ""
 
-#: src/confuse.c:806
+#: src/confuse.c:814
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr ""
 
-#: src/confuse.c:823
+#: src/confuse.c:835
 #, c-format
 msgid "missing title for section '%s'"
 msgstr ""
 
-#: src/confuse.c:832
+#: src/confuse.c:844
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr ""
 
-#: src/confuse.c:849 src/confuse.c:863
+#: src/confuse.c:861 src/confuse.c:875
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr ""
 
-#: src/confuse.c:1018
+#: src/confuse.c:1030
 msgid "wrong number of arguments to cfg_include()"
 msgstr ""
 
-#: src/lexer.l:140
+#: src/lexer.l:143
 #, c-format
 msgid "invalid octal number '%s'"
 msgstr ""
 
-#: src/lexer.l:146
+#: src/lexer.l:149
 #, c-format
 msgid "bad escape sequence '%s'"
 msgstr ""
 
-#: src/lexer.l:221
+#: src/lexer.l:224
 msgid "unterminated string constant"
 msgstr ""
 
-#: src/lexer.l:287
+#: src/lexer.l:290
 msgid "includes nested too deeply"
 msgstr ""

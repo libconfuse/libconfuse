@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libConfuse 2.2\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2003-08-14 16:18+0200\n"
-"PO-Revision-Date: 2003-08-14 16:18+0200\n"
+"POT-Creation-Date: 2003-09-23 17:10+0200\n"
+"PO-Revision-Date: 2003-09-23 17:10+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -63,77 +63,77 @@ msgstr "invalid floating point value for option ‘%s’"
 msgid "floating point value for option '%s' is out of range"
 msgstr "floating point value for option ‘%s’ is out of range"
 
-#: src/confuse.c:590
+#: src/confuse.c:593
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr "invalid boolean value for option ‘%s’"
 
-#: src/confuse.c:702
+#: src/confuse.c:706
 msgid "premature end of file"
 msgstr "premature end of file"
 
-#: src/confuse.c:712
+#: src/confuse.c:716
 msgid "unexpected closing brace"
 msgstr "unexpected closing brace"
 
-#: src/confuse.c:718 src/confuse.c:773 src/confuse.c:800
+#: src/confuse.c:722 src/confuse.c:777 src/confuse.c:808
 #, c-format
 msgid "unexpected token '%s'"
 msgstr "unexpected token ‘%s’"
 
-#: src/confuse.c:738
+#: src/confuse.c:742
 #, c-format
 msgid "attempt to append to non-list option %s"
 msgstr "attempt to append to non-list option %s"
 
-#: src/confuse.c:752
+#: src/confuse.c:756
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr "missing equal sign after option ‘%s’"
 
-#: src/confuse.c:787
+#: src/confuse.c:793
 #, c-format
 msgid "missing opening brace for option '%s'"
 msgstr "missing opening brace for option ‘%s’"
 
-#: src/confuse.c:806
+#: src/confuse.c:814
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr "missing opening brace for section ‘%s’"
 
-#: src/confuse.c:823
+#: src/confuse.c:835
 #, c-format
 msgid "missing title for section '%s'"
 msgstr "missing title for section ‘%s’"
 
-#: src/confuse.c:832
+#: src/confuse.c:844
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr "missing parenthesis for function ‘%s’"
 
-#: src/confuse.c:849 src/confuse.c:863
+#: src/confuse.c:861 src/confuse.c:875
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr "syntax error in call of function ‘%s’"
 
-#: src/confuse.c:1018
+#: src/confuse.c:1030
 msgid "wrong number of arguments to cfg_include()"
 msgstr "wrong number of arguments to cfg_include()"
 
-#: src/lexer.l:140
+#: src/lexer.l:143
 #, c-format
 msgid "invalid octal number '%s'"
 msgstr "invalid octal number ‘%s’"
 
-#: src/lexer.l:146
+#: src/lexer.l:149
 #, c-format
 msgid "bad escape sequence '%s'"
 msgstr "bad escape sequence ‘%s’"
 
-#: src/lexer.l:221
+#: src/lexer.l:224
 msgid "unterminated string constant"
 msgstr "unterminated string constant"
 
-#: src/lexer.l:287
+#: src/lexer.l:290
 msgid "includes nested too deeply"
 msgstr "includes nested too deeply"
