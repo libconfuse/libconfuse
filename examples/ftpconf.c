@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <confuse.h>
 
+/* valid values for the auto-create-bookmark option */
 #define ACB_YES 1
 #define ACB_NO 2
 #define ACB_ASK 3
@@ -16,7 +17,7 @@ int conf_alias(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
 {
     if(argc < 2)
     {
-        cfg_error(cfg, "function '%s' requires 2 arguments", opt->name);
+        cfg_error(cfg, "function '%s' requires 2 arguments", cfg_opt_name(opt));
         return -1;
     }
     printf("got alias '%s' = '%s'\n", argv[0], argv[1]);
@@ -34,7 +35,7 @@ int conf_parse_acb(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
         *(int *)result = ACB_ASK;
     else
     {
-        cfg_error(cfg, "invalid value for option '%s': %s", opt->name, value);
+        cfg_error(cfg, "invalid value for option '%s': %s", cfg_opt_name(opt), value);
         return -1;
     }
     return 0;
@@ -46,7 +47,7 @@ int conf_validate_port(cfg_t *cfg, cfg_opt_t *opt)
     int value = cfg_opt_getnint(opt, 0);
     if(value <= 0)
     {
-        cfg_error(cfg, "invalid port %d in section '%s'", value, cfg->name);
+        cfg_error(cfg, "invalid port %d in section '%s'", value, cfg_name(cfg));
         return -1;
     }
     return 0;

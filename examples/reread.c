@@ -8,11 +8,11 @@ const char *config_filename = "./reread.conf";
 
 void read_config(void)
 {
-    static cfg_opt_t arg_opts[] = {
+    cfg_opt_t arg_opts[] = {
         CFG_STR("value", "default", CFGF_NONE),
         CFG_END()
     };
-    static cfg_opt_t opts[] = {
+    cfg_opt_t opts[] = {
         CFG_INT("delay", 3, CFGF_NONE),
         CFG_STR("message", "This is a message", CFGF_NONE),
         CFG_SEC("argument", arg_opts, CFGF_MULTI | CFGF_TITLE),
@@ -54,9 +54,11 @@ int main(void)
     signal(SIGHUP, sighandler);
     signal(SIGUSR1, usr1handler);
 
-    while(loop) {
+    while(loop)
+    {
         printf("Message: %s", cfg_getstr(cfg, "message"));
-        for(i = 0; i < cfg_size(cfg, "argument"); i++) {
+        for(i = 0; i < cfg_size(cfg, "argument"); i++)
+        {
             cfg_t *arg = cfg_getnsec(cfg, "argument", i);
             printf(", %s", cfg_getstr(arg, "value"));
         }
