@@ -29,6 +29,8 @@
 #endif
 #include "confuse.h"
 
+#include <errno.h>
+
 #if ENABLE_NLS
 # include <libintl.h>
 # define _(str) dgettext(PACKAGE, str)
