@@ -1332,8 +1332,9 @@ DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
 												   cfg_validate_callback_t vf)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	cfg_validate_callback_t oldvf;
 	assert(opt);
-	cfg_validate_callback_t oldvf = opt->validcb;
+	oldvf = opt->validcb;
 	opt->validcb = vf;
 	return oldvf;
 }
