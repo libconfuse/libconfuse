@@ -373,19 +373,19 @@ static void cfg_init_defaults(cfg_t *cfg)
 			} else {
 				switch(cfg->opts[i].type) {
 					case CFGT_INT:
-						cfg_opt_setnint(cfg, &cfg->opts[i],
+						cfg_opt_setnint(&cfg->opts[i],
 										cfg->opts[i].def.number, 0);
 						break;
 					case CFGT_FLOAT:
-						cfg_opt_setnfloat(cfg, &cfg->opts[i],
+						cfg_opt_setnfloat(&cfg->opts[i],
 										  cfg->opts[i].def.fpnumber, 0);
 						break;
 					case CFGT_BOOL:
-						cfg_opt_setnbool(cfg, &cfg->opts[i],
+						cfg_opt_setnbool(&cfg->opts[i],
 										 cfg->opts[i].def.boolean, 0);
 						break;
 					case CFGT_STR:
-						cfg_opt_setnstr(cfg, &cfg->opts[i],
+						cfg_opt_setnstr(&cfg->opts[i],
 										cfg->opts[i].def.string, 0);
 						break;
 					case CFGT_FUNC:
@@ -985,11 +985,11 @@ static cfg_value_t *cfg_getval(cfg_opt_t *opt, unsigned int index)
 	return val;
 }
 
-DLLIMPORT void cfg_opt_setnint(cfg_t *cfg, cfg_opt_t *opt, long int value,
-					 unsigned int index)
+DLLIMPORT void cfg_opt_setnint(cfg_opt_t *opt, long int value,
+							   unsigned int index)
 {
 	cfg_value_t *val;
-	assert(cfg && opt && opt->type == CFGT_INT);
+	assert(opt && opt->type == CFGT_INT);
 	val = cfg_getval(opt, index);
 	val->number = value;
 }
@@ -999,7 +999,7 @@ DLLIMPORT void cfg_setnint(cfg_t *cfg, const char *name,
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
-		cfg_opt_setnint(cfg, opt, value, index);
+		cfg_opt_setnint(opt, value, index);
 }
 
 DLLIMPORT void cfg_setint(cfg_t *cfg, const char *name, long int value)
@@ -1007,11 +1007,11 @@ DLLIMPORT void cfg_setint(cfg_t *cfg, const char *name, long int value)
 	cfg_setnint(cfg, name, value, 0);
 }
 
-DLLIMPORT void cfg_opt_setnfloat(cfg_t *cfg, cfg_opt_t *opt, double value,
-					   unsigned int index)
+DLLIMPORT void cfg_opt_setnfloat(cfg_opt_t *opt, double value,
+								 unsigned int index)
 {
 	cfg_value_t *val;
-	assert(cfg && opt && opt->type == CFGT_FLOAT);
+	assert(opt && opt->type == CFGT_FLOAT);
 	val = cfg_getval(opt, index);
 	val->fpnumber = value;
 }
@@ -1021,7 +1021,7 @@ DLLIMPORT void cfg_setnfloat(cfg_t *cfg, const char *name,
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
-		cfg_opt_setnfloat(cfg, opt, value, index);
+		cfg_opt_setnfloat(opt, value, index);
 }
 
 DLLIMPORT void cfg_setfloat(cfg_t *cfg, const char *name, double value)
@@ -1029,21 +1029,21 @@ DLLIMPORT void cfg_setfloat(cfg_t *cfg, const char *name, double value)
 	cfg_setnfloat(cfg, name, value, 0);
 }
 
-DLLIMPORT void cfg_opt_setnbool(cfg_t *cfg, cfg_opt_t *opt, cfg_bool_t value,
-					  unsigned int index)
+DLLIMPORT void cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value,
+								unsigned int index)
 {
 	cfg_value_t *val;
-	assert(cfg && opt && opt->type == CFGT_BOOL);
+	assert(opt && opt->type == CFGT_BOOL);
 	val = cfg_getval(opt, index);
 	val->boolean = value;
 }
 
 DLLIMPORT void cfg_setnbool(cfg_t *cfg, const char *name,
-				  cfg_bool_t value, unsigned int index)
+							cfg_bool_t value, unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
-		cfg_opt_setnbool(cfg, opt, value, index);
+		cfg_opt_setnbool(opt, value, index);
 }
 
 DLLIMPORT void cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value)
@@ -1051,22 +1051,22 @@ DLLIMPORT void cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value)
 	cfg_setnbool(cfg, name, value, 0);
 }
 
-DLLIMPORT void cfg_opt_setnstr(cfg_t *cfg, cfg_opt_t *opt, const char *value,
-					 unsigned int index)
+DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value,
+							   unsigned int index)
 {
 	cfg_value_t *val;
-	assert(cfg && opt && opt->type == CFGT_STR);
+	assert(opt && opt->type == CFGT_STR);
 	val = cfg_getval(opt, index);
 	free(val->string);
 	val->string = value ? strdup(value) : 0;
 }
 
 DLLIMPORT void cfg_setnstr(cfg_t *cfg, const char *name,
-				 const char *value, unsigned int index)
+						   const char *value, unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
-		cfg_opt_setnstr(cfg, opt, value, index);
+		cfg_opt_setnstr(opt, value, index);
 }
 
 DLLIMPORT void cfg_setstr(cfg_t *cfg, const char *name, const char *value)
@@ -1074,7 +1074,7 @@ DLLIMPORT void cfg_setstr(cfg_t *cfg, const char *name, const char *value)
 	cfg_setnstr(cfg, name, value, 0);
 }
 
-static void cfg_addlist_internal(cfg_t *cfg, cfg_opt_t *opt,
+static void cfg_addlist_internal(cfg_opt_t *opt,
 								 unsigned int nvalues, va_list ap)
 {
 	unsigned int i;
@@ -1082,18 +1082,18 @@ static void cfg_addlist_internal(cfg_t *cfg, cfg_opt_t *opt,
 	for(i = 0; i < nvalues; i++) {
 		switch(opt->type) {
 			case CFGT_INT:
-				cfg_opt_setnint(cfg, opt, va_arg(ap, int), opt->nvalues);
+				cfg_opt_setnint(opt, va_arg(ap, int), opt->nvalues);
 				break;
 			case CFGT_FLOAT:
-				cfg_opt_setnfloat(cfg, opt, va_arg(ap, double),
+				cfg_opt_setnfloat(opt, va_arg(ap, double),
 								  opt->nvalues);
 				break;
 			case CFGT_BOOL:
-				cfg_opt_setnbool(cfg, opt, va_arg(ap, cfg_bool_t),
+				cfg_opt_setnbool(opt, va_arg(ap, cfg_bool_t),
 								 opt->nvalues);
 				break;
 			case CFGT_STR:
-				cfg_opt_setnstr(cfg, opt, va_arg(ap, char*), opt->nvalues);
+				cfg_opt_setnstr(opt, va_arg(ap, char*), opt->nvalues);
 				break;
 			case CFGT_FUNC:
 			case CFGT_SEC:
@@ -1113,7 +1113,7 @@ DLLIMPORT void cfg_setlist(cfg_t *cfg, const char *name,
 
 		cfg_free_value(opt);
 		va_start(ap, nvalues);
-		cfg_addlist_internal(cfg, opt, nvalues, ap);
+		cfg_addlist_internal(opt, nvalues, ap);
 		va_end(ap);
 	}
 }
@@ -1127,7 +1127,7 @@ DLLIMPORT void cfg_addlist(cfg_t *cfg, const char *name,
 		va_list ap;
 
 		va_start(ap, nvalues);
-		cfg_addlist_internal(cfg, opt, nvalues, ap);
+		cfg_addlist_internal(opt, nvalues, ap);
 		va_end(ap);
 	}
 }
