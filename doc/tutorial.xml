@@ -9,6 +9,7 @@
 <!ENTITY listing5 SYSTEM "listing5.xml">
 <!ENTITY listing6 SYSTEM "listing6.xml">
 <!ENTITY listing7 SYSTEM "listing7.xml">
+<!ENTITY listing8 SYSTEM "listing8.xml">
 ]>
 <article>
     <articleinfo>
@@ -147,9 +148,7 @@ target = ${USER:-User}
         <para>
             The modified program is shown below:
         </para>
-        <programlisting>
-            &listing4;
-        </programlisting>
+        &listing4;
         <para>
             Three things are a bit different here. First, the macro to
             initialize the "targets" option is
@@ -317,7 +316,7 @@ while(repeat--)
         <para>
             We'll fix this by not allowing a negative value in the configuration
             file. Of course we could first just check if the value is negative
-            and the abort, using <function>cfg_getint()</function> and a test.
+            and then abort, using <function>cfg_getint()</function> and a test.
             But we will use a validating callback function instead. This way
             <function>cfg_parse()</function> will return an error directly when
             parsing the file, additionally indicating on which line the error
@@ -352,8 +351,11 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
         <sect2>
             <title>Installing the callback</title>
             <para>
-                The validating callback is installed with <function>cfg_set_validate_func()</function>.
+                The validating callback is installed with
+                <function>cfg_set_validate_func()</function>. The complete
+                program is now:
             </para>
+            &listing8;
         </sect2>
     </sect1>
 

@@ -1,18 +1,6 @@
 #include <stdio.h>
 #include <confuse.h>
 
-int validate_unsigned_int(cfg_t *cfg, cfg_opt_t *opt)
-{
-    int value = cfg_opt_getnint(opt, cfg_opt_size(opt) - 1);
-    if(value &lt; 0)
-    {
-        cfg_error(cfg, "integer option '%s' must be positive in section '%s'",
-                opt->name, cfg->name);
-        return -1;
-    }
-    return 0;
-}
-
 int main(void)
 {
     cfg_opt_t greet_opts[] =
@@ -31,7 +19,6 @@ int main(void)
     int i, j;
 
     cfg = cfg_init(opts, CFGF_NONE);
-    cfg_set_validate_func(cfg, "greeting|repeat", validate_unsigned_int);
     cfg_parse(cfg, "hello.conf");
 
     for(j = 0; j < cfg_size(cfg, "greeting"); j++)

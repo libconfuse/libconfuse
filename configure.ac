@@ -55,7 +55,7 @@ CONFUSE_LIBS="-lconfuse $LTLIBINTL"
 AC_CONFIG_LIBCONFIG_IN_STATIC
 AC_CONFIG_LIBCONFIG_IN([confuse])
 
-AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile libconfuse.pc \
+AC_CONFIG_FILES([Makefile doc/Doxyfile src/Makefile examples/Makefile libconfuse.pc \
                  po/Makefile.in m4/Makefile tests/Makefile doc/Makefile libconfuse.spec confuse-config])
 AC_OUTPUT
 

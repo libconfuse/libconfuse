@@ -3,7 +3,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 CLEANFILES=*~ '\#*\#' confuse-config.in
-EXTRA_DIST=Doxyfile.in Doxyfile libconfuse.spec.in libconfuse.spec
+EXTRA_DIST=libconfuse.spec.in libconfuse.spec
 SUBDIRS = m4 po src examples tests doc
 
 if HAVE_PKGCONFIG
@@ -13,10 +13,6 @@ else
   bin_SCRIPTS = confuse-config
 endif
 
-doc: doc/html/index.html
-doc/html/index.html: src/confuse.h
-	doxygen
-
 celan: clean
 
 ACLOCAL_AMFLAGS = -I m4
@@ -24,7 +20,7 @@ ACLOCAL_AMFLAGS = -I m4
 BORLAND_FILES=cfgtest.bpf cfgtest.bpr config.h confuse.bpg libConfuse.bpf libConfuse.bpr
 DEVCPP_FILES=cfgtest.dev config.h libConfuse.dev
 MSVC6_FILES=config.h libConfuse.dsp libConfuse.dsw unistd.h
-MSVS_FILES=config.h msvs.net.sln
+MSVS_FILES=config.h msvs.net.sln unistd.h
 MSVS_CFGTEST_FILES=cfgtest.vcproj
 MSVS_LIBCONFUSE_FILES=libConfuse.vcproj
 
