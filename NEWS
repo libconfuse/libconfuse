@@ -12,7 +12,10 @@ New in 2.1
 * Added project files for MS Visual C++ 6.0
 * Includes io.h on windows
 * Fixed initialization of default values for lists, when given a NULL
-  string. Now initialized to the empty list. Reported by Juraj Variny.
+  string. Now initialized to the empty list. Noted by Juraj Variny.
+* Setting a list to the empty list in the config file now possible.
+* Appending to default values in a list is now ok.
+
 
 
 New in 2.0

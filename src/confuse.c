@@ -623,6 +623,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 	cfg_opt_t *opt = 0;
 	cfg_value_t *val = 0;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
+	int num_values = 0; /* number of values found for a list option */
 
 	if(force_state != -1)
 		state = force_state;
@@ -679,6 +680,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 								  opt->name);
 						return STATE_ERROR;
 					}
+					/* Even if the reset flag was set by
+					 * cfg_init_defaults, appending to the defaults
+					 * should be ok.
+					 */
+					opt->flags &= ~CFGF_RESET;
 				} else if(tok == '=') {
 					/* set the (temporary) reset flag to clear the old
 					 * values, since we obviously didn't want to append */
@@ -688,14 +694,19 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 							  opt->name);
 					return STATE_ERROR;
 				}
-				if(is_set(CFGF_LIST, opt->flags))
+				if(is_set(CFGF_LIST, opt->flags)) {
 					state = 3;
-				else
+					num_values = 0;
+				} else
 					state = 2;
 				break;
 			case 2: /* expecting an option value */
 				if(tok == '}' && is_set(CFGF_LIST, opt->flags)) {
 					state = 0;
+					if(num_values == 0 && is_set(CFGF_RESET, opt->flags))
+						/* Reset flags was set, and the empty list was
+						 * specified. Free all old values. */
+						cfg_free_value(opt);
 					break;
 				}
 
@@ -706,9 +717,10 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 
 				if(cfg_setopt(cfg, opt, cfg_yylval) == 0)
 					return STATE_ERROR;
-				if(is_set(CFGF_LIST, opt->flags))
+				if(is_set(CFGF_LIST, opt->flags)) {
 					state = 4;
-				else
+					++num_values;
+				} else
 					state = 0;
 				break;
 			case 3: /* expecting an opening brace for a list option */
