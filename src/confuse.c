@@ -372,13 +372,13 @@ static void cfg_init_defaults(cfg_t *cfg)
 	int i;
 
 	for(i = 0; cfg->opts[i].name; i++) {
-		cfg->opts[i].flags |= CFGF_DEFINIT;
-
 		/* libConfuse doesn't handle default values for "simple" options */
 		if(cfg->opts[i].simple_value)
 			continue;
 
 		if(cfg->opts[i].type != CFGT_SEC) {
+
+			cfg->opts[i].flags |= CFGF_DEFINIT;
 
 			if(is_set(CFGF_LIST, cfg->opts[i].flags) ||
 			   cfg->opts[i].def.parsed)
@@ -461,7 +461,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			cfg->opts[i].flags |= CFGF_RESET;
 		} else if(!is_set(CFGF_MULTI, cfg->opts[i].flags)) {
 			cfg_setopt(cfg, &cfg->opts[i], 0);
-			cfg->opts[i].flags |= CFGF_RESET;
+			cfg->opts[i].flags |= CFGF_DEFINIT;
 		}
 	}
 }
@@ -565,18 +565,21 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 				val->string = strdup(value);
 			break;
 		case CFGT_SEC:
-			cfg_free(val->section);
-			val->section = (cfg_t *)malloc(sizeof(cfg_t));
-			assert(val->section);
-			memset(val->section, 0, sizeof(cfg_t));
-			val->section->name = strdup(opt->name);
-			val->section->opts = cfg_dupopts(opt->subopts);
-			val->section->flags = cfg->flags;
-			val->section->flags |= CFGF_ALLOCATED;
-			val->section->filename = cfg->filename;
-			val->section->line = cfg->line;
-			val->section->errfunc = cfg->errfunc;
-			val->section->title = value;
+			if(is_set(CFGF_MULTI, opt->flags) || val->section == 0)
+			{
+				cfg_free(val->section);
+				val->section = (cfg_t *)malloc(sizeof(cfg_t));
+				assert(val->section);
+				memset(val->section, 0, sizeof(cfg_t));
+				val->section->name = strdup(opt->name);
+				val->section->opts = cfg_dupopts(opt->subopts);
+				val->section->flags = cfg->flags;
+				val->section->flags |= CFGF_ALLOCATED;
+				val->section->filename = cfg->filename;
+				val->section->line = cfg->line;
+				val->section->errfunc = cfg->errfunc;
+				val->section->title = value;
+			}
 			if(!is_set(CFGF_DEFINIT, opt->flags))
 				cfg_init_defaults(val->section);
 			break;
