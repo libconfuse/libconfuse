@@ -1,0 +1,57 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+usage()
+{
+	cat <<EOF
+Usage: confuse-config [OPTIONS]
+Options:
+	[--version]
+	[--cflags]
+	[--ldflags]
+	[--libs]
+EOF
+	exit $1
+}
+
+if test $# -eq 0; then
+  usage 1 1>&2
+fi
+
+while test $# -gt 0; do
+  case $1 in
+    --version)
+      echo @VERSION@
+      ;;
+    --cflags)
+      echo_cflags="yes"
+      ;;
+    --ldflags)
+      echo_ldflags="yes"
+      ;;
+    --libs)
+      echo_libs="yes"
+      ;;
+    *)
+      usage 1 1>&2
+      ;;
+  esac
+  shift
+done
+
+if test "$echo_cflags" = "yes"; then
+  if test "@includedir@" != "/usr/include" ; then
+    includes="-I@includedir@"
+  fi
+  echo "$includes"
+fi
+
+if test "$echo_ldflags" = "yes"; then
+  echo "-L@libdir@"
+fi
+
+if test "$echo_libs" = "yes"; then
+  echo "-lconfuse @LIBS@"
+fi

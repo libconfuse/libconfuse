@@ -32,5 +32,5 @@ AC_C_CONST
 AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
 AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile \
- po/Makefile.in m4/Makefile libconfuse.spec])
+ po/Makefile.in m4/Makefile libconfuse.spec confuse-config])
 AC_OUTPUT
