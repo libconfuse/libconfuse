@@ -1,5 +1,7 @@
 /* Configuration file parser -*- tab-width: 4; -*-
  *
+ * $Id$
+ *
  * Copyright (c) 2002-2003, Martin Hedenfalk <mhe@home.se>
  *
  * This library is free software; you can redistribute it and/or
