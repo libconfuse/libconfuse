@@ -53,6 +53,7 @@ extern "C" {
 # ifdef HAVE__FILENO
 #  define fileno _fileno
 # endif
+# include <io.h>
 # ifdef HAVE__ISATTY
 #  define isatty _isatty
 # endif
