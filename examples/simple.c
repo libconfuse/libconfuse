@@ -4,7 +4,7 @@
 int main(void)
 {
 	cfg_bool_t verbose = cfg_false;
-	char *server = strdup("gazonk");
+	char *server = NULL;
 	double delay = 1.356e-32;
 	char *username = NULL;
 	int debug = 1;
@@ -18,6 +18,9 @@ int main(void)
 		CFG_END()
 	};
 	cfg_t *cfg;
+
+	/* set default value for the server option */
+	server = strdup("gazonk");
 
 	cfg = cfg_init(opts, 0);
 	cfg_parse(cfg, "simple.conf");
@@ -36,6 +39,13 @@ int main(void)
 	 */
 	cfg_setstr(cfg, "user", "foo");
 	printf("username: %s\n", username);
+
+	/* print the parsed values to another file */
+	{
+		FILE *fp = fopen("simple.conf.out", "w");
+		cfg_print(cfg, fp);
+		fclose(fp);
+	}
 
 	cfg_free(cfg);
 	return 0;

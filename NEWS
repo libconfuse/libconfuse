@@ -6,6 +6,8 @@ New in 2.2
 * added cfg_opt_size function
 * added support to print options to a file
 * added print callback function per option
+* simple options can be retrieved with the cfg_get functions (allows
+  using the cfg_print function for simple values)
 
 
 New in 2.1

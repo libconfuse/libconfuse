@@ -183,6 +183,7 @@ int main(int argc, char **argv)
 		printf("ask-quit-array[%d] == %ld\n",
 			   i, cfg_getnint(cfg, "ask-quit-array", i));
 
+	/* print the parsed values to another file */
 	{
 		FILE *fp = fopen("test.conf.out", "w");
 		cfg_set_print_func(cfg, "func", print_func);

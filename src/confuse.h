@@ -134,6 +134,26 @@ typedef int cfg_flag_t;
 typedef int (*cfg_func_t)(cfg_t *cfg, cfg_opt_t *opt,
 						  int argc, const char **argv);
 
+/** Function prototype used by the cfg_print_ functions.
+ *
+ * This callback function is used to print option values. For options
+ * with a value parsing callback, this is often required, especially
+ * if a string is mapped to an integer by the callback. This print
+ * callback must then map the integer back to the appropriate string.
+ *
+ * Except for functions, the print callback function should only print
+ * the value of the option, not the name and the equal sign (that is
+ * handled by the cfg_opt_print function). For function options
+ * however, the name and the parenthesis must be printed by this
+ * function. The value to print can be accessed with the cfg_opt_get
+ * functions.
+ *
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get. Zero based.
+ * @param fp File stream to print to, use stdout to print to the screen.
+ *
+ * @see cfg_print, cfg_set_print_func
+ */
 typedef void (*cfg_print_func_t)(cfg_opt_t *opt, unsigned int index, FILE *fp);
 	
 /** Value parsing callback prototype
@@ -227,7 +247,7 @@ struct cfg_opt_t {
 							 * store simple values (created with the
 							 * CFG_SIMPLE_* initializers) */
 	cfg_callback_t cb;      /**< Value parsing callback function */
-	cfg_print_func_t pf;    /**< (optional) print function */
+	cfg_print_func_t pf;    /**< print callback function */
 };
 
 extern const char __export confuse_copyright[];
@@ -265,9 +285,16 @@ extern const char __export confuse_author[];
  * lists of values or multiple sections. LibConfuse will store the
  * value of a simple option in the user-defined location specified by
  * the value parameter in the initializer. Simple options are not
- * stored in the cfg_t context (you can thus not use the cfg_get*
- * functions to get the value). Sections can not be initialized as a
- * "simple" option.
+ * stored in the cfg_t context, only a pointer. Sections can not be
+ * initialized as a "simple" option.
+ *
+ * As of version 2.2, libConfuse can now return the values of simple
+ * options with the cfg_get functions. This allows using the new
+ * cfg_print function with simple options.
+ *
+ * libConfuse doesn't support handling default values for "simple"
+ * options. They are assumed to be set by the calling application
+ * before cfg_parse is called.
  *
  * @param name name of the option
  * @param svalue pointer to a character pointer (a char **). This value
@@ -283,13 +310,24 @@ extern const char __export confuse_author[];
  * since libConfuse will try to free the static string "joe" (which is
  * an error) when a "user" option is found. Rather, use the following
  * code snippet:
- *
  * <pre>
  * char *user = strdup("joe");
  * ...
  * cfg_opt_t opts[] = {
  *      CFG_SIMPLE_STR("user", &user),
  * ...
+ * </pre>
+ * Alternatively, the default value can be set after the opts struct
+ * is defined, as in:
+ * <pre>
+ * char *user = 0;
+ * ...
+ * cfg_opt_t opts[] = {
+ *      CFG_SIMPLE_STR("user", &user),
+ * ...
+ * user = strdup("joe");
+ * cfg = cfg_init(opts, 0);
+ * cfg_parse(cfg, filename);
  * </pre>
  *
  */
@@ -886,14 +924,78 @@ DLLIMPORT void __export cfg_setlist(cfg_t *cfg, const char *name,
 DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
 									unsigned int nvalues, ...);
 
+/** Default value print function.
+ *
+ * Print only the value of a given option. Does not handle sections or
+ * functions. Use cfg_opt_print to print the whole assignment ("option
+ * = value"), or cfg_print to print the whole config file.
+ *
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index The index in the option value array that should be
+ * @param fp File stream to print to.
+ *
+ * @see cfg_print, cfg_opt_print
+ */
 DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index,
 								  FILE *fp);
+
+/** Print an option and its value to a file.
+ * Same as cfg_opt_print, but with the indentation level specified.
+ * @see cfg_opt_print
+ */
 DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
+
+/** Print an option and its value to a file.
+ *
+ * If a print callback function is specified for the option, it is
+ * used instead of cfg_opt_nprint_var.
+ *
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param fp File stream to print to.
+ *
+ * @see cfg_print_func_t
+ */
 DLLIMPORT void cfg_opt_print(cfg_opt_t *opt, FILE *fp);
+
+/** Print the options and values to a file.
+ * Same as cfg_print, but with the indentation level specified.
+ * @see cfg_print
+ */
 DLLIMPORT void cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
-DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);;
+
+/** Print the options and values to a file.
+ *
+ * Note that options in any included file are expanded and printed
+ * directly to the file. Option values given with environment
+ * variables in the parsed input are also printed expanded. This means
+ * that if you parse a configuration file you can't expect that the
+ * output from this function is identical to the initial file.
+ *
+ * @param cfg The configuration file context.
+ * @param fp File stream to print to, use stdout to print to the screen.
+ *
+ * @see cfg_print_func_t, cfg_set_print_func
+ */
+DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);
+
+/** Set a print callback function for an option.
+ *
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param pf The print function callback.
+ *
+ * @see cfg_print_func_t
+ */
 DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
 												  cfg_print_func_t pf);
+
+/** Set a print callback function for an option.
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param pf The print function callback.
+ *
+ * @see cfg_print_func_t
+ */
 DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
 											  cfg_print_func_t pf);
 

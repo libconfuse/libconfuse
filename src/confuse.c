@@ -194,6 +194,8 @@ DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index)
 	assert(opt && opt->type == CFGT_INT);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->number;
+	else if(opt->simple_value)
+		return *(signed long *)opt->simple_value;
 	else
 		return 0;
 }
@@ -214,6 +216,8 @@ DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index)
 	assert(opt && opt->type == CFGT_FLOAT);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->fpnumber;
+	else if(opt->simple_value)
+		return *(double *)opt->simple_value;
 	else
 		return 0;
 }
@@ -234,6 +238,8 @@ DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index)
 	assert(opt && opt->type == CFGT_BOOL);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->boolean;
+	else if(opt->simple_value)
+		return *(cfg_bool_t *)opt->simple_value;
 	else
 		return cfg_false;
 }
@@ -254,6 +260,8 @@ DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index)
 	assert(opt && opt->type == CFGT_STR);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->string;
+	else if(opt->simple_value)
+		return *(char **)opt->simple_value;
 	else
 		return 0;
 }
@@ -365,6 +373,10 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 	for(i = 0; cfg->opts[i].name; i++) {
 		cfg->opts[i].flags |= CFGF_DEFINIT;
+
+		/* libConfuse doesn't handle default values for "simple" options */
+		if(cfg->opts[i].simple_value)
+			continue;
 
 		if(cfg->opts[i].type != CFGT_SEC) {
 
@@ -598,14 +610,16 @@ DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
 	if(opt == 0)
 		return;
 
-	for(i = 0; i < opt->nvalues; i++) {
-		if(opt->type == CFGT_STR)
-			free(opt->values[i]->string);
-		else if(opt->type == CFGT_SEC)
-			cfg_free(opt->values[i]->section);
-		free(opt->values[i]);
+	if(opt->values) {
+		for(i = 0; i < opt->nvalues; i++) {
+			if(opt->type == CFGT_STR)
+				free(opt->values[i]->string);
+			else if(opt->type == CFGT_SEC)
+				cfg_free(opt->values[i]->section);
+			free(opt->values[i]);
+		}
+		free(opt->values);
 	}
-	free(opt->values);
 	opt->values = 0;
 	opt->nvalues = 0;
 }
