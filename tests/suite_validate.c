@@ -14,6 +14,8 @@ cfg_t *cfg = 0;
 #define ACTION_CRAWL 3
 #define ACTION_JUMP 4
 
+void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
+
 int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
     if(strcmp(value, "run") == 0)
@@ -26,7 +28,7 @@ int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
         *(int *)result = ACTION_JUMP;
     else
     {
-        cfg_error(cfg, "Invalid action value '%s'", value);
+        /* cfg_error(cfg, "Invalid action value '%s'", value); */
         return -1;
     }
     return 0;
@@ -40,7 +42,7 @@ int validate_speed(cfg_t *cfg, cfg_opt_t *opt)
     {
         if(cfg_opt_getnint(opt, i) <= 0)
         {
-            cfg_error(cfg, "speed must be positive in section %s", cfg->name);
+            /* cfg_error(cfg, "speed must be positive in section %s", cfg->name); */
             return 1;
         }
     }
@@ -57,7 +59,7 @@ int validate_ip(cfg_t *cfg, cfg_opt_t *opt)
         char *ip = cfg_opt_getnstr(opt, i);
         if(inet_aton(ip, &addr) == 0)
         {
-            cfg_error(cfg, "invalid IP address %s in section %s", ip, cfg->name);
+            /* cfg_error(cfg, "invalid IP address %s in section %s", ip, cfg->name); */
             return 1;
         }
     }
@@ -78,7 +80,7 @@ int validate_action(cfg_t *cfg, cfg_opt_t *opt)
 
     if(cfg_opt_getnstr(name_opt, 0) == NULL)
     {
-        cfg_error(cfg, "missing required option 'name' in section %s", opt->name);
+        /* cfg_error(cfg, "missing required option 'name' in section %s", opt->name); */
         return 1;
     }
     return 0;
@@ -86,17 +88,21 @@ int validate_action(cfg_t *cfg, cfg_opt_t *opt)
 
 void validate_setup(void)
 {
-    cfg_opt_t multi_opts[] =
-    {
-//        CFG_INT_LIST("speeds", 0, CFGF_NONE),
-        {"speeds",CFGT_INT,0,0,CFGF_LIST,0,{0,0,cfg_false,0,0},0,0,0,validate_speed,0},
-        CFG_END()
-    };
+    cfg_opt_t *opt = 0;
 
     cfg_opt_t action_opts[] =
     {
         CFG_INT("speed", 0, CFGF_NONE),
         CFG_STR("name", 0, CFGF_NONE),
+        CFG_INT("xspeed", 0, CFGF_NONE),
+        CFG_END()
+    };
+
+    cfg_opt_t multi_opts[] =
+    {
+        CFG_INT_LIST("speeds", 0, CFGF_NONE),
+        //{"speeds",CFGT_INT,0,0,CFGF_LIST,0,{0,0,cfg_false,0,0},0,0,0,validate_speed,0},
+        CFG_SEC("options", action_opts, CFGF_NONE),
         CFG_END()
     };
 
@@ -110,11 +116,31 @@ void validate_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
+    cfg_set_error_function(cfg, suppress_errors);
 
     cfg_set_validate_func(cfg, "ip-address", validate_ip);
+    fail_unless(cfg_set_validate_func(cfg, "ip-address", validate_ip) == validate_ip, "unable to set validating callback");
+    opt = cfg_getopt(cfg, "ip-address");
+    fail_unless(opt != 0, 0);
+    fail_unless(opt->validcb == validate_ip, 0);
+
     cfg_set_validate_func(cfg, "options", validate_action);
+    fail_unless(cfg_set_validate_func(cfg, "options", validate_action) == validate_action, "unable to set validating callback");
+    opt = cfg_getopt(cfg, "options");
+    fail_unless(opt != 0, 0);
+    fail_unless(opt->validcb == validate_action, 0);
+
     cfg_set_validate_func(cfg, "options|speed", validate_speed);
-/*    cfg_set_validate_func(cfg, "multi_options|speed", validate_speed);*/
+    fail_unless(cfg_set_validate_func(cfg, "options|speed", validate_speed) == validate_speed, "unable to set validating callback");
+    opt = cfg_getopt(cfg, "options|speed");
+    fail_unless(opt != 0, 0);
+    fail_unless(opt->validcb == validate_speed, 0);
+
+    cfg_set_validate_func(cfg, "multi_options|speeds", validate_speed);
+    fail_unless(cfg_set_validate_func(cfg, "multi_options|speeds", validate_speed) == validate_speed, "unable to set validating callback");
+
+    cfg_set_validate_func(cfg, "multi_options|options|xspeed", validate_speed);
+    fail_unless(cfg_set_validate_func(cfg, "multi_options|options|xspeed", validate_speed) == validate_speed, "unable to set validating callback");
 }
 
 void validate_teardown(void)
@@ -125,6 +151,7 @@ void validate_teardown(void)
 START_TEST(validate_test)
 {
     char *buf;
+    int i;
 
     buf = "action = wlak";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, 0);
@@ -154,9 +181,28 @@ START_TEST(validate_test)
     buf = "action = run"
           " multi_options { speeds = {1, 2, 3, 4, 5} }";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, 0);
+    for(i = 0; i < cfg_size(cfg, "multi_options"); i++)
+    {
+        cfg_t *multisec = cfg_getnsec(cfg, "multi_options", i);
+        cfg_opt_t *speeds_opt = cfg_getopt(multisec, "speeds");
+        fail_unless(speeds_opt != 0, 0);
+        fail_unless(speeds_opt->validcb == validate_speed, 0);
+    }
+
+    buf = "action = run"
+          " multi_options { speeds = {1, 2, 3, -4, 5} }";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "negative speed should not be allowed");
 
     buf = "action = run"
           " multi_options { speeds = {1, 2, 3, 4, 0} }";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, "zero speed value not allowed");
+
+    buf = "action = run"
+          " multi_options { options { xspeed = 3 } }";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, 0);
+
+    buf = "action = run"
+          " multi_options { options { xspeed = -3 } }";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, 0);
 }
 END_TEST

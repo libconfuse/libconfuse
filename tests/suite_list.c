@@ -4,6 +4,8 @@
 cfg_t *cfg;
 int numopts = 0;
 
+void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
+
 void list_setup(void)
 {
     cfg_opt_t subsec_opts[] = 
@@ -36,6 +38,7 @@ void list_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
+    cfg_set_error_function(cfg, suppress_errors);
     numopts = cfg_numopts(opts);
     fail_unless(numopts == 5, NULL);
 

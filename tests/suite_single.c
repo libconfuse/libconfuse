@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <net/ethernet.h>
 
+void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 static cfg_t *cfg;
 
 int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
@@ -15,7 +16,7 @@ int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result
     struct in_addr *addr = (struct in_addr *)malloc(sizeof(struct in_addr));
     if(inet_aton(value, addr) == 0)
     {
-        cfg_error(cfg, "invalid IP address %s in section %s", value, cfg->name);
+        /*cfg_error(cfg, "invalid IP address %s in section %s", value, cfg->name);*/
         free(addr);
         return 1;
     }
@@ -30,7 +31,7 @@ int parse_ether_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *res
     tmp = ether_aton(value);
     if(tmp == 0)
     {
-        cfg_error(cfg, "invalid Ethernet address %s in section %s", value, cfg->name);
+        /*cfg_error(cfg, "invalid Ethernet address %s in section %s", value, cfg->name);*/
         return 1;
     }
     *(void **)result = malloc(sizeof(struct ether_addr));
@@ -59,6 +60,13 @@ void single_setup(void)
         CFG_END()
     };
 
+    cfg_opt_t nodef_opts[] =
+    {
+        CFG_STR("string", "defvalue", CFGF_NONE),
+        CFG_INT("int", -17, CFGF_NODEFAULT),
+        CFG_END()
+    };
+
     cfg_opt_t opts[] = 
     {
         CFG_STR("string", "default", CFGF_NONE),
@@ -68,10 +76,13 @@ void single_setup(void)
         CFG_PTR_CB("ip-address", 0, CFGF_NONE, parse_ip_address, free),
         CFG_PTR_CB("ethernet-address", 0, CFGF_NONE, parse_ether_address, free),
         CFG_SEC("section", sec_opts, CFGF_NONE),
+        CFG_STR("nodefstring", "not used", CFGF_NODEFAULT),
+        CFG_SEC("nodefsec", nodef_opts, CFGF_NODEFAULT),
         CFG_END()
     };
 
     cfg = cfg_init(opts, 0);
+    cfg_set_error_function(cfg, suppress_errors);
 
     memset(opts, 0, sizeof(opts));
     memset(sec_opts, 0, sizeof(sec_opts));
@@ -260,6 +271,25 @@ START_TEST(nonexistent_option_test)
 }
 END_TEST
 
+START_TEST(nodefault_test)
+{
+    char *buf;
+    cfg_t *nodefsec;
+
+    fail_unless(cfg_size(cfg, "nodefstring") == 0, "option with CFGF_NODEFAULT should have no default");
+    cfg_setstr(cfg, "nodefstring", "manually set");
+    fail_unless(cfg_size(cfg, "nodefstring") == 1, "size should be 1");
+    fail_unless(cfg_size(cfg, "nodefsec") == 0, "section with CFGF_NODEFAULT should have no default");
+
+    buf = "nodefsec {}";    
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, "parse_buf shouldn't fail");
+    nodefsec = cfg_getsec(cfg, "nodefsec");
+    fail_unless(nodefsec != 0, "couldn't get nodefsec");
+    fail_unless(cfg_size(nodefsec, "string") == 1, "should be 1");
+    fail_unless(cfg_size(nodefsec, "int") == 0, "should be 0");
+}
+END_TEST
+
 Suite *single_suite(void) 
 { 
     Suite *s = suite_create("single"); 
@@ -275,6 +305,7 @@ Suite *single_suite(void)
     tcase_add_test(tc_single, single_ptr_test); 
     tcase_add_test(tc_single, parse_buf_test); 
     tcase_add_test(tc_single, nonexistent_option_test);
+    tcase_add_test(tc_single, nodefault_test);
 
     return s; 
 }

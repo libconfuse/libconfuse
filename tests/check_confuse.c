@@ -7,6 +7,10 @@ Suite *list_suite(void);
 Suite *validate_suite(void);
 Suite *func_suite(void);
  
+void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap)
+{
+}
+
 int main(void) 
 { 
     int nf; 

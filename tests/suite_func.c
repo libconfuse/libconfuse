@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
+
 static cfg_t *cfg = 0;
 static int func_alias_called = 0;
 
@@ -36,6 +38,7 @@ void func_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
+    cfg_set_error_function(cfg, suppress_errors);
 }
 
 void func_teardown(void)
