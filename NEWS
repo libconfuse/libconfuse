@@ -1,27 +1,32 @@
-New in 1.2.4
-------------
+New in 2.0
+----------
 
-* Added _WIN32 #if's, should compile on Windows (not tested)
+ NOTE! Compatibility with earlier versions is broken.
+
 * Changed cfg_flag_t from enum to int (should now compile with c++)
 * Variable number of arguments to functions: function types should no
   longer specify number of expected arguments in the initializer, the
-  callback should instead check the argc variable. NOTE! compatibility
-  with earlier versions is broken.
+  callback should instead check the argc variable.
 * Fixed the cfg_tilde_expand function
-* Addedd documentation for the value parsing callback
+* Added documentation for the value parsing callback
 * Changed the definitions of cfg_func_t and cfg_callback_t, the cfg
-  and opt context are now both passed as parameters
-  NOTE! This will break compatibility with earlier versions, you'll
-  have to change your callback declarations.
-* The default value in the initializer macros is now a string, which
-  is parsed in the same way as the configuration file. NOTE! this
-  breaks compatibility with earlier versions! It is now possible
-  to initialize default values for lists, as well as not having a
-  default value at all.
+  and option context are now both passed as parameters
 * Fixed and extended the example programs
-* Added cfg_setXXX functions to set option values
-* Added cfg_output function that writes a configuration file based on
-  the options and values
+* Added a bunch of cfg_setXXX functions to set option values after parsing
+* Some types renamed for consistency (cfgopt_t to cfg_opt_t, cfgval_t
+  to cfg_value_t, cfgbool_t to cfg_bool_t)
+* cfg_free_val() renamed to cfg_free_value()
+* Lexer symbols now uses prefix cfg_ to ease linking with other lexers
+* Forgot to close the file in cfg_parse()
+* Memory leaks fixed (checked with valgrind)
+* Sections with same title are always overwritten
+* Lists can now have (complete) default values in the form of a string
+  that is parsed in the same way as the config file (see doc + examples)
+* Added support for building as a DLL on Windows
+* Included project files for Borland C++ Builder 6.0
+* Included project files for Dev-Cpp 5.0
+* Included project files for MS Visual Studio
+* Pre-built documentation now included in the source tarball
 
 
 New in 1.2.3

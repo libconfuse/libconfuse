@@ -3,10 +3,11 @@ dnl $Id$
 
 AC_PREREQ(2.50)
 
-AC_INIT(libConfuse, 1.2.4, mhe@home.se, confuse)
-dnl AC_INIT_SRCDIR(src/confuse.c)
+AC_INIT(libConfuse, 2.0, confuse-devel@nongnu.org, confuse)
+AC_CONFIG_AUX_DIR(support)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
+AC_CONFIG_SRCDIR(src/confuse.c)
 
 # Checks for programs.
 AC_PROG_CC
@@ -27,7 +28,8 @@ AC_C_CONST
 # Checks for library functions.
 # AC_FUNC_MALLOC
 # AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([strcasecmp strdup])
+AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
-AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile po/Makefile.in m4/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile \
+ po/Makefile.in m4/Makefile libconfuse.spec])
 AC_OUTPUT

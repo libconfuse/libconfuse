@@ -4,12 +4,13 @@ similar libraries.
 
 See the INSTALL file for installation instructions. By default, only a
 static library is built. Specify --enable-shared to the configure
-script to build a shared library also.
+script to also build a shared library.
 
 Documentation can be built by running doxygen in the top-level
 directory. It is also available at
 http://www.e.kth.se/~e97_mhe/confuse-manual/index.shtml.
 
+There is a project page at http://sv.nongnu.org/projects/confuse.
 Report bugs to <confuse-devel@nongnu.org>
 
 
@@ -18,3 +19,4 @@ TODO
 ----
 
 * add list support for simple values
+* make thread safe
