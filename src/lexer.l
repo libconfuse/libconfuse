@@ -71,15 +71,12 @@ int cfg_include_stack_ptr = 0;
 %x comment
 %x dq_str
 %x sq_str
-%x incl1
-%x incl2
-%x incl3
 
 %%
 
 [ \t]+    /* eat up whitespace */
 
-[\n]	 cfg->line++; /* keep track of line number */
+\n	 cfg->line++; /* keep track of line number */
 
 ("#"|"//")[^\n]*     /* eat up one-line comments */
 
@@ -113,7 +110,7 @@ int cfg_include_stack_ptr = 0;
 	cfg_yylval = cfg_qstring;
 	return CFGT_STR;
  }
-<dq_str>$\{[^}]*\} {
+<dq_str>$\{[^}]*\} { /* environment variable substitution */
 	char *var;
 	char *e;
 	yytext[strlen(yytext) - 1] = 0;
@@ -128,11 +125,15 @@ int cfg_include_stack_ptr = 0;
 	while(var && *var)
 		qputc(*var++);
 }
+<dq_str>\n   {
+	qputc('\n');
+    cfg->line++;
+}
 <dq_str>\\\n { /* allow continuing on next line */
     /* no-op */
+    cfg->line++;
 }
-<dq_str>\\[0-7]{1,3} {
-	/* octal escape sequence */
+<dq_str>\\[0-7]{1,3} {	/* octal escape sequence */
 	int result;
 	sscanf(yytext + 1, "%o", &result);
 	if(result > 0xFF) {
@@ -144,9 +145,23 @@ int cfg_include_stack_ptr = 0;
 <dq_str>\\[0-9]+   {
 	cfg_error(cfg, _("bad escape sequence '%s'"), yytext);
 	return 0;
- }
-<dq_str>\\n|\\r|\\b|\\f  {
-	qputc(yytext[0]);
+}
+<dq_str>"\\x"[0-9A-Fa-f]{1,2} { /* hexadecimal escape sequence */
+	int result;
+	sscanf(yytext + 2, "%x", &result);
+	qputc(result);
+}
+<dq_str>\\n  {
+	qputc('\n');
+}
+<dq_str>\\r  {
+	qputc('\r');
+}
+<dq_str>\\b  {
+	qputc('\b');
+}
+<dq_str>\\f  {
+	qputc('\f');
 }
 <dq_str>\\a  {
 	qputc('\007');
@@ -154,12 +169,16 @@ int cfg_include_stack_ptr = 0;
 <dq_str>\\e  {
 	qputc('\033');
 }
-
-<dq_str>\\(.|\n)  {
+<dq_str>\\t  {
+	qputc('\t');
+}
+<dq_str>\\v  {
+	qputc('\v');
+}
+<dq_str>\\.  {
 	qputc(yytext[1]);
 }
-
-<dq_str>[^\\\"]+  {
+<dq_str>[^\\\"\n]+  {
 	char *yptr = yytext;
 	while(*yptr) {
 		qputc(*yptr++);
@@ -171,14 +190,19 @@ int cfg_include_stack_ptr = 0;
     qstring_index = 0;
     BEGIN(sq_str);
 }
-<sq_str>\' { /* saw closing quite - all done */
+<sq_str>\' { /* saw closing quote - all done */
     BEGIN(INITIAL);
     qputc('\0');
     cfg_yylval = cfg_qstring;
     return CFGT_STR;
 }
-<sq_str>\\\n {
+<sq_str>\n   {
+	qputc('\n');
+    cfg->line++;
+}
+<sq_str>\\\n { /* allow continuing on next line */
     /* no-op */
+    cfg->line++;
 }
 <sq_str>\\[\\\'] {
 	qputc(yytext[1]);
@@ -187,14 +211,11 @@ int cfg_include_stack_ptr = 0;
 	qputc(yytext[0]);
 	qputc(yytext[1]);
 }
-<sq_str>[^\\\']+ {
+<sq_str>[^\\\'\n]+ {
     char *cp = yytext;
     while(*cp != '\0') {
 		qputc(*cp++);
     }
-}
-<sq_str>(.|\n) {
-	qputc(yytext[1]);
 }
 <sq_str><<EOF>> {
     cfg_error(cfg, _("unterminated string constant"));
@@ -238,7 +259,8 @@ $\{[^}]*\} {
 
  /* an unquoted string
   */
-[^ \"\'\t\n={}()+,]+  cfg_yylval = yytext; return CFGT_STR;
+  /*[^ \"\'\t\n\r={}()+,]+*/
+[[:alnum:]!?$%&/.<>-]+  cfg_yylval = yytext; return CFGT_STR;
 
 %%
 
