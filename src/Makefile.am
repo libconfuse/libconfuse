@@ -7,7 +7,7 @@ datadir = @datadir@
 localedir = $(datadir)/locale
 DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
-LIBS = @LIBINTL@ @LIBS@
+LIBS = @LIBS@
 
 CLEANFILES=*~ \#*\#
 AM_LFLAGS=-Pcfg_yy -olex.yy.c

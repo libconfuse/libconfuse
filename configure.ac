@@ -17,6 +17,7 @@ AC_PROG_LIBTOOL
 # Checks for libraries.
 
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION(0.12.1)
 
 # Checks for header files.
 AC_HEADER_STDC

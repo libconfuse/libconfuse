@@ -30,30 +30,31 @@ DOC_HTML_FILES=annotated.html confuse_8h.html examples.html globals.html \
 DOC_MAN_MAN3_FILES=cfg_opt_t.3 cfg_t.3 cfg_value_t.3 confuse.h.3
 
 dist-hook: doc
-	mkdir $(distdir)/BCB
-	mkdir $(distdir)/dev-cpp
-	mkdir $(distdir)/msvc
-	mkdir $(distdir)/msvc/cfgtest
-	mkdir $(distdir)/msvc/libConfuse
-	mkdir $(distdir)/msvc/wincfgtest
-	mkdir $(distdir)/msvc6
-	mkdir $(distdir)/msvc6/libConfuse
+	mkdir $(distdir)/windows
+	mkdir $(distdir)/windows/BCB
+	mkdir $(distdir)/windows/dev-cpp
+	mkdir $(distdir)/windows/msvc
+	mkdir $(distdir)/windows/msvc/cfgtest
+	mkdir $(distdir)/windows/msvc/libConfuse
+	mkdir $(distdir)/windows/msvc/wincfgtest
+	mkdir $(distdir)/windows/msvc6
+	mkdir $(distdir)/windows/msvc6/libConfuse
 	mkdir $(distdir)/doc
 	mkdir $(distdir)/doc/html
 	mkdir $(distdir)/doc/man
 	mkdir $(distdir)/doc/man/man3
 
-	for f in $(BCB_FILES); do cp -f $(top_srcdir)/BCB/$$f $(distdir)/BCB/; done
+	for f in $(BCB_FILES); do cp -f $(top_srcdir)/BCB/$$f $(distdir)/windows/BCB/; done
 	for f in $(DEV_CPP_FILES); do \
-		cp -f $(top_srcdir)/dev-cpp/$$f $(distdir)/dev-cpp/; done
+		cp -f $(top_srcdir)/dev-cpp/$$f $(distdir)/windows/dev-cpp/; done
 	for f in $(MSVC_CFGTEST_FILES); do \
-		cp -f $(top_srcdir)/msvc/cfgtest/$$f $(distdir)/msvc/cfgtest/; done
+		cp -f $(top_srcdir)/msvc/cfgtest/$$f $(distdir)/windows/msvc/cfgtest/; done
 	for f in $(MSVC_LIBCONFUSE_FILES); do \
-	   cp -f $(top_srcdir)/msvc/libConfuse/$$f $(distdir)/msvc/libConfuse; done
+	   cp -f $(top_srcdir)/msvc/libConfuse/$$f $(distdir)/windows/msvc/libConfuse; done
 	for f in $(MSVC_WINCFGTEST_FILES); do \
-	   cp -f $(top_srcdir)/msvc/wincfgtest/$$f $(distdir)/msvc/wincfgtest; done
+	   cp -f $(top_srcdir)/msvc/wincfgtest/$$f $(distdir)/windows/msvc/wincfgtest; done
 	for f in $(MSVC6_LIBCONFUSE_FILES); do \
-	   cp -f $(top_srcdir)/msvc6/libConfuse/$$f $(distdir)/msvc6/libConfuse; done
+	   cp -f $(top_srcdir)/msvc6/libConfuse/$$f $(distdir)/windows/msvc6/libConfuse; done
 
 	for f in $(DOC_FILES); do \
 		cp -f $(top_srcdir)/doc/$$f $(distdir)/doc/; done
