@@ -7,7 +7,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <net/ethernet.h>
-#include <netinet/ether.h>
+#ifdef linux
+# include <netinet/ether.h>
+#endif
 
 void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 static cfg_t *cfg;
