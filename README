@@ -13,8 +13,7 @@ set. You'll have to do a "export SED=sed" (if using bash) or "setenv
 SED sed" (if using csh) before running make.
 
 Documentation can be built by running doxygen in the top-level
-directory. It is also available at
-http://www.e.kth.se/~e97_mhe/confuse-manual/index.shtml.
+directory. It is also available at http://www.nongnu.org/confuse/manual/.
 
 There is a project page at http://sv.nongnu.org/projects/confuse.
 Report bugs to <confuse-devel@nongnu.org>
