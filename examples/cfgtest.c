@@ -101,6 +101,7 @@ int main(void)
 	n = cfg_size(cfg, "bookmark");
 	printf("%d configured bookmarks:\n", n);
 	for(i = 0; i < n; i++) {
+		cfg_t *pxy;
 		cfg_t *bm = cfg_getnsec(cfg, "bookmark", i);
 		printf("  bookmark #%u (%s):\n", i+1, cfg_title(bm));
 		printf("    machine = %s\n", cfg_getstr(bm, "machine"));
@@ -111,9 +112,9 @@ int main(void)
 		printf("    directory = %s\n", cfg_getstr(bm, "directory"));
 		printf("    password = %s\n", cfg_getstr(bm, "password"));
 
-		if(cfg_size(bm, "proxy")) {
+		pxy = cfg_getsec(bm, "proxy");
+		if(pxy) {
 			int j, m;
-			cfg_t *pxy = cfg_getsec(bm, "proxy");
 			if(cfg_getstr(pxy, "host") == 0) {
 				printf("no proxy host is set, setting it to 'localhost'...\n");
 				cfg_setstr(pxy, "host", "localhost");
@@ -143,6 +144,11 @@ int main(void)
 	cfg_setint(cfg, "ask-quit", 4);
 
 	printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
+
+	/* The following commented line will generate a failed assertion
+	 * and abort, since the option "foo" is not declared
+	 */
+	/* printf("foo == %ld\n", cfg_getint(cfg, "foo")); */
 
 	cfg_addlist(cfg, "ask-quit-array", 2, -1, -2);
 
