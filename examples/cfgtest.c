@@ -62,6 +62,24 @@ int cb_verify_ask(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 	return 0;
 }
 
+int cb_validate_bookmark(cfg_t *cfg, cfg_opt_t *opt)
+{
+	/* only validate the last bookmark */
+	cfg_t *sec = cfg_opt_getnsec(opt, cfg_opt_size(opt) - 1);
+	if(!sec)
+	{
+		cfg_error(cfg, "section is NULL!?");
+		return -1;
+	}
+	if(cfg_getstr(sec, "machine") == 0)
+	{
+		cfg_error(cfg, "machine option must be set for bookmark '%s'",
+				  cfg_title(sec));
+		return -1;
+	}
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	unsigned int i;
@@ -72,7 +90,7 @@ int main(int argc, char **argv)
 		CFG_INT("type", 0, CFGF_NONE),
 		CFG_STR("host", 0, CFGF_NONE),
 		CFG_STR_LIST("exclude", "{localhost, .localnet}", CFGF_NONE),
-		CFG_INT("port", 0, CFGF_NONE),
+		CFG_INT("port", 21, CFGF_NONE),
 		CFG_END()
 	};
 	static cfg_opt_t bookmark_opts[] = {
@@ -90,7 +108,6 @@ int main(int argc, char **argv)
 		CFG_STR("probe-device", "eth2", CFGF_NONE),
 		CFG_SEC("bookmark", bookmark_opts, CFGF_MULTI | CFGF_TITLE),
 		CFG_FLOAT_LIST("delays", "{3.567e2, 0.2, -47.11}", CFGF_NONE),
-		/*{"func",CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,"func(default, value) func(second,default)"},&cb_func,0,0},*/
 		CFG_FUNC("func", &cb_func),
 		CFG_INT_CB("ask-quit", 3, CFGF_NONE, &cb_verify_ask),
 		CFG_INT_LIST_CB("ask-quit-array", "{maybe, yes, no}",
@@ -105,6 +122,10 @@ int main(int argc, char **argv)
 #endif
 
 	cfg = cfg_init(opts, CFGF_NOCASE);
+
+	/* set a validating callback function for bookmark sections */
+	cfg_set_validate_func(cfg, "bookmark", &cb_validate_bookmark);
+
 	ret = cfg_parse(cfg, argc > 1 ? argv[1] : "test.conf");
 	printf("ret == %d\n", ret);
 	if(ret == CFG_FILE_ERROR) {
@@ -167,15 +188,18 @@ int main(int argc, char **argv)
 
 	/* Using cfg_setint(), the integer value for the option ask-quit
 	 * is not verified by the value parsing callback.
-	 */
-	/*cfg_setint(cfg, "ask-quit", 4);*/
-
-	printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
+	 *
+	 *
+	 cfg_setint(cfg, "ask-quit", 4);
+	 printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
+	*/
 
 	/* The following commented line will generate a failed assertion
 	 * and abort, since the option "foo" is not declared
-	 */
-	/* printf("foo == %ld\n", cfg_getint(cfg, "foo")); */
+	 *
+	 *
+	 printf("foo == %ld\n", cfg_getint(cfg, "foo"));
+	*/
 
 	cfg_addlist(cfg, "ask-quit-array", 2, 1, 2);
 
