@@ -494,10 +494,21 @@ extern const char __export confuse_author[];
 
 /** Initialize a user-defined option
  *
+ * CFG_PTR options can only be used together with a value parsing callback.
+ * 
+ * @param name The name of the option
+ * @param def Default value
+ * @param flags Flags
+ * @param parsecb Value parsing callback
+ * @param freecb Memory release function
+ *
+ * @see cfg_callback_t, cfg_free_func_t
  */
 #define CFG_PTR_CB(name, def, flags, parsecb, freecb) \
   __CFG_PTR(name, def, flags, 0, parsecb, freecb)
 
+/** Initialize a list of user-defined options
+ */
 #define CFG_PTR_LIST_CB(name, def, flags, parsecb, freecb) \
   __CFG_PTR(name, def, flags | CFGF_LIST, 0, parsecb, freecb)
 
@@ -700,6 +711,15 @@ DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
 
 DLLIMPORT void *cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT void *cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
+
+/** Returns the value of a user-defined option (void pointer).
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The requested value is returned. If the option was not set
+ * in the configuration file, the default value given in the
+ * corresponding cfg_opt_t structure is returned. It is an error to
+ * try to get an option that isn't declared.
+ */
 DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name);
 
 
