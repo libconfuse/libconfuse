@@ -69,6 +69,7 @@ const char confuse_author[] = "Martin Hedenfalk <mhe@home.se>";
 
 static int cfg_parse_internal(cfg_t *cfg, int level,
 							  int force_state, cfg_opt_t *force_opt);
+static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value);
 
 #define STATE_CONTINUE 0
 #define STATE_EOF -1
@@ -131,17 +132,37 @@ static int strcasecmp(const char *a, const char *b)
 DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 {
 	unsigned int i;
+	cfg_t *sec = cfg;
 
 	assert(cfg && cfg->name && name);
 
-	for(i = 0; cfg->opts[i].name; i++) {
-		if(is_set(CFGF_NOCASE, cfg->flags)) {
-			if(strcasecmp(cfg->opts[i].name, name) == 0) {
-				return &cfg->opts[i];
+	while(name && *name) {
+		char *secname;
+		size_t len = strcspn(name, "|");
+		if(name[len] == 0 /*len == strlen(name)*/)
+			/* no more subsections */
+			break;
+		if(len) {
+			secname = strndup(name, len);
+			sec = cfg_getsec(sec, secname);
+			if(sec == 0)
+				cfg_error(cfg, _("no such option '%s'"), secname);
+			free(secname);
+			if(sec == 0)
+				return 0;
+		}
+		name += len;
+		name += strspn(name, "|");
+	}
+
+	for(i = 0; sec->opts[i].name; i++) {
+		if(is_set(CFGF_NOCASE, sec->flags)) {
+			if(strcasecmp(sec->opts[i].name, name) == 0) {
+				return &sec->opts[i];
 			}
 		} else {
-			if(strcmp(cfg->opts[i].name, name) == 0) {
-				return &cfg->opts[i];
+			if(strcmp(sec->opts[i].name, name) == 0) {
+				return &sec->opts[i];
 			}
 		}
 	}
@@ -370,6 +391,9 @@ static void cfg_init_defaults(cfg_t *cfg)
 			 * will be freed and the flag unset.
 			 */
 			cfg->opts[i].flags |= CFGF_RESET;
+		} else if(!is_set(CFGF_MULTI, cfg->opts[i].flags)) {
+			cfg_setopt(cfg, &cfg->opts[i], 0);
+			cfg->opts[i].flags |= CFGF_RESET;
 		}
 	}
 }
@@ -473,6 +497,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 				val->string = strdup(value);
 			break;
 		case CFGT_SEC:
+			cfg_free(val->section);
 			val->section = (cfg_t *)malloc(sizeof(cfg_t));
 			assert(val->section);
 			memset(val->section, 0, sizeof(cfg_t));
@@ -791,6 +816,7 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 
 	assert(cfg && filename);
 
+	free(cfg->filename);
 	cfg->filename = cfg_tilde_expand(filename);
 	fp = fopen(cfg->filename, "r");
 	if(fp == 0)
@@ -804,8 +830,8 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
 	int ret;
 
-	if(cfg->filename == 0)
-		cfg->filename = strdup("BUF");
+	free(cfg->filename);
+	cfg->filename = strdup("[buf]");
 	cfg->line = 1;
 
 	cfg_scan_string_begin(buf);
