@@ -1,0 +1,2 @@
+<!--#set var="title" value="$title" -->
+<!--#include virtual="header.shtml" -->
