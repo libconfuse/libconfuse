@@ -91,7 +91,6 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_LIST 2        /**< option is a list */
 #define CFGF_NOCASE 4      /**< configuration file is case insensitive */
 #define CFGF_TITLE 8       /**< option has a title (only applies to section) */
-#define CFGF_ALLOCATED 16
 #define CFGF_RESET 32
 #define CFGF_DEFINIT 64
 
@@ -158,42 +157,38 @@ typedef void (*cfg_print_func_t)(cfg_opt_t *opt, unsigned int index, FILE *fp);
     
 /** Value parsing callback prototype
  *
- * This is a callback function (different from the one registered with
- * the CFG_FUNC initializer) used to parse a value. This can be used
- * to override the internal parsing of a value.
+ * This is a callback function (different from the one registered with the
+ * CFG_FUNC initializer) used to parse a value. This can be used to override
+ * the internal parsing of a value.
  *
- * Suppose you want an integer option that only can have certain
- * values, for example 1, 2 and 3, and these should be written in the
- * configuration file as "yes", "no" and "maybe". The callback
- * function would be called with the found value ("yes", "no" or
- * "maybe") as a string, and the result should be stored in the result
- * parameter.
+ * Suppose you want an integer option that only can have certain values, for
+ * example 1, 2 and 3, and these should be written in the configuration file as
+ * "yes", "no" and "maybe". The callback function would be called with the
+ * found value ("yes", "no" or "maybe") as a string, and the result should be
+ * stored in the result parameter.
  *
  * @param cfg The configuration file context.
  * @param opt The option.
  * @param value The value found in the configuration file.
  * @param result Pointer to storage for the result, cast to a void pointer.
  *
- * @return On success, 0 should be returned. All other values
- * indicates an error, and the parsing is aborted. The callback
- * function should notify the error itself, for example by calling
- * cfg_error().
+ * @return On success, 0 should be returned. All other values indicates an
+ * error, and the parsing is aborted. The callback function should notify the
+ * error itself, for example by calling cfg_error().
  */
 typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt,
                               const char *value, void *result);
 
 /** Validating callback prototype
  *
- * This callback function is called after an option has been parsed
- * and set. The function is called for both fundamental values
- * (strings, integers etc) as well as lists and sections. Can for
- * example be used to validate that all required options in a section
- * has been set to sane values.
+ * This callback function is called after an option has been parsed and set.
+ * The function is called for both fundamental values (strings, integers etc)
+ * as well as lists and sections. This can for example be used to validate that
+ * all required options in a section has been set to sane values.
  *
- * @return On success, 0 should be returned. All other values
- * indicates an error, and the parsing is aborted. The callback
- * function should notify the error itself, for example by calling
- * cfg_error().
+ * @return On success, 0 should be returned. All other values indicates an
+ * error, and the parsing is aborted. The callback function should notify the
+ * error itself, for example by calling cfg_error().
  *
  * @see cfg_set_validate_func
  */
@@ -487,24 +482,21 @@ extern const char __export confuse_author[];
 
 
 
-/** Create and initialize a cfg_t structure. This should be the first
- * function called when setting up the parsing of a configuration
- * file. The options passed in the first parameter is typically
- * statically initialized, using the CFG_* initializers. The last
- * option in the option array must be CFG_END(), unless you like
+/** Create and initialize a cfg_t structure. This should be the first function
+ * called when setting up the parsing of a configuration file. The options
+ * passed in the first parameter is initialized using the CFG_* initializers.
+ * The last option in the option array must be CFG_END(), unless you like
  * segmentation faults.
  *
- * The options must also be defined in the same scope as where the
- * cfg_xxx functions are used. This means that you should either
- * define the option array in main(), statically in another function,
- * as global variables or dynamically using malloc(). The option array
- * is used in nearly all calls.
+ * The options must no longer be defined in the same scope as where the cfg_xxx
+ * functions are used (since version 2.3). 
  *
  * @param opts An arrary of options
- * @param flags One or more flags (bitwise or'ed together)
+ * @param flags One or more flags (bitwise or'ed together). Currently only
+ * CFGF_NOCASE is available. Use 0 if no flags are needed.
  *
  * @return A configuration context structure. This pointer is passed
- * to all other functions as the first parameter.
+ * to almost all other functions as the first parameter.
  */
 DLLIMPORT cfg_t * __export cfg_init(cfg_opt_t *opts, cfg_flag_t flags);
 
@@ -546,8 +538,9 @@ DLLIMPORT int __export cfg_parse_fp(cfg_t *cfg, FILE *fp);
 DLLIMPORT int __export cfg_parse_buf(cfg_t *cfg, const char *buf);
 
 /** Free the memory allocated for the values of a given option. Only
- * the values are freed, not the option itself (it is often statically
- * initialized).
+ * the values are freed, not the option itself (it is freed by cfg_free()).
+ *
+ * @see cfg_free()
  */
 DLLIMPORT void __export cfg_free_value(cfg_opt_t *opt);
 
@@ -735,6 +728,11 @@ DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt);
  * is given for the option and no value was found in the config file,
  * 0 will be returned (ie, the option value is not set at all).
  *
+ * Note that there is no way to *not* specify a default value for integers,
+ * floats and booleans. Ie, they always have default values (since 0 or NULL is
+ * a valid integer/float/boolean value). Only strings and lists may have no
+ * default value.
+ *
  * @param cfg The configuration file context.
  * @param name The name of the option.
  */
@@ -778,9 +776,8 @@ DLLIMPORT int __export cfg_parse_boolean(const char *s);
  * @param cfg The configuration file context.
  * @param name The name of the option.
  *
- * @return Returns a pointer to the option. It is an error to try to
- * get an options that isn't declared (libConfuse will print an error
- * message and abort in that case).
+ * @return Returns a pointer to the option. If the option isn't declared,
+ * libConfuse will print an error message and return 0.
  */
 DLLIMPORT cfg_opt_t * __export cfg_getopt(cfg_t *cfg, const char *name);
 
@@ -799,7 +796,8 @@ DLLIMPORT void __export cfg_opt_setnint(cfg_opt_t *opt,
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
- * @param value The value to set.
+ * @param value The value to set. If the option is a list (the CFGF_LIST flag
+ * is set), only the first value (with index 0) is set.
  */
 DLLIMPORT void __export cfg_setint(cfg_t *cfg, const char *name,
                                    long int value);
@@ -831,7 +829,8 @@ DLLIMPORT void __export cfg_opt_setnfloat(cfg_opt_t *opt,
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
- * @param value The value to set.
+ * @param value The value to set. If the option is a list (the CFGF_LIST flag
+ * is set), only the first value (with index 0) is set.
  */
 DLLIMPORT void __export cfg_setfloat(cfg_t *cfg, const char *name,
                                      double value);
@@ -863,7 +862,8 @@ DLLIMPORT void __export cfg_opt_setnbool(cfg_opt_t *opt,
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
- * @param value The value to set.
+ * @param value The value to set. If the option is a list (the CFGF_LIST flag
+ * is set), only the first value (with index 0) is set.
  */
 DLLIMPORT void __export cfg_setbool(cfg_t *cfg, const char *name,
                                     cfg_bool_t value);
@@ -896,8 +896,9 @@ DLLIMPORT void __export cfg_opt_setnstr(cfg_opt_t *opt,
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
- * @param value The value to set. Memory for the string is allocated
- * and the value is copied. Any privious string value is freed.
+ * @param value The value to set. Memory for the string is allocated and the
+ * value is copied. Any previous string value is freed. If the option is a list
+ * (the CFGF_LIST flag is set), only the first value (with index 0) is set.
  */
 DLLIMPORT void __export cfg_setstr(cfg_t *cfg, const char *name,
                                    const char *value);
@@ -949,7 +950,7 @@ DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
  * = value"), or cfg_print to print the whole config file.
  *
  * @param opt The option structure (eg, as returned from cfg_getopt())
- * @param index The index in the option value array that should be
+ * @param index The index in the option value array that should be printed
  * @param fp File stream to print to.
  *
  * @see cfg_print, cfg_opt_print
@@ -1006,7 +1007,7 @@ DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);
 DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
                                                   cfg_print_func_t pf);
 
-/** Set a print callback function for an option.
+/** Set a print callback function for an option given its name.
  *
  * @param cfg The configuration file context.
  * @param name The name of the option.
@@ -1027,7 +1028,7 @@ DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
  */
 DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
                                                         const char *name,
-                                                   cfg_validate_callback_t vf);
+                                                        cfg_validate_callback_t vf);
 
 #ifdef __cplusplus
 }
