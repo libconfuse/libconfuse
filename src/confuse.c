@@ -105,6 +105,7 @@ static char *strndup(const char *s, size_t n)
 
 	r = (char *)malloc(n + 1);
 	strncpy(r, s, n);
+	r[n] = 0;
 	return r;
 }
 #endif
