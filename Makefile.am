@@ -63,6 +63,14 @@ dist-hook: doc
 	for f in $(DOC_MAN_MAN3_FILES); do \
 		cp -f $(top_srcdir)/doc/man/man3/$$f $(distdir)/doc/man/man3/; done
 
+dist-extra: dist
+	tar zxf $(PACKAGE)-$(VERSION).tar.gz
+	rm -f $(PACKAGE)-$(VERSION).zip
+	zip -9 -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
+	rm -f $(PACKAGE)-$(VERSION).tar.bz2
+	tar jcf $(PACKAGE)-$(VERSION).tar.bz2 $(PACKAGE)-$(VERSION)
+	rm -rf $(PACKAGE)-$(VERSION)
+
 rpm: Makefile
 	$(MAKE) dist
 	rpm -ta --clean $(PACKAGE)-$(VERSION).tar.gz
