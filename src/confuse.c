@@ -1,5 +1,7 @@
 /* Configuration file parser -*- tab-width: 4; -*-
  *
+ * $Id$
+ *
  * Copyright (c) 2002-2003, Martin Hedenfalk <mhe@home.se>
  *
  * This library is free software; you can redistribute it and/or
@@ -164,11 +166,10 @@ DLLIMPORT signed long cfg_getnint(cfg_t *cfg, const char *name,
 								  unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		assert(opt->type == CFGT_INT);
-		assert(index < opt->nvalues);
+	assert(opt && opt->type == CFGT_INT);
+	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->number;
-	} else
+	else
 		return 0;
 }
 
@@ -181,11 +182,10 @@ DLLIMPORT double cfg_getnfloat(cfg_t *cfg, const char *name,
 							   unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		assert(opt->type == CFGT_FLOAT);
-		assert(index < opt->nvalues);
+	assert(opt && opt->type == CFGT_FLOAT);
+	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->fpnumber;
-	} else
+	else
 		return 0;
 }
 
@@ -198,11 +198,10 @@ DLLIMPORT cfg_bool_t cfg_getnbool(cfg_t *cfg, const char *name,
 								  unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		assert(opt->type == CFGT_BOOL);
-		assert(index < opt->nvalues);
+	assert(opt && opt->type == CFGT_BOOL);
+	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->boolean;
-	} else
+	else
 		return cfg_false;
 }
 
@@ -214,12 +213,11 @@ DLLIMPORT cfg_bool_t cfg_getbool(cfg_t *cfg, const char *name)
 DLLIMPORT char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		assert(opt->type == CFGT_STR);
-		assert(index < opt->nvalues);
+	assert(opt && opt->type == CFGT_STR);
+	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->string;
-	}
-	return 0;
+	else
+		return 0;
 }
 
 DLLIMPORT char *cfg_getstr(cfg_t *cfg, const char *name)
@@ -230,12 +228,9 @@ DLLIMPORT char *cfg_getstr(cfg_t *cfg, const char *name)
 DLLIMPORT cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
 {
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		assert(opt->type == CFGT_SEC);
-		assert(opt->values);
-		assert(index < opt->nvalues);
+	assert(opt && opt->type == CFGT_SEC);
+	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->section;
-	}
 	return 0;
 }
 
