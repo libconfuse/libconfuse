@@ -1,7 +1,11 @@
-New in 2.1.1
-------------
+New in 2.2
+----------
 
 * Allows more characters in an unquoted string (thanks Mike)
+* added cfg_opt_get functions
+* added cfg_opt_size function
+* added support to print options to a file
+* added print callback function per option
 
 
 New in 2.1

@@ -1,6 +1,28 @@
 #include "confuse.h"
 #include <string.h>
 
+void print_func(cfg_opt_t *opt, unsigned int index, FILE *fp)
+{
+	fprintf(fp, "%s(foo)", opt->name);
+}
+
+void print_ask(cfg_opt_t *opt, unsigned int index, FILE *fp)
+{
+	int value = cfg_opt_getnint(opt, index);
+	switch(value) {
+		case 1:
+			fprintf(fp, "yes");
+			break;
+		case 2:
+			fprintf(fp, "no");
+			break;
+		case 3:
+		default:
+			fprintf(fp, "maybe");
+			break;
+	}
+}
+
 /* function callback
  */
 int cb_func(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
@@ -40,7 +62,7 @@ int cb_verify_ask(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 	return 0;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
 	unsigned int i;
 	cfg_t *cfg;
@@ -83,7 +105,7 @@ int main(void)
 #endif
 
 	cfg = cfg_init(opts, CFGF_NOCASE);
-	ret = cfg_parse(cfg, "test.conf");
+	ret = cfg_parse(cfg, argc > 1 ? argv[1] : "test.conf");
 	printf("ret == %d\n", ret);
 	if(ret == CFG_FILE_ERROR) {
 		perror("test.conf");
@@ -146,7 +168,7 @@ int main(void)
 	/* Using cfg_setint(), the integer value for the option ask-quit
 	 * is not verified by the value parsing callback.
 	 */
-	cfg_setint(cfg, "ask-quit", 4);
+	/*cfg_setint(cfg, "ask-quit", 4);*/
 
 	printf("ask-quit == %ld\n", cfg_getint(cfg, "ask-quit"));
 
@@ -155,11 +177,20 @@ int main(void)
 	 */
 	/* printf("foo == %ld\n", cfg_getint(cfg, "foo")); */
 
-	cfg_addlist(cfg, "ask-quit-array", 2, -1, -2);
+	cfg_addlist(cfg, "ask-quit-array", 2, 1, 2);
 
 	for(i = 0; i < cfg_size(cfg, "ask-quit-array"); i++)
 		printf("ask-quit-array[%d] == %ld\n",
 			   i, cfg_getnint(cfg, "ask-quit-array", i));
+
+	{
+		FILE *fp = fopen("test.conf.out", "w");
+		cfg_set_print_func(cfg, "func", print_func);
+		cfg_set_print_func(cfg, "ask-quit", print_ask);
+		cfg_set_print_func(cfg, "ask-quit-array", print_ask);
+		cfg_print(cfg, fp);
+		fclose(fp);
+	}
 
 	cfg_free(cfg);
 	return 0;

@@ -134,6 +134,8 @@ typedef int cfg_flag_t;
 typedef int (*cfg_func_t)(cfg_t *cfg, cfg_opt_t *opt,
 						  int argc, const char **argv);
 
+typedef void (*cfg_print_func_t)(cfg_opt_t *opt, unsigned int index, FILE *fp);
+	
 /** Value parsing callback prototype
  *
  * This is a callback function (different from the one registered with
@@ -225,6 +227,7 @@ struct cfg_opt_t {
 							 * store simple values (created with the
 							 * CFG_SIMPLE_* initializers) */
 	cfg_callback_t cb;      /**< Value parsing callback function */
+	cfg_print_func_t pf;    /**< (optional) print function */
 };
 
 extern const char __export confuse_copyright[];
@@ -561,6 +564,8 @@ DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
  */
 DLLIMPORT cfg_t * __export cfg_getsec(cfg_t *cfg, const char *name);
 
+DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt);
+
 /** Return the number of values this option has. If no default value
  * is given for the option and no value was found in the config file,
  * 0 will be returned (ie, the option value is not set at all).
@@ -569,6 +574,8 @@ DLLIMPORT cfg_t * __export cfg_getsec(cfg_t *cfg, const char *name);
  * @param name The name of the option.
  */
 DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
+
+DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getint(), used for lists.
  * @param cfg The configuration file context.
@@ -579,6 +586,8 @@ DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
 DLLIMPORT long int __export cfg_getnint(cfg_t *cfg, const char *name,
 										unsigned int index);
 
+DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index);
+
 /** Indexed version of cfg_getfloat(), used for lists.
  * @param cfg The configuration file context.
  * @param name The name of the option.
@@ -587,6 +596,8 @@ DLLIMPORT long int __export cfg_getnint(cfg_t *cfg, const char *name,
  */
 DLLIMPORT double __export cfg_getnfloat(cfg_t *cfg, const char *name,
 										unsigned int index);
+
+DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getstr(), used for lists.
  * @param cfg The configuration file context.
@@ -597,6 +608,8 @@ DLLIMPORT double __export cfg_getnfloat(cfg_t *cfg, const char *name,
 DLLIMPORT char * __export cfg_getnstr(cfg_t *cfg, const char *name,
 									  unsigned int index);
 
+DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index);
+	
 /** Indexed version of cfg_getbool(), used for lists.
  *
  * @param cfg The configuration file context.
@@ -606,6 +619,8 @@ DLLIMPORT char * __export cfg_getnstr(cfg_t *cfg, const char *name,
  */
 DLLIMPORT cfg_bool_t __export cfg_getnbool(cfg_t *cfg, const char *name,
 										   unsigned int index);
+
+DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getsec(), used for sections with the
  * CFGF_MULTI flag set.
@@ -830,6 +845,17 @@ DLLIMPORT void __export cfg_setlist(cfg_t *cfg, const char *name,
  */
 DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
 									unsigned int nvalues, ...);
+
+DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index,
+								  FILE *fp);
+DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
+DLLIMPORT void cfg_opt_print(cfg_opt_t *opt, FILE *fp);
+DLLIMPORT void cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
+DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);;
+DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
+												  cfg_print_func_t pf);
+DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
+											  cfg_print_func_t pf);
 
 #ifdef __cplusplus
 }

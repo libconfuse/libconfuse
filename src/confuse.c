@@ -177,18 +177,20 @@ DLLIMPORT const char *cfg_title(cfg_t *cfg)
 	return cfg->title;
 }
 
-DLLIMPORT unsigned int cfg_size(cfg_t *cfg, const char *name)
+DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
 		return opt->nvalues;
 	return 0;
 }
 
-DLLIMPORT signed long cfg_getnint(cfg_t *cfg, const char *name,
-								  unsigned int index)
+DLLIMPORT unsigned int cfg_size(cfg_t *cfg, const char *name)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	return cfg_opt_size(cfg_getopt(cfg, name));
+}
+
+DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index)
+{
 	assert(opt && opt->type == CFGT_INT);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->number;
@@ -196,15 +198,19 @@ DLLIMPORT signed long cfg_getnint(cfg_t *cfg, const char *name,
 		return 0;
 }
 
+DLLIMPORT signed long cfg_getnint(cfg_t *cfg, const char *name,
+								  unsigned int index)
+{
+	return cfg_opt_getnint(cfg_getopt(cfg, name), index);
+}
+
 DLLIMPORT signed long cfg_getint(cfg_t *cfg, const char *name)
 {
 	return cfg_getnint(cfg, name, 0);
 }
 
-DLLIMPORT double cfg_getnfloat(cfg_t *cfg, const char *name,
-							   unsigned int index)
+DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	assert(opt && opt->type == CFGT_FLOAT);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->fpnumber;
@@ -212,15 +218,19 @@ DLLIMPORT double cfg_getnfloat(cfg_t *cfg, const char *name,
 		return 0;
 }
 
+DLLIMPORT double cfg_getnfloat(cfg_t *cfg, const char *name,
+							   unsigned int index)
+{
+	return cfg_opt_getnfloat(cfg_getopt(cfg, name), index);
+}
+
 DLLIMPORT double cfg_getfloat(cfg_t *cfg, const char *name)
 {
 	return cfg_getnfloat(cfg, name, 0);
 }
 
-DLLIMPORT cfg_bool_t cfg_getnbool(cfg_t *cfg, const char *name,
-								  unsigned int index)
+DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	assert(opt && opt->type == CFGT_BOOL);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->boolean;
@@ -228,14 +238,19 @@ DLLIMPORT cfg_bool_t cfg_getnbool(cfg_t *cfg, const char *name,
 		return cfg_false;
 }
 
+DLLIMPORT cfg_bool_t cfg_getnbool(cfg_t *cfg, const char *name,
+								  unsigned int index)
+{
+	return cfg_opt_getnbool(cfg_getopt(cfg, name), index);
+}
+
 DLLIMPORT cfg_bool_t cfg_getbool(cfg_t *cfg, const char *name)
 {
 	return cfg_getnbool(cfg, name, 0);
 }
 
-DLLIMPORT char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	assert(opt && opt->type == CFGT_STR);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->string;
@@ -243,17 +258,45 @@ DLLIMPORT char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
 		return 0;
 }
 
+DLLIMPORT char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnstr(cfg_getopt(cfg, name), index);
+}
+
 DLLIMPORT char *cfg_getstr(cfg_t *cfg, const char *name)
 {
 	return cfg_getnstr(cfg, name, 0);
 }
 
-DLLIMPORT cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	assert(opt && opt->type == CFGT_SEC);
 	if(opt->values && index < opt->nvalues)
 		return opt->values[index]->section;
+	return 0;
+}
+
+DLLIMPORT cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnsec(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
+{
+	unsigned int i, n;
+
+	n = cfg_opt_size(opt);
+	for(i = 0; i < n; i++) {
+		cfg_t *sec = cfg_opt_getnsec(opt, i);
+		assert(sec && sec->title);
+		if(is_set(CFGF_NOCASE, opt->flags)) {
+			if(strcasecmp(title, sec->title) == 0)
+				return sec;
+		} else {
+			if(strcmp(title, sec->title) == 0)
+				return sec;
+		}
+	}
 	return 0;
 }
 
@@ -997,9 +1040,7 @@ DLLIMPORT void cfg_opt_setnint(cfg_opt_t *opt, long int value,
 DLLIMPORT void cfg_setnint(cfg_t *cfg, const char *name,
 					 long int value, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt)
-		cfg_opt_setnint(opt, value, index);
+	cfg_opt_setnint(cfg_getopt(cfg, name), value, index);
 }
 
 DLLIMPORT void cfg_setint(cfg_t *cfg, const char *name, long int value)
@@ -1019,9 +1060,7 @@ DLLIMPORT void cfg_opt_setnfloat(cfg_opt_t *opt, double value,
 DLLIMPORT void cfg_setnfloat(cfg_t *cfg, const char *name,
 				   double value, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt)
-		cfg_opt_setnfloat(opt, value, index);
+	cfg_opt_setnfloat(cfg_getopt(cfg, name), value, index);
 }
 
 DLLIMPORT void cfg_setfloat(cfg_t *cfg, const char *name, double value)
@@ -1041,9 +1080,7 @@ DLLIMPORT void cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value,
 DLLIMPORT void cfg_setnbool(cfg_t *cfg, const char *name,
 							cfg_bool_t value, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt)
-		cfg_opt_setnbool(opt, value, index);
+	cfg_opt_setnbool(cfg_getopt(cfg, name), value, index);
 }
 
 DLLIMPORT void cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value)
@@ -1064,9 +1101,7 @@ DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value,
 DLLIMPORT void cfg_setnstr(cfg_t *cfg, const char *name,
 						   const char *value, unsigned int index)
 {
-	cfg_opt_t *opt = cfg_getopt(cfg, name);
-	if(opt)
-		cfg_opt_setnstr(opt, value, index);
+	cfg_opt_setnstr(cfg_getopt(cfg, name), value, index);
 }
 
 DLLIMPORT void cfg_setstr(cfg_t *cfg, const char *name, const char *value)
@@ -1106,29 +1141,153 @@ static void cfg_addlist_internal(cfg_opt_t *opt,
 DLLIMPORT void cfg_setlist(cfg_t *cfg, const char *name,
 						   unsigned int nvalues, ...)
 {
+	va_list ap;
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 
-	if(opt) {
-		va_list ap;
+	assert(opt && is_set(CFGF_LIST, opt->flags));
 
-		cfg_free_value(opt);
-		va_start(ap, nvalues);
-		cfg_addlist_internal(opt, nvalues, ap);
-		va_end(ap);
-	}
+	cfg_free_value(opt);
+	va_start(ap, nvalues);
+	cfg_addlist_internal(opt, nvalues, ap);
+	va_end(ap);
 }
 
 DLLIMPORT void cfg_addlist(cfg_t *cfg, const char *name,
 						   unsigned int nvalues, ...)
 {
+	va_list ap;
 	cfg_opt_t *opt = cfg_getopt(cfg, name);
 
-	if(opt) {
-		va_list ap;
+	assert(opt && is_set(CFGF_LIST, opt->flags));
 
-		va_start(ap, nvalues);
-		cfg_addlist_internal(opt, nvalues, ap);
-		va_end(ap);
+	va_start(ap, nvalues);
+	cfg_addlist_internal(opt, nvalues, ap);
+	va_end(ap);
+}
+
+DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
+{
+	const char *str;
+	const char *name = opt->name;
+
+	switch(opt->type)
+	{
+		case CFGT_INT:
+			fprintf(fp, "%ld", cfg_opt_getnint(opt, index));
+			break;
+		case CFGT_FLOAT:
+			fprintf(fp, "%lf", cfg_opt_getnfloat(opt, index));
+			break;
+		case CFGT_STR:
+			str = cfg_opt_getnstr(opt, index);
+			fprintf(fp, "\"%s\"", str ? str : "");
+			break;
+		case CFGT_BOOL:
+			fprintf(fp, "%s", cfg_opt_getnbool(opt, index) ? "true" : "false");
+			break;
+		case CFGT_NONE:
+		case CFGT_SEC:
+		case CFGT_FUNC:
+			break;
 	}
 }
 
+static void cfg_indent(FILE *fp, int indent)
+{
+	while(indent--)
+		fprintf(fp, "  ");
+}
+
+DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
+{
+	assert(opt);
+
+	if(opt->type == CFGT_SEC) {
+		cfg_t *sec;
+		int i;
+
+		for(i = 0; i < cfg_opt_size(opt); i++) {
+			sec = cfg_opt_getnsec(opt, i);
+			cfg_indent(fp, indent);
+			if(is_set(CFGF_TITLE, opt->flags))
+				fprintf(fp, "%s \"%s\" {\n", opt->name, cfg_title(sec));
+			else
+				fprintf(fp, "%s {\n", opt->name);
+			cfg_print_indent(sec, fp, indent + 1);
+			cfg_indent(fp, indent);
+			fprintf(fp, "}\n");
+		}
+	} else if(opt->type != CFGT_FUNC && opt->type != CFGT_NONE) {
+		if(is_set(CFGF_LIST, opt->flags)) {
+			int i;
+
+			cfg_indent(fp, indent);
+			fprintf(fp, "%s = {", opt->name);
+
+			if(opt->nvalues) {
+				if(opt->pf)
+					opt->pf(opt, 0, fp);
+				else
+					cfg_opt_nprint_var(opt, 0, fp);
+				for(i = 1; i < opt->nvalues; i++) {
+					fprintf(fp, ", ");
+					if(opt->pf)
+						opt->pf(opt, i, fp);
+					else
+						cfg_opt_nprint_var(opt, i, fp);
+				}
+			}
+
+			fprintf(fp, "}");
+		} else {
+			cfg_indent(fp, indent);
+			fprintf(fp, "%s = ", opt->name);
+			if(opt->pf)
+				opt->pf(opt, 0, fp);
+			else
+				cfg_opt_nprint_var(opt, 0, fp);
+		}
+	
+		fprintf(fp, "\n");
+	} else if(opt->pf) {
+		cfg_indent(fp, indent);
+		opt->pf(opt, 0, fp);
+		fprintf(fp, "\n");
+	}
+}
+
+DLLIMPORT void cfg_opt_print(cfg_opt_t *opt, FILE *fp)
+{
+	cfg_opt_print_indent(opt, fp, 0);
+}
+
+DLLIMPORT void cfg_print_indent(cfg_t *cfg, FILE *fp, int indent)
+{
+	int i;
+
+	for(i = 0; cfg->opts[i].name; i++)
+		cfg_opt_print_indent(&cfg->opts[i], fp, indent);
+}
+
+DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp)
+{
+	cfg_print_indent(cfg, fp, 0);
+}
+
+DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
+												  cfg_print_func_t pf)
+{
+	cfg_print_func_t oldpf;
+
+	assert(opt);
+	oldpf = opt->pf;
+	opt->pf = pf;
+
+	return oldpf;
+}
+
+DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
+											  cfg_print_func_t pf)
+{
+	return cfg_opt_set_print_func(cfg_getopt(cfg, name), pf);
+}
