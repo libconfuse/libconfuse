@@ -20,6 +20,7 @@ DEV_CPP_FILES=cfgtest.dev config.h libConfuse.dev test.conf
 MSVC_CFGTEST_FILES=cfgtest.ncb cfgtest.sln cfgtest.vcproj test.conf
 MSVC_LIBCONFUSE_FILES=config.h libConfuse.sln libConfuse.vcproj
 MSVC_WINCFGTEST_FILES=wincfgtest.conf wincfgtest.sln wincfgtest.vcproj
+MSVC6_LIBCONFUSE_FILES=config.h libConfuse.dsp libConfuse.dsw unistd.h
 DOC_FILES=doxygen-footer.html doxygen-header.html doxygen.css
 DOC_HTML_FILES=annotated.html confuse_8h.html examples.html globals.html \
   simple_8c-example.html unioncfg__value__t.html cfgtest_8c-example.html \
@@ -35,6 +36,8 @@ dist-hook: doc
 	mkdir $(distdir)/msvc/cfgtest
 	mkdir $(distdir)/msvc/libConfuse
 	mkdir $(distdir)/msvc/wincfgtest
+	mkdir $(distdir)/msvc6
+	mkdir $(distdir)/msvc6/libConfuse
 	mkdir $(distdir)/doc
 	mkdir $(distdir)/doc/html
 	mkdir $(distdir)/doc/man
@@ -49,6 +52,8 @@ dist-hook: doc
 	   cp -f $(top_srcdir)/msvc/libConfuse/$$f $(distdir)/msvc/libConfuse; done
 	for f in $(MSVC_WINCFGTEST_FILES); do \
 	   cp -f $(top_srcdir)/msvc/wincfgtest/$$f $(distdir)/msvc/wincfgtest; done
+	for f in $(MSVC6_LIBCONFUSE_FILES); do \
+	   cp -f $(top_srcdir)/msvc6/libConfuse/$$f $(distdir)/msvc6/libConfuse; done
 
 	for f in $(DOC_FILES); do \
 		cp -f $(top_srcdir)/doc/$$f $(distdir)/doc/; done
