@@ -258,6 +258,15 @@ greeting Bye
             from the cfg_greet section. Next, the section titled "Bye" is
             found, and the values are retrieved from that section.
         </para>
+        <para>
+            When run, the program produces the following:
+        </para>
+        <programlisting>
+$ ./listing5
+Hello, Life, Universe, Everything!
+Bye, Adams!
+$ 
+        </programlisting>
 
     </sect1>
     <sect1>
@@ -352,8 +361,13 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
             <title>Installing the callback</title>
             <para>
                 The validating callback is installed with
-                <function>cfg_set_validate_func()</function>. The complete
-                program is now:
+                <function>cfg_set_validate_func()</function>. It is called with
+                a string specifying which option is affected, and a pointer to
+                the callback function. To specify an option in a subsection,
+                the section and the option must be separated with a vertical
+                bar ("|").
+               
+                The complete program is now:
             </para>
             &listing8;
         </sect2>
@@ -362,6 +376,15 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
     <sect1>
         <title>Value parsing callback</title>
         <para>
+            A value parsing callback is another kind of callback function
+            available in libConfuse. This function is used to map a string into
+            some other other value. One example is to extend a boolean option
+            to accept the values "yes", "no" and "ask" (or perhaps "true",
+            "false" and "maybe"). Those values should be mapped to the integers
+            0, 1 and 3.
+        </para>
+        <para>
+            
         </para>
     </sect1>
 
