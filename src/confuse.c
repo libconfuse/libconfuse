@@ -122,7 +122,8 @@ static int strcasecmp(const char *a, const char *b)
     if(a == b)
         return 0;
 
-    while((r = tolower(*a) - tolower(*b++)) == 0) {
+    while((r = tolower(*a) - tolower(*b++)) == 0)
+    {
         if(*a++ == '\0')
             break;
     }
@@ -138,13 +139,15 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
     assert(cfg && cfg->name && name);
 
-    while(name && *name) {
+    while(name && *name)
+    {
         char *secname;
         size_t len = strcspn(name, "|");
         if(name[len] == 0 /*len == strlen(name)*/)
             /* no more subsections */
             break;
-        if(len) {
+        if(len)
+        {
             secname = strndup(name, len);
             sec = cfg_getsec(sec, secname);
             if(sec == 0)
@@ -157,15 +160,17 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
         name += strspn(name, "|");
     }
 
-    for(i = 0; sec->opts[i].name; i++) {
-        if(is_set(CFGF_NOCASE, sec->flags)) {
-            if(strcasecmp(sec->opts[i].name, name) == 0) {
+    for(i = 0; sec->opts[i].name; i++)
+    {
+        if(is_set(CFGF_NOCASE, sec->flags))
+        {
+            if(strcasecmp(sec->opts[i].name, name) == 0)
                 return &sec->opts[i];
-            }
-        } else {
-            if(strcmp(sec->opts[i].name, name) == 0) {
+        }
+        else
+        {
+            if(strcmp(sec->opts[i].name, name) == 0)
                 return &sec->opts[i];
-            }
         }
     }
     cfg_error(cfg, _("no such option '%s'"), name);
@@ -174,7 +179,9 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
 DLLIMPORT const char *cfg_title(cfg_t *cfg)
 {
-    return cfg->title;
+    if(cfg)
+        return cfg->title;
+    return 0;
 }
 
 DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
@@ -293,14 +300,19 @@ DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
 {
     unsigned int i, n;
 
+    assert(opt && title);
     n = cfg_opt_size(opt);
-    for(i = 0; i < n; i++) {
+    for(i = 0; i < n; i++)
+    {
         cfg_t *sec = cfg_opt_getnsec(opt, i);
         assert(sec && sec->title);
-        if(is_set(CFGF_NOCASE, opt->flags)) {
+        if(is_set(CFGF_NOCASE, opt->flags))
+        {
             if(strcasecmp(title, sec->title) == 0)
                 return sec;
-        } else {
+        }
+        else
+        {
             if(strcmp(title, sec->title) == 0)
                 return sec;
         }
@@ -310,21 +322,7 @@ DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
 
 DLLIMPORT cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
 {
-    unsigned int i, n;
-
-    n = cfg_size(cfg, name);
-    for(i = 0; i < n; i++) {
-        cfg_t *sec = cfg_getnsec(cfg, name, i);
-        assert(sec && sec->title);
-        if(is_set(CFGF_NOCASE, cfg->flags)) {
-            if(strcasecmp(title, sec->title) == 0)
-                return sec;
-        } else {
-            if(strcmp(title, sec->title) == 0)
-                return sec;
-        }
-    }
-    return 0;
+    return cfg_opt_gettsec(cfg_getopt(cfg, name), title);
 }
 
 DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
@@ -342,15 +340,36 @@ static cfg_value_t *cfg_addval(cfg_opt_t *opt)
     return opt->values[opt->nvalues++];
 }
 
-static cfg_opt_t *cfg_dupopts(cfg_opt_t *opts)
+int cfg_numopts(cfg_opt_t *opts)
 {
     int n;
-    cfg_opt_t *dupopts;
 
     for(n = 0; opts[n].name; n++)
         /* do nothing */ ;
-    dupopts = (cfg_opt_t *)malloc(++n * sizeof(cfg_opt_t));
+    return n;
+}
+
+static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
+{
+    int i;
+    cfg_opt_t *dupopts;
+    int n = cfg_numopts(opts);
+    dupopts = (cfg_opt_t *)malloc((n+1) * sizeof(cfg_opt_t));
+    memset(dupopts, 0, (n+1) * sizeof(cfg_opt_t));
     memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
+
+    for(i = 0; i < n; i++)
+    {
+        dupopts[i].name = strdup(opts[i].name);
+        if(opts[i].subopts)
+            dupopts[i].subopts = cfg_dupopt_array(opts[i].subopts);
+
+        if(is_set(CFGF_LIST, opts[i].flags) || opts[i].type == CFGT_FUNC)
+            dupopts[i].def.parsed = opts[i].def.parsed ? strdup(opts[i].def.parsed) : 0;
+        else if(opts[i].type == CFGT_STR)
+            dupopts[i].def.string = opts[i].def.string ? strdup(opts[i].def.string) : 0;
+    }
+
     return dupopts;
 }
 
@@ -371,13 +390,14 @@ static void cfg_init_defaults(cfg_t *cfg)
 {
     int i;
 
-    for(i = 0; cfg->opts[i].name; i++) {
+    for(i = 0; cfg->opts[i].name; i++)
+    {
         /* libConfuse doesn't handle default values for "simple" options */
         if(cfg->opts[i].simple_value)
             continue;
 
-        if(cfg->opts[i].type != CFGT_SEC) {
-
+        if(cfg->opts[i].type != CFGT_SEC)
+        {
             cfg->opts[i].flags |= CFGF_DEFINIT;
 
             if(is_set(CFGF_LIST, cfg->opts[i].flags) ||
@@ -405,12 +425,14 @@ static void cfg_init_defaults(cfg_t *cfg)
                     xstate = 2;
 
                 cfg_scan_string_begin(cfg->opts[i].def.parsed);
-                do {
+                do
+                {
                     ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
                     xstate = -1;
                 } while(ret == STATE_CONTINUE);
                 cfg_scan_string_end();
-                if(ret == STATE_ERROR) {
+                if(ret == STATE_ERROR)
+                {
                     /*
                      * If there was an error parsing the default string,
                      * the initialization of the default value could be
@@ -425,8 +447,11 @@ static void cfg_init_defaults(cfg_t *cfg)
                             " libConfuse documentation\n");
                     abort();
                 }
-            } else {
-                switch(cfg->opts[i].type) {
+            }
+            else
+            {
+                switch(cfg->opts[i].type)
+                {
                     case CFGT_INT:
                         cfg_opt_setnint(&cfg->opts[i],
                                         cfg->opts[i].def.number, 0);
@@ -459,7 +484,9 @@ static void cfg_init_defaults(cfg_t *cfg)
              * will be freed and the flag unset.
              */
             cfg->opts[i].flags |= CFGF_RESET;
-        } else if(!is_set(CFGF_MULTI, cfg->opts[i].flags)) {
+        }
+        else if(!is_set(CFGF_MULTI, cfg->opts[i].flags))
+        {
             cfg_setopt(cfg, &cfg->opts[i], 0);
             cfg->opts[i].flags |= CFGF_DEFINIT;
         }
@@ -477,30 +504,40 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 
     assert(cfg && opt);
 
-    if(opt->simple_value) {
+    if(opt->simple_value)
+    {
         assert(opt->type != CFGT_SEC);
         val = (cfg_value_t *)opt->simple_value;
-    } else {
-        if(is_set(CFGF_RESET, opt->flags)) {
+    }
+    else
+    {
+        if(is_set(CFGF_RESET, opt->flags))
+        {
             cfg_free_value(opt);
             opt->flags &= ~CFGF_RESET;
         }
+
         if(opt->nvalues == 0 || is_set(CFGF_MULTI, opt->flags) ||
            is_set(CFGF_LIST, opt->flags))
         {
             val = 0;
-            if(opt->type == CFGT_SEC && is_set(CFGF_TITLE, opt->flags)) {
+            if(opt->type == CFGT_SEC && is_set(CFGF_TITLE, opt->flags))
+            {
                 unsigned int i;
 
                 /* check if there already is a section with the same title
                  */
                 assert(value);
-                for(i = 0; i < opt->nvalues; i++) {
+                for(i = 0; i < opt->nvalues; i++)
+                {
                     cfg_t *sec = opt->values[i]->section;
-                    if(is_set(CFGF_NOCASE, cfg->flags)) {
+                    if(is_set(CFGF_NOCASE, cfg->flags))
+                    {
                         if(strcasecmp(value, sec->title) == 0)
                             val = opt->values[i];
-                    } else {
+                    }
+                    else
+                    {
                         if(strcmp(value, sec->title) == 0)
                             val = opt->values[i];
                     }
@@ -508,24 +545,31 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             }
             if(val == 0)
                 val = cfg_addval(opt);
-        } else
+        }
+        else
             val = opt->values[0];
     }
 
-    switch(opt->type) {
+    switch(opt->type)
+    {
         case CFGT_INT:
-            if(opt->parsecb) {
+            if(opt->parsecb)
+            {
                 if((*opt->parsecb)(cfg, opt, value, &i) != 0)
                     return 0;
                 val->number = i;
-            } else {
+            }
+            else
+            {
                 val->number = strtol(value, &endptr, 0);
-                if(*endptr != '\0') {
+                if(*endptr != '\0')
+                {
                     cfg_error(cfg, _("invalid integer value for option '%s'"),
                               opt->name);
                     return 0;
                 }
-                if(errno == ERANGE) {
+                if(errno == ERANGE)
+                {
                     cfg_error(cfg,
                           _("integer value for option '%s' is out of range"),
                               opt->name);
@@ -533,20 +577,26 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 }
             }
             break;
+
         case CFGT_FLOAT:
-            if(opt->parsecb) {
+            if(opt->parsecb)
+            {
                 if((*opt->parsecb)(cfg, opt, value, &f) != 0)
                     return 0;
                 val->fpnumber = f;
-            } else {
+            }
+            else
+            {
                 val->fpnumber = strtod(value, &endptr);
-                if(*endptr != '\0') {
+                if(*endptr != '\0')
+                {
                     cfg_error(cfg,
                           _("invalid floating point value for option '%s'"),
                               opt->name);
                     return 0;
                 }
-                if(errno == ERANGE) {
+                if(errno == ERANGE)
+                {
                     cfg_error(cfg,
                   _("floating point value for option '%s' is out of range"),
                               opt->name);
@@ -554,16 +604,20 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 }
             }
             break;
+
         case CFGT_STR:
             free(val->string);
-            if(opt->parsecb) {
+            if(opt->parsecb)
+            {
                 s = 0;
                 if((*opt->parsecb)(cfg, opt, value, &s) != 0)
                     return 0;
                 val->string = strdup(s);
-            } else
+            }
+            else
                 val->string = strdup(value);
             break;
+
         case CFGT_SEC:
             if(is_set(CFGF_MULTI, opt->flags) || val->section == 0)
             {
@@ -572,10 +626,10 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 assert(val->section);
                 memset(val->section, 0, sizeof(cfg_t));
                 val->section->name = strdup(opt->name);
-                val->section->opts = cfg_dupopts(opt->subopts);
+                val->section->opts = cfg_dupopt_array(opt->subopts);
                 val->section->flags = cfg->flags;
                 val->section->flags |= CFGF_ALLOCATED;
-                val->section->filename = cfg->filename;
+                val->section->filename = cfg->filename ? strdup(cfg->filename) : 0;
                 val->section->line = cfg->line;
                 val->section->errfunc = cfg->errfunc;
                 val->section->title = value;
@@ -583,13 +637,18 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             if(!is_set(CFGF_DEFINIT, opt->flags))
                 cfg_init_defaults(val->section);
             break;
+
         case CFGT_BOOL:
-            if(opt->parsecb) {
+            if(opt->parsecb)
+            {
                 if((*opt->parsecb)(cfg, opt, value, &b) != 0)
                     return 0;
-            } else {
+            }
+            else
+            {
                 b = cfg_parse_boolean(value);
-                if(b == -1) {
+                if(b == -1)
+                {
                     cfg_error(cfg, _("invalid boolean value for option '%s'"),
                               opt->name);
                     return 0;
@@ -597,6 +656,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             }
             val->boolean = (cfg_bool_t)b;
             break;
+
         default:
             cfg_error(cfg, "internal error in cfg_setopt(%s, %s)",
                       opt->name, value);
@@ -604,27 +664,6 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             break;
     }
     return val;
-}
-
-DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
-{
-    unsigned int i;
-
-    if(opt == 0)
-        return;
-
-    if(opt->values) {
-        for(i = 0; i < opt->nvalues; i++) {
-            if(opt->type == CFGT_STR)
-                free(opt->values[i]->string);
-            else if(opt->type == CFGT_SEC)
-                cfg_free(opt->values[i]->section);
-            free(opt->values[i]);
-        }
-        free(opt->values);
-    }
-    opt->values = 0;
-    opt->nvalues = 0;
 }
 
 DLLIMPORT cfg_errfunc_t cfg_set_error_function(cfg_t *cfg,
@@ -644,9 +683,10 @@ DLLIMPORT void cfg_error(cfg_t *cfg, const char *fmt, ...)
 
     va_start(ap, fmt);
 
-    if(cfg && cfg->errfunc) {
+    if(cfg && cfg->errfunc)
         (*cfg->errfunc)(cfg, fmt, ap);
-    } else {
+    else
+    {
         if(cfg && cfg->filename && cfg->line)
             fprintf(stderr, "%s:%d: ", cfg->filename, cfg->line);
         else if(cfg && cfg->filename)
@@ -693,51 +733,66 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
     if(force_opt)
         opt = force_opt;
 
-    while(1) {
+    while(1)
+    {
         int tok = cfg_yylex(cfg);
 
-        if(tok == 0) {
+        if(tok == 0)
+        {
             /* lexer.l should have called cfg_error */
             return STATE_ERROR;
         }
 
-        if(tok == EOF) {
-            if(state != 0) {
+        if(tok == EOF)
+        {
+            if(state != 0)
+            {
                 cfg_error(cfg, _("premature end of file"));
                 return STATE_ERROR;
             }
             return STATE_EOF;
         }
 
-        switch(state) {
+        switch(state)
+        {
             case 0: /* expecting an option name */
-                if(tok == '}') {
-                    if(level == 0) {
+                if(tok == '}')
+                {
+                    if(level == 0)
+                    {
                         cfg_error(cfg, _("unexpected closing brace"));
                         return STATE_ERROR;
                     }
                     return STATE_EOF;
                 }
-                if(tok != CFGT_STR) {
+                if(tok != CFGT_STR)
+                {
                     cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
                     return STATE_ERROR;
                 }
                 opt = cfg_getopt(cfg, cfg_yylval);
                 if(opt == 0)
                     return STATE_ERROR;
-                if(opt->type == CFGT_SEC) {
+                if(opt->type == CFGT_SEC)
+                {
                     if(is_set(CFGF_TITLE, opt->flags))
                         state = 6;
                     else
                         state = 5;
-                } else if(opt->type == CFGT_FUNC) {
+                }
+                else if(opt->type == CFGT_FUNC)
+                {
                     state = 7;
-                } else
+                }
+                else
                     state = 1;
                 break;
+
             case 1: /* expecting an equal sign or plus-equal sign */
-                if(tok == '+') {
-                    if(!is_set(CFGF_LIST, opt->flags)) {
+                if(tok == '+')
+                {
+                    if(!is_set(CFGF_LIST, opt->flags))
+                    {
                         cfg_error(cfg,
                                   _("attempt to append to non-list option %s"),
                                   opt->name);
@@ -748,23 +803,30 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                      * should be ok.
                      */
                     opt->flags &= ~CFGF_RESET;
-                } else if(tok == '=') {
+                }
+                else if(tok == '=')
+                {
                     /* set the (temporary) reset flag to clear the old
                      * values, since we obviously didn't want to append */
                     opt->flags |= CFGF_RESET;
-                } else {
+                }
+                else
+                {
                     cfg_error(cfg, _("missing equal sign after option '%s'"),
                               opt->name);
                     return STATE_ERROR;
                 }
-                if(is_set(CFGF_LIST, opt->flags)) {
+                if(is_set(CFGF_LIST, opt->flags))
+                {
                     state = 3;
                     num_values = 0;
                 } else
                     state = 2;
                 break;
+
             case 2: /* expecting an option value */
-                if(tok == '}' && is_set(CFGF_LIST, opt->flags)) {
+                if(tok == '}' && is_set(CFGF_LIST, opt->flags))
+                {
                     state = 0;
                     if(num_values == 0 && is_set(CFGF_RESET, opt->flags))
                         /* Reset flags was set, and the empty list was
@@ -773,7 +835,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     break;
                 }
 
-                if(tok != CFGT_STR) {
+                if(tok != CFGT_STR)
+                {
                     cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
                     return STATE_ERROR;
                 }
@@ -782,35 +845,45 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     return STATE_ERROR;
                 if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
                     return STATE_ERROR;
-                if(is_set(CFGF_LIST, opt->flags)) {
+                if(is_set(CFGF_LIST, opt->flags))
+                {
                     state = 4;
                     ++num_values;
-                } else
+                }
+                else
                     state = 0;
                 break;
+
             case 3: /* expecting an opening brace for a list option */
-                if(tok != '{') {
+                if(tok != '{')
+                {
                     cfg_error(cfg, _("missing opening brace for option '%s'"),
                               opt->name);
                     return STATE_ERROR;
                 }
                 state = 2;
                 break;
+
             case 4: /* expecting a separator for a list option, or
                      * closing (list) brace */
                 if(tok == ',')
                     state = 2;
-                else if(tok == '}') {
+                else if(tok == '}')
+                {
                     state = 0;
                     if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
                         return STATE_ERROR;
-                } else {
+                }
+                else
+                {
                     cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
                     return STATE_ERROR;
                 }
                 break;
+
             case 5: /* expecting an opening brace for a section */
-                if(tok != '{') {
+                if(tok != '{')
+                {
                     cfg_error(cfg, _("missing opening brace for section '%s'"),
                               opt->name);
                     return STATE_ERROR;
@@ -830,53 +903,69 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     return STATE_ERROR;
                 state = 0;
                 break;
+
             case 6: /* expecting a title for a section */
-                if(tok != CFGT_STR) {
+                if(tok != CFGT_STR)
+                {
                     cfg_error(cfg, _("missing title for section '%s'"),
                               opt->name);
                     return STATE_ERROR;
-                } else
+                }
+                else
                     opttitle = strdup(cfg_yylval);
                 state = 5;
                 break;
+
             case 7: /* expecting an opening parenthesis for a function */
-                if(tok != '(') {
+                if(tok != '(')
+                {
                     cfg_error(cfg, _("missing parenthesis for function '%s'"),
                               opt->name);
                     return STATE_ERROR;
                 }
                 state = 8;
                 break;
+
             case 8: /* expecting a function parameter or a closing paren */
-                if(tok == ')') {
+                if(tok == ')')
+                {
                     int ret = call_function(cfg, opt, &funcopt);
                     if(ret != 0)
                         return STATE_ERROR;
                     state = 0;
-                } else if(tok == CFGT_STR) {
+                }
+                else if(tok == CFGT_STR)
+                {
                     val = cfg_addval(&funcopt);
                     val->string = strdup(cfg_yylval);
                     state = 9;
-                } else {
+                }
+                else
+                {
                     cfg_error(cfg, _("syntax error in call of function '%s'"),
                               opt->name);
                     return STATE_ERROR;
                 }
                 break;
+
             case 9: /* expecting a comma in a function or a closing paren */
-                if(tok == ')') {
+                if(tok == ')')
+                {
                     int ret = call_function(cfg, opt, &funcopt);
                     if(ret != 0)
                         return STATE_ERROR;
                     state = 0;
-                } else if(tok == ',') {
+                }
+                else if(tok == ',')
                     state = 8;
-                } else {
+                else
+                {
                     cfg_error(cfg, _("syntax error in call of function '%s'"),
                               opt->name);
                     return STATE_ERROR;
                 }
                 break;
+
             default:
                 /* missing state, internal error, abort */
                 assert(0);
@@ -925,6 +1014,10 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
     int ret;
 
+    assert(cfg);
+    if(buf == 0)
+        return CFG_SUCCESS;
+
     free(cfg->filename);
     cfg->filename = strdup("[buf]");
     cfg->line = 1;
@@ -945,9 +1038,10 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
     assert(cfg);
     memset(cfg, 0, sizeof(cfg_t));
 
-    cfg->name = "root";
-    cfg->opts = opts;
+    cfg->name = strdup("root");
+    cfg->opts = cfg_dupopt_array(opts);
     cfg->flags = flags;
+    cfg->flags |= CFGF_ALLOCATED;
     cfg->filename = 0;
     cfg->line = 0;
     cfg->errfunc = 0;
@@ -970,15 +1064,19 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 #ifndef _WIN32
     /* do tilde expansion
      */
-    if(filename[0] == '~') {
+    if(filename[0] == '~')
+    {
         struct passwd *passwd = 0;
         const char *file = 0;
 
-        if(filename[1] == '/' || filename[1] == 0) {
+        if(filename[1] == '/' || filename[1] == 0)
+        {
             /* ~ or ~/path */
             passwd = getpwuid(geteuid());
             file = filename + 1;
-        } else {
+        }
+        else
+        {
             /* ~user or ~user/path */
             char *user;
 
@@ -991,7 +1089,8 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
             free(user);
         }
 
-        if(passwd) {
+        if(passwd)
+        {
             expanded = (char *)malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
             strcpy(expanded, passwd->pw_dir);
             strcat(expanded, file);
@@ -1001,6 +1100,46 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
     if(!expanded)
         expanded = strdup(filename);
     return expanded;
+}
+
+DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
+{
+    unsigned int i;
+
+    if(opt == 0)
+        return;
+
+    if(opt->values)
+    {
+        for(i = 0; i < opt->nvalues; i++)
+        {
+            if(opt->type == CFGT_STR)
+                free(opt->values[i]->string);
+            else if(opt->type == CFGT_SEC)
+                cfg_free(opt->values[i]->section);
+            free(opt->values[i]);
+        }
+        free(opt->values);
+    }
+    opt->values = 0;
+    opt->nvalues = 0;
+}
+
+static void cfg_free_opt_array(cfg_opt_t *opts)
+{
+    int i;
+
+    for(i = 0; opts[i].name; ++i)
+    {
+        free(opts[i].name);
+        if(opts[i].type == CFGT_STR)
+            free(opts[i].def.string);
+        else if(opts[i].type == CFGT_SEC)
+            cfg_free_opt_array(opts[i].subopts);
+        else if(opts[i].type == CFGT_FUNC || is_set(CFGF_LIST, opts[i].flags))
+            free(opts[i].def.parsed);
+    }
+    free(opts);
 }
 
 DLLIMPORT void cfg_free(cfg_t *cfg)
@@ -1013,12 +1152,11 @@ DLLIMPORT void cfg_free(cfg_t *cfg)
     for(i = 0; cfg->opts[i].name; ++i)
         cfg_free_value(&cfg->opts[i]);
 
-    if(is_set(CFGF_ALLOCATED, cfg->flags)) {
-        free(cfg->name);
-        free(cfg->opts);
-        free(cfg->title);
-    } else
-        free(cfg->filename);
+    cfg_free_opt_array(cfg->opts);
+
+    free(cfg->name);
+    free(cfg->title);
+    free(cfg->filename);
 
     free(cfg);
 }
@@ -1026,7 +1164,8 @@ DLLIMPORT void cfg_free(cfg_t *cfg)
 DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc,
                           const char **argv)
 {
-    if(argc != 1) {
+    if(argc != 1)
+    {
         cfg_error(cfg, _("wrong number of arguments to cfg_include()"));
         return 1;
     }
@@ -1039,16 +1178,19 @@ static cfg_value_t *cfg_getval(cfg_opt_t *opt, unsigned int index)
 
     assert(index == 0 || is_set(CFGF_LIST, opt->flags));
 
-    if(opt->simple_value) {
+    if(opt->simple_value)
         val = (cfg_value_t *)opt->simple_value;
-    } else {
-        if(is_set(CFGF_RESET, opt->flags)) {
+    else
+    {
+        if(is_set(CFGF_RESET, opt->flags))
+        {
             cfg_free_value(opt);
             opt->flags &= ~CFGF_RESET;
         }
-        if(index >= opt->nvalues) {
+
+        if(index >= opt->nvalues)
             val = cfg_addval(opt);
-        } else
+        else
             val = opt->values[index];
     }
     return val;
@@ -1140,8 +1282,10 @@ static void cfg_addlist_internal(cfg_opt_t *opt,
 {
     unsigned int i;
 
-    for(i = 0; i < nvalues; i++) {
-        switch(opt->type) {
+    for(i = 0; i < nvalues; i++)
+    {
+        switch(opt->type)
+        {
             case CFGT_INT:
                 cfg_opt_setnint(opt, va_arg(ap, int), opt->nvalues);
                 break;
@@ -1227,11 +1371,13 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 {
     assert(opt);
 
-    if(opt->type == CFGT_SEC) {
+    if(opt->type == CFGT_SEC)
+    {
         cfg_t *sec;
         unsigned int i;
 
-        for(i = 0; i < cfg_opt_size(opt); i++) {
+        for(i = 0; i < cfg_opt_size(opt); i++)
+        {
             sec = cfg_opt_getnsec(opt, i);
             cfg_indent(fp, indent);
             if(is_set(CFGF_TITLE, opt->flags))
@@ -1242,19 +1388,24 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
             cfg_indent(fp, indent);
             fprintf(fp, "}\n");
         }
-    } else if(opt->type != CFGT_FUNC && opt->type != CFGT_NONE) {
-        if(is_set(CFGF_LIST, opt->flags)) {
+    }
+    else if(opt->type != CFGT_FUNC && opt->type != CFGT_NONE)
+    {
+        if(is_set(CFGF_LIST, opt->flags))
+        {
             unsigned int i;
 
             cfg_indent(fp, indent);
             fprintf(fp, "%s = {", opt->name);
 
-            if(opt->nvalues) {
+            if(opt->nvalues)
+            {
                 if(opt->pf)
                     opt->pf(opt, 0, fp);
                 else
                     cfg_opt_nprint_var(opt, 0, fp);
-                for(i = 1; i < opt->nvalues; i++) {
+                for(i = 1; i < opt->nvalues; i++)
+                {
                     fprintf(fp, ", ");
                     if(opt->pf)
                         opt->pf(opt, i, fp);
@@ -1264,13 +1415,18 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
             }
 
             fprintf(fp, "}");
-        } else {
+        }
+        else
+        {
             cfg_indent(fp, indent);
             /* comment out the option if is not set */
-            if(opt->simple_value) {
+            if(opt->simple_value)
+            {
                 if(opt->type == CFGT_STR && *((char **)opt->simple_value) == 0)
                     fprintf(fp, "# ");
-            } else {
+            }
+            else
+            {
                 if(cfg_opt_size(opt) == 0 || (
                        opt->type == CFGT_STR && (opt->values[0]->string == 0 ||
                                              opt->values[0]->string[0] == 0)))
@@ -1284,7 +1440,9 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
         }
     
         fprintf(fp, "\n");
-    } else if(opt->pf) {
+    }
+    else if(opt->pf)
+    {
         cfg_indent(fp, indent);
         opt->pf(opt, 0, fp);
         fprintf(fp, "\n");
@@ -1338,3 +1496,4 @@ DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
     opt->validcb = vf;
     return oldvf;
 }
+
