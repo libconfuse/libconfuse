@@ -102,13 +102,15 @@ target = ${USER:-User}
         <para>
             The macros used to initialize a string, integer, boolean and a
             float is, respectively, <function>CFG_STR()</function>,
-            <function>CFG_INT()</function>, <function>CFG_BOOL()</function> and
-            <function>CFG_FLOAT()</function>. All macros take three parameters:
+            <function>CFG_INT()</function>, <function>CFG_BOOL()</function>,
+            <function>CFG_FLOAT()</function> and
+            <function>CFG_PTR()</function>. All macros take three parameters:
             the name of the option, a default value and flags. To retrieve the
             values, use <function>cfg_getstr()</function>,
             <function>cfg_getint()</function>,
-            <function>cfg_getbool()</function> or
-            <function>cfg_getfloat()</function>.
+            <function>cfg_getbool()</function>,
+            <function>cfg_getfloat()</function> or
+            <function>cfg_getptr()</function>, respectively.
         </para>
         <para>
             Let's introduce an integer option that tells us how many times to print the
@@ -366,8 +368,11 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
                 the callback function. To specify an option in a subsection,
                 the section and the option must be separated with a vertical
                 bar ("|").
-               
-                The complete program is now:
+            </para>
+            <para>
+                We're now also looking at the return code from
+                <function>cfg_parse()</function> to verify that the parsing was
+                successful. The complete program is now:
             </para>
             &listing8;
         </sect2>
@@ -381,8 +386,12 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
             some other other value. One example is to extend a boolean option
             to accept the values "yes", "no" and "ask" (or perhaps "true",
             "false" and "maybe"). Those values should be mapped to the integers
-            0, 1 and 3.
+            1, 2 and 3.
         </para>
+        <programlisting>
+typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt,
+                              const char *value, void *result);
+        </programlisting>
         <para>
             
         </para>
@@ -393,7 +402,20 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
         <para>
             libConfuse supports functions to parse options that does not fit
             well in the general syntax. Functions can be called with a variable
-            number of arguments.
+            number of arguments. No data from the function or any arguments are
+            stored by libConfuse after the function has run. It is up to the caller
+            to process and/or save the data.
+        </para>
+        <para>
+            A function is defined with a <function>CFG_FUNC</function> macro.
+            It takes two arguments: the name of the function and a function
+            callback. The callback is defined as:
+        </para>
+        <programlisting>
+typedef int (*cfg_func_t)(cfg_t *cfg, cfg_opt_t *opt,
+                          int argc, const char **argv);
+        </programlisting>
+        <para>
         </para>
 
         <sect2>
@@ -410,7 +432,10 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
                 entry in your options:
             </para>
             <programlisting>
-CFG_FUNC("include", cfg_include),
+cfg_opt_t opts[] = {
+    CFG_FUNC("include", cfg_include),
+    CFG_END()
+};
             </programlisting>
             <para>
                 In the configuration file, it is used in the following way:
@@ -425,6 +450,12 @@ include("included.conf")
         <title>Saving configuration files</title>
         <para>
         </para>
+
+        <sect2>
+            <title>Altering the printing of certain options</title>
+            <para>
+            </para>
+        </sect2>
     </sect1>
 
 </article>

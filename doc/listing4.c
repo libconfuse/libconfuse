@@ -14,7 +14,8 @@ int main(void)
     int i;
 
     cfg = cfg_init(opts, CFGF_NONE);
-    cfg_parse(cfg, "hello.conf");
+    if(cfg_parse(cfg, "hello.conf") == CFG_PARSE_ERROR)
+        return 1;
 
     repeat = cfg_getint(cfg, "repeat");
     while(repeat--)

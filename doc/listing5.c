@@ -19,7 +19,8 @@ int main(void)
     int i, j;
 
     cfg = cfg_init(opts, CFGF_NONE);
-    cfg_parse(cfg, "hello.conf");
+    if(cfg_parse(cfg, "hello.conf") == CFG_PARSE_ERROR)
+        return 1;
 
     for(j = 0; j < cfg_size(cfg, "greeting"); j++)
     {

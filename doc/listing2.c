@@ -11,7 +11,8 @@ int main(void)
     cfg_t *cfg;
 
     cfg = cfg_init(opts, CFGF_NONE);
-    cfg_parse(cfg, "hello.conf");
+    if(cfg_parse(cfg, "hello.conf") == CFG_PARSE_ERROR)
+        return 1;
 
     printf("Hello, %s!\n", cfg_getstr(cfg, "target"));
 
