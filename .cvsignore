@@ -1,0 +1,17 @@
+.gdb_history
+aclocal.m4
+autom4te.cache
+config.h
+config.h.in
+config.log
+config.status
+configure
+confuse-config
+Doxyfile
+libconfuse.pc
+libconfuse.spec
+libtool
+libtool.patch
+Makefile
+Makefile.in
+stamp-h1
