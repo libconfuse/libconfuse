@@ -43,6 +43,8 @@
 
 #include "confuse.h"
 
+#define is_set(f, x) (((f) & (x)) == (f))
+
 #if ENABLE_NLS
 # include <libintl.h>
 # include <locale.h>
@@ -108,7 +110,7 @@ static char *strndup(const char *s, size_t n)
 #endif
 
 #ifndef HAVE_STRCASECMP
-/* Implementation from from GNU glibc 2.3.1
+/* Implementation from GNU glibc 2.3.1
  * Copyright (C) 1991,1992,1995,1996,1997,2001,2002
  *   Free Software Foundation, Inc.
  * License: GNU LGPL

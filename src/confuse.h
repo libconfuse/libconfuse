@@ -98,8 +98,6 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFG_FILE_ERROR -1
 #define CFG_PARSE_ERROR 1
 
-#define is_set(f, x) ((f & x) == f)
-
 typedef union cfg_value_t cfg_value_t;
 typedef struct cfg_opt_t cfg_opt_t;
 typedef struct cfg_t cfg_t;
