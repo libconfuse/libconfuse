@@ -16,3 +16,5 @@ tutorial
 tutorial-html
 tutorial-source
 valid.c
+.Makefile.am.swp
+tutorial-build.timestamp
