@@ -39,14 +39,22 @@ void sighandler(int sig)
 	signal(SIGHUP, sighandler);
 }
 
+static int loop = 1;
+
+void usr1handler(int sig)
+{
+	loop = 0;
+}
+
 int main(void)
 {
 	unsigned int i;
 
 	read_config();
 	signal(SIGHUP, sighandler);
+	signal(SIGUSR1, usr1handler);
 
-	while(1) {
+	while(loop) {
 		printf("Message: %s", cfg_getstr(cfg, "message"));
 		for(i = 0; i < cfg_size(cfg, "argument"); i++) {
 			cfg_t *arg = cfg_getnsec(cfg, "argument", i);
@@ -58,6 +66,7 @@ int main(void)
 	}
 
 	cfg_free(cfg);
+	cfg = 0;
 
 	return 0;
 }
