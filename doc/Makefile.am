@@ -29,6 +29,8 @@ html/index.html: Doxyfile
 	doxygen
 doxygen-manual: html/index.html
 
+documentation: tutorial doxygen-manual
+
 dist-hook: tutorial doxygen-manual
 	cp -pr html $(distdir)
 	cp -pr man $(distdir)
