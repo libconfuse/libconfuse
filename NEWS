@@ -18,6 +18,7 @@ New in 2.1
 * Hexadecimal escape sequences allowed in double-quoted strings
 * Corrected line number with multi-line quoted strings
 * Fixed undetected /*comment*/ (ie, without space between /* and the text)
+* Forgot to fclose include file after use, found by James Haley
 
 
 New in 2.0

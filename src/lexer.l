@@ -223,7 +223,7 @@ int cfg_include_stack_ptr = 0;
 }
 
 <<EOF>> {
-             if ( --cfg_include_stack_ptr < 0 )
+             if ( cfg_include_stack_ptr <= 0 )
                  {
                  return EOF;
                  }
@@ -231,6 +231,9 @@ int cfg_include_stack_ptr = 0;
              else
                  {
                  yy_delete_buffer( YY_CURRENT_BUFFER );
+				 fclose(cfg_yyin);
+				 cfg_yyin = 0;
+                 --cfg_include_stack_ptr;
                  yy_switch_to_buffer(
                       cfg_include_stack[cfg_include_stack_ptr].state );
                  free(cfg->filename);
@@ -288,7 +291,6 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 
 	xfilename = cfg_tilde_expand(filename);
 
-	/*cfg_error(cfg, "opening %s for parsing", xfilename);*/
 	cfg_yyin = fopen(xfilename, "r");
 
 	if(!cfg_yyin) {
@@ -356,7 +358,8 @@ void cfg_scan_fp_end(void)
 	/* restore to previous state
 	 */
 	yy_delete_buffer(fp_scan_state);
-	yy_switch_to_buffer(pre_fp_scan_state);
+	if(pre_fp_scan_state)
+		yy_switch_to_buffer(pre_fp_scan_state);
 	free(cfg_qstring);
 	cfg_qstring = 0;
 	qstring_index = qstring_len = 0;
