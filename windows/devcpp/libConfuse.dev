@@ -1,24 +1,24 @@
 [Project]
 FileName=libConfuse.dev
 Name=libConfuse
-UnitCount=4
+UnitCount=3
 Type=3
 Ver=1
 ObjFiles=
-Includes=../src;.
+Includes=.
 Libs=
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
 Compiler=-DBUILDING_DLL=1_@@_-DHAVE_CONFIG_H_@@_
 CppCompiler=
-Linker=--no-export-all-symbols --add-stdcall-alias_@@_
+Linker=--no-export-all-symbols_@@_--add-stdcall-alias_@@_
 IsCpp=0
 Icon=
 ExeOutput=
 ObjectOutput=
 OverrideOutput=0
-OverrideOutputName=
+OverrideOutputName=libConfuse.dll
 HostApplication=
 Folders=
 CommandLine=
@@ -28,7 +28,7 @@ CompilerSet=0
 CompilerSettings=000000000100100000
 
 [Unit1]
-FileName=..\src\confuse.c
+FileName=config.h
 CompileCpp=0
 Folder=libConfuse
 Compile=1
@@ -38,7 +38,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\src\confuse.h
+FileName=..\..\src\lexer.c
 CompileCpp=0
 Folder=libConfuse
 Compile=1
@@ -48,7 +48,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\src\lexer.c
+FileName=..\..\src\confuse.c
 CompileCpp=0
 Folder=libConfuse
 Compile=1

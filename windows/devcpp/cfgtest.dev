@@ -5,8 +5,8 @@ UnitCount=1
 Type=1
 Ver=1
 ObjFiles=
-Includes=../src
-Libs=../src
+Includes=../../src
+Libs=
 PrivateResource=
 ResourceIncludes=
 MakeIncludes=
@@ -28,7 +28,7 @@ CompilerSet=0
 CompilerSettings=000000000000000000
 
 [Unit1]
-FileName=..\examples\cfgtest.c
+FileName=..\..\examples\cfgtest.c
 CompileCpp=0
 Folder=cfgtest
 Compile=1

@@ -4,20 +4,20 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="cfgtest.exe"/>
-    <OBJFILES value="..\examples\cfgtest.obj"/>
+    <OBJFILES value="..\..\examples\cfgtest.obj"/>
     <RESFILES value="cfgtest.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
-    <LIBFILES value="..\libConfuse.lib"/>
+    <LIBFILES value="libConfuse.lib"/>
     <LIBRARIES value=""/>
     <SPARELIBS value=""/>
     <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
       vcldbx.bpi ibxpress.bpi cds.bpi dsnap.bpi bdecds.bpi qrpt.bpi teeui.bpi 
       teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
       dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi"/>
-    <PATHCPP value=".;..\examples"/>
+    <PATHCPP value=".;..\..\examples"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -27,16 +27,16 @@
     <USERDEFINES value="_DEBUG;HAVE_CONFIG_H"/>
     <SYSDEFINES value="NO_STRICT;_NO_VCL;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="cfgtest.bpf"/>
-    <INCLUDEPATH value=".;..\examples;..\src;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value=".;..\examples;..\src;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\..\examples;$(BCB)\include;$(BCB)\include\vcl;..\..\src"/>
+    <LIBPATH value="..\..\examples;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I. -I..\examples -I..\src -I$(BCB)\include -I$(BCB)\include\vcl 
+    <IDLCFLAGS value="-I..\..\examples -I$(BCB)\include -I$(BCB)\include\vcl -I..\..\src 
       -src_suffix cpp -D_DEBUG -DHAVE_CONFIG_H -boa"/>
-    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -A -r- -a8 -b- -k -y -v -vi- 
-      -tWC -tWM- -c"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC 
+      -tWM- -c"/>
     <PFLAGS value="-$YD -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zd"/>
@@ -52,8 +52,8 @@
   <FILELIST>
       <FILE FILENAME="cfgtest.res" FORMNAME="" UNITNAME="cfgtest.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="cfgtest.bpf" FORMNAME="" UNITNAME="cfgtest" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\examples\cfgtest.c" FORMNAME="" UNITNAME="cfgtest" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\libConfuse.lib" FORMNAME="" UNITNAME="libConfuse.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\examples\cfgtest.c" FORMNAME="" UNITNAME="cfgtest" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="libConfuse.lib" FORMNAME="" UNITNAME="libConfuse.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -87,38 +87,27 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=10
-Item0=.;..\examples;..\src;$(BCB)\include;$(BCB)\include\vcl
-Item1=..\examples;..;..\src;$(BCB)\include;$(BCB)\include\vcl
-Item2=..\;..\src;$(BCB)\include;$(BCB)\include\vcl
-Item3=..\examples;examples;$(BCB)\include;$(BCB)\include\vcl;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item4=examples;$(BCB)\include;$(BCB)\include\vcl;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item5=examples;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\include;$(BCB)\include\vcl;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item6=C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\include;$(BCB)\include\vcl;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item7=C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\include;$(BCB)\include\vcl;.C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item8=C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\include;$(BCB)\include\vcl;../src
-Item9=C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\include;$(BCB)\include\vcl
+Count=6
+Item0=..\..\examples;$(BCB)\include;$(BCB)\include\vcl;..\..\src
+Item1=$(BCB)\include;$(BCB)\include\vcl;..\..\src
+Item2=..\..\examples;$(BCB)\include;$(BCB)\include\vcl;..\src
+Item3=$(BCB)\include;$(BCB)\include\vcl;..\src
+Item4=..\..\examples;$(BCB)\include;$(BCB)\include\vcl
+Item5=$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=8
-Item0=.;..\examples;..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item1=..\examples;..;..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..\;..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item3=..\examples;examples;$(BCB)\lib\obj;$(BCB)\lib;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item4=examples;$(BCB)\lib\obj;$(BCB)\lib;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\src
-Item5=examples;$(BCB)\lib\obj;$(BCB)\lib
-Item6=examples;C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\lib\obj;$(BCB)\lib
-Item7=C:\Documents and Settings\martin\Skrivbord\confuse-2.0\examples;$(BCB)\lib\obj;$(BCB)\lib
+Count=2
+Item0=..\..\examples;$(BCB)\lib\obj;$(BCB)\lib
+Item1=$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
 Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=3
+Count=2
 Item0=_DEBUG;HAVE_CONFIG_H
-Item1=_DEBUG -DHAVE_CONFIG_H
-Item2=_DEBUG
+Item1=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

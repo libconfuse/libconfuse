@@ -4,7 +4,7 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="libConfuse.dll"/>
-    <OBJFILES value="..\src\lexer.obj ..\src\confuse.obj"/>
+    <OBJFILES value="..\..\src\confuse.obj ..\..\src\lexer.obj"/>
     <RESFILES value="libConfuse.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -17,7 +17,7 @@
       vcldbx.bpi ibxpress.bpi cds.bpi dsnap.bpi bdecds.bpi qrpt.bpi teeui.bpi 
       teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
       dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi"/>
-    <PATHCPP value=".;..\src;..\src"/>
+    <PATHCPP value=".;..\..\src;..\..\src"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
@@ -27,14 +27,14 @@
     <USERDEFINES value="_DEBUG;HAVE_CONFIG_H;BUILDING_DLL"/>
     <SYSDEFINES value="NO_STRICT;_NO_VCL;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="libConfuse.bpf"/>
-    <INCLUDEPATH value=".;..\src;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value=".;..\src;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\..\src;.;..\src;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\..\src;.;..\src;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I. -I..\src -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp 
-      -D_DEBUG -DHAVE_CONFIG_H -DBUILDING_DLL -boa"/>
+    <IDLCFLAGS value="-I..\..\src -I. -I..\src -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix 
+      cpp -D_DEBUG -DHAVE_CONFIG_H -DBUILDING_DLL -boa"/>
     <CFLAG1 value="-WD -Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- 
       -tWD -tWM- -c"/>
     <PFLAGS value="-$YD -$W -$O- -$A8 -v -JPHNE -M"/>
@@ -52,8 +52,8 @@
   <FILELIST>
       <FILE FILENAME="libConfuse.res" FORMNAME="" UNITNAME="libConfuse.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="libConfuse.bpf" FORMNAME="" UNITNAME="libConfuse" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\src\lexer.c" FORMNAME="" UNITNAME="lexer.c" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\src\confuse.c" FORMNAME="" UNITNAME="confuse.c" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\src\confuse.c" FORMNAME="" UNITNAME="confuse.c" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\src\lexer.c" FORMNAME="" UNITNAME="lexer.c" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -87,18 +87,20 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=4
-Item0=.;..\src;$(BCB)\include;$(BCB)\include\vcl
-Item1=..\src;$(BCB)\include;$(BCB)\include\vcl
-Item2=..;..\src;$(BCB)\include;$(BCB)\include\vcl
-Item3=..\;..\src;$(BCB)\include;$(BCB)\include\vcl
+Count=5
+Item0=..\..\src;.;..\src;$(BCB)\include;$(BCB)\include\vcl
+Item1=.;..\src;$(BCB)\include;$(BCB)\include\vcl
+Item2=..\src;$(BCB)\include;$(BCB)\include\vcl
+Item3=..;..\src;$(BCB)\include;$(BCB)\include\vcl
+Item4=..\;..\src;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=4
-Item0=.;..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item1=..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..;..\src;$(BCB)\lib\obj;$(BCB)\lib
-Item3=..\;..\src;$(BCB)\lib\obj;$(BCB)\lib
+Count=5
+Item0=..\..\src;.;..\src;$(BCB)\lib\obj;$(BCB)\lib
+Item1=.;..\src;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\src;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..;..\src;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..\;..\src;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1

@@ -91,11 +91,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\confuse.c
+SOURCE=..\..\..\src\confuse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lexer.c
+SOURCE=..\..\..\src\lexer.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -103,7 +103,7 @@ SOURCE=..\..\src\lexer.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\src\confuse.h
+SOURCE=..\..\..\src\confuse.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
