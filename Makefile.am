@@ -2,7 +2,7 @@
 ## $Id$
 
 AUTOMAKE_OPTIONS = foreign
-CLEANFILES=*~ '\#*\#' confuse-config.in
+CLEANFILES=*~ '\#*\#'
 EXTRA_DIST=libconfuse.spec.in libconfuse.spec
 SUBDIRS = m4 po src examples tests doc
 
