@@ -27,10 +27,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libConfuse 2.1\n"
+"Project-Id-Version: libConfuse 2.2\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2003-07-13 13:49+0200\n"
-"PO-Revision-Date: 2003-07-13 13:49+0200\n"
+"POT-Creation-Date: 2003-08-14 16:18+0200\n"
+"PO-Revision-Date: 2003-08-14 16:18+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -43,80 +43,80 @@ msgstr ""
 msgid "no such option '%s'"
 msgstr "no such option ‘%s’"
 
-#: src/confuse.c:469
+#: src/confuse.c:524
 #, c-format
 msgid "invalid integer value for option '%s'"
 msgstr "invalid integer value for option ‘%s’"
 
-#: src/confuse.c:475
+#: src/confuse.c:530
 #, c-format
 msgid "integer value for option '%s' is out of range"
 msgstr "integer value for option ‘%s’ is out of range"
 
-#: src/confuse.c:490
+#: src/confuse.c:545
 #, c-format
 msgid "invalid floating point value for option '%s'"
 msgstr "invalid floating point value for option ‘%s’"
 
-#: src/confuse.c:496
+#: src/confuse.c:551
 #, c-format
 msgid "floating point value for option '%s' is out of range"
 msgstr "floating point value for option ‘%s’ is out of range"
 
-#: src/confuse.c:535
+#: src/confuse.c:590
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr "invalid boolean value for option ‘%s’"
 
-#: src/confuse.c:645
+#: src/confuse.c:702
 msgid "premature end of file"
 msgstr "premature end of file"
 
-#: src/confuse.c:655
+#: src/confuse.c:712
 msgid "unexpected closing brace"
 msgstr "unexpected closing brace"
 
-#: src/confuse.c:661 src/confuse.c:716 src/confuse.c:743
+#: src/confuse.c:718 src/confuse.c:773 src/confuse.c:800
 #, c-format
 msgid "unexpected token '%s'"
 msgstr "unexpected token ‘%s’"
 
-#: src/confuse.c:681
+#: src/confuse.c:738
 #, c-format
 msgid "attempt to append to non-list option %s"
 msgstr "attempt to append to non-list option %s"
 
-#: src/confuse.c:695
+#: src/confuse.c:752
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr "missing equal sign after option ‘%s’"
 
-#: src/confuse.c:730
+#: src/confuse.c:787
 #, c-format
 msgid "missing opening brace for option '%s'"
 msgstr "missing opening brace for option ‘%s’"
 
-#: src/confuse.c:749
+#: src/confuse.c:806
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr "missing opening brace for section ‘%s’"
 
-#: src/confuse.c:766
+#: src/confuse.c:823
 #, c-format
 msgid "missing title for section '%s'"
 msgstr "missing title for section ‘%s’"
 
-#: src/confuse.c:775
+#: src/confuse.c:832
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr "missing parenthesis for function ‘%s’"
 
-#: src/confuse.c:792 src/confuse.c:806
+#: src/confuse.c:849 src/confuse.c:863
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr "syntax error in call of function ‘%s’"
 
-#: src/confuse.c:961
+#: src/confuse.c:1018
 msgid "wrong number of arguments to cfg_include()"
 msgstr "wrong number of arguments to cfg_include()"
 
@@ -134,6 +134,6 @@ msgstr "bad escape sequence ‘%s’"
 msgid "unterminated string constant"
 msgstr "unterminated string constant"
 
-#: src/lexer.l:283
+#: src/lexer.l:287
 msgid "includes nested too deeply"
 msgstr "includes nested too deeply"
