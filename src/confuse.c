@@ -1537,8 +1537,9 @@ static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const cha
             break;
         if(len)
         {
+            cfg_opt_t *secopt;
             secname = strndup(name, len);
-            cfg_opt_t *secopt = cfg_getopt_array(opts, cfg_flags, secname);
+            secopt = cfg_getopt_array(opts, cfg_flags, secname);
             free(secname);
             if(secopt == 0)
             {
