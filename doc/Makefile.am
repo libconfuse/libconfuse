@@ -20,9 +20,9 @@ TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c listing5.c listi
 TUTORIAL_LISTINGS = $(TUTORIAL_CSOURCES:.c=.xml)
 
 .c.xml:
-	echo "<figure><title>$<</title><programlisting id=\"$*\"><![CDATA[" > $@
+	echo "<programlisting id=\"$*\"><![CDATA[" > $@
 	cat $< | awk 'BEGIN {l=1} /.*/ {printf("%02d   %s\n", l, $$0); l++}' >> $@
-	echo ']]></programlisting></figure>' >> $@
+	echo ']]></programlisting>' >> $@
 
 tutorial-html/index.html: tutorial.xml $(TUTORIAL_LISTINGS) css.xsl tutorial.css
 	xmllint --valid --noout $< && xmlto -o tutorial-html --extensions -m css.xsl xhtml $<
