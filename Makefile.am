@@ -2,11 +2,16 @@
 ## $Id$
 
 AUTOMAKE_OPTIONS = foreign
-CLEANFILES=*~ \#*\#
-EXTRA_DIST=Doxyfile.in Doxyfile libconfuse.spec.in libconfuse.spec confuse-config.in
-SUBDIRS = m4 po src examples tests
+CLEANFILES=*~ '\#*\#' confuse-config.in
+EXTRA_DIST=Doxyfile.in Doxyfile libconfuse.spec.in libconfuse.spec
+SUBDIRS = m4 po src examples tests doc
 
-bin_SCRIPTS=confuse-config
+if HAVE_PKGCONFIG
+  pkgconfigdir = $(libdir)/pkgconfig
+  pkgconfig_DATA = libconfuse.pc
+else
+  bin_SCRIPTS = confuse-config
+endif
 
 doc: doc/html/index.html
 doc/html/index.html: src/confuse.h
@@ -76,3 +81,4 @@ dist-extra: dist
 rpm: Makefile
 	$(MAKE) dist
 	rpm -ta --clean $(PACKAGE)-$(VERSION).tar.gz
+

@@ -3,7 +3,7 @@ dnl $Id$
 
 AC_PREREQ(2.50)
 
-AC_INIT(libConfuse, 2.4, confuse-devel@nongnu.org, confuse)
+AC_INIT(libConfuse, 2.5, confuse-devel@nongnu.org, confuse)
 AC_CONFIG_AUX_DIR(support)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -33,7 +33,29 @@ AC_C_CONST
 # AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
-AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile \
- po/Makefile.in m4/Makefile tests/Makefile libconfuse.spec confuse-config])
+dnl pkgconfig/confuse-config.
+dnl If pkgconfig is found, use it and disable confuse-config, otherwise do the
+dnl opposite, unless the user overrides.
+
+AC_ARG_ENABLE([pkgconfig],
+  AC_HELP_STRING([--disable-pkgconfig],[disable pkgconfig data files (auto)]),
+  [dopkgconfig="$enableval"], [dopkgconfig="maybe"])
+if test "$dopkgconfig" = "maybe"; then
+  AC_CHECK_PROG([PKGCONFIG], [pkg-config], [yes], [no])
+else
+  AC_MSG_CHECKING([whether pkgconfig should be used])
+  PKGCONFIG="$dopkgconfig"
+  AC_MSG_RESULT([$PKGCONFIG])
+fi
+AM_CONDITIONAL([HAVE_PKGCONFIG], [test "$PKGCONFIG" != "no"])
+
+CONFUSE_VERSION="$VERSION"
+CONFUSE_CPPFLAGS="-I$includedir"
+CONFUSE_LIBS="-lconfuse $LTLIBINTL"
+AC_CONFIG_LIBCONFIG_IN_STATIC
+AC_CONFIG_LIBCONFIG_IN([confuse])
+
+AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile libconfuse.pc \
+                 po/Makefile.in m4/Makefile tests/Makefile doc/Makefile libconfuse.spec confuse-config])
 AC_OUTPUT
 
