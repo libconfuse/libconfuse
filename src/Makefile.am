@@ -9,4 +9,8 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 LIBS = @LIBINTL@ @LIBS@
 
+CLEANFILES=*~ \#*\#
+AM_LFLAGS=-Pcfg_yy -olex.yy.c
+lexer.c: lexer.l
+
 celan: clean

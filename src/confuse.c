@@ -22,6 +22,7 @@
 #endif
 
 #ifdef HAVE_STRING_H
+# define _GNU_SOURCE    /* FIXME! */
 # include <string.h>
 #endif
 #ifdef HAVE_STDLIB_H
@@ -36,10 +37,7 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-
-#ifndef HAVE_STRCASECMP
-# define strcasecmp strcmp
-#endif
+#include <ctype.h>
 
 #include "confuse.h"
 
@@ -52,34 +50,85 @@
 #endif
 #define N_(str) str
 
-extern FILE *yyin;
-
-const char *confuse_version = PACKAGE_VERSION;
-const char *confuse_copyright = PACKAGE_STRING" by Martin Hedenfalk <mhe@home.se>";
-const char *confuse_author = "Martin Hedenfalk <mhe@home.se>";
-
-extern int yylex(cfg_t *cfg);
-char * yylval;
+extern FILE *cfg_yyin;
+extern int cfg_yylex(cfg_t *cfg);
 extern int cfg_lexer_include(cfg_t *cfg, const char *fname);
 extern void cfg_scan_string_begin(const char *buf);
 extern void cfg_scan_string_end(void);
-extern void cfg_create_buffer_from_fp(FILE *fp);
+extern void cfg_scan_fp_begin(FILE *fp);
+extern void cfg_scan_fp_end(void);
+extern char *cfg_qstring;
+
+char *cfg_yylval = 0;
+
+const char confuse_version[] = PACKAGE_VERSION;
+const char confuse_copyright[] = PACKAGE_STRING" by Martin Hedenfalk <mhe@home.se>";
+const char confuse_author[] = "Martin Hedenfalk <mhe@home.se>";
+
 static int cfg_parse_internal(cfg_t *cfg, int level,
-							  int force_state, cfgopt_t *force_opt);
+							  int force_state, cfg_opt_t *force_opt);
 
 #define STATE_CONTINUE 0
 #define STATE_EOF -1
 #define STATE_ERROR 1
 
-#ifdef DEBUG
-# define debug(fmt, args...) fprintf(stderr, fmt, ## args)
-#else
-# define debug(fmt, args...) 
+#ifndef HAVE_STRDUP
+# ifdef HAVE__STRDUP
+#  define strdup _strdup
+# else
+static char *strdup(const char *s)
+{
+	char *r;
+
+	if(s == 0 || *s == 0)
+		return 0;
+
+	r = (char *)malloc(strlen(s) + 1);
+	strcpy(r, s);
+	return r;
+}
+# endif
 #endif
 
-cfgopt_t *cfg_getopt(cfg_t *cfg, const char *name)
+#ifndef HAVE_STRNDUP
+static char *strndup(const char *s, size_t n)
 {
-	int i;
+	char *r;
+
+	if(s == 0)
+		return 0;
+
+	r = (char *)malloc(n + 1);
+	strncpy(r, s, n);
+	return r;
+}
+#endif
+
+#ifndef HAVE_STRCASECMP
+/* Implementation from from GNU glibc 2.3.1
+ * Copyright (C) 1991,1992,1995,1996,1997,2001,2002
+ *   Free Software Foundation, Inc.
+ * License: GNU LGPL
+ */
+static int strcasecmp(const char *a, const char *b)
+{
+	int r;
+
+	if(a == b)
+		return 0;
+
+	while((r = tolower(*a) - tolower(*b++)) == 0) {
+		if(*a++ == '\0')
+			break;
+	}
+
+	return r;
+}
+#endif
+
+DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
+{
+	unsigned int i;
 
 	assert(cfg && cfg->name && name);
 
@@ -98,22 +147,23 @@ cfgopt_t *cfg_getopt(cfg_t *cfg, const char *name)
 	return 0;
 }
 
-const char *cfg_title(cfg_t *cfg)
+DLLIMPORT const char *cfg_title(cfg_t *cfg)
 {
 	return cfg->title;
 }
 
-unsigned int cfg_size(cfg_t *cfg, const char *name)
+DLLIMPORT unsigned int cfg_size(cfg_t *cfg, const char *name)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt)
 		return opt->nvalues;
 	return 0;
 }
 
-signed long cfg_getnint(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT signed long cfg_getnint(cfg_t *cfg, const char *name,
+								  unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt) {
 		assert(opt->type == CFGT_INT);
 		assert(index < opt->nvalues);
@@ -122,14 +172,15 @@ signed long cfg_getnint(cfg_t *cfg, const char *name, unsigned int index)
 		return 0;
 }
 
-signed long cfg_getint(cfg_t *cfg, const char *name)
+DLLIMPORT signed long cfg_getint(cfg_t *cfg, const char *name)
 {
 	return cfg_getnint(cfg, name, 0);
 }
 
-double cfg_getnfloat(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT double cfg_getnfloat(cfg_t *cfg, const char *name,
+							   unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt) {
 		assert(opt->type == CFGT_FLOAT);
 		assert(index < opt->nvalues);
@@ -138,30 +189,31 @@ double cfg_getnfloat(cfg_t *cfg, const char *name, unsigned int index)
 		return 0;
 }
 
-double cfg_getfloat(cfg_t *cfg, const char *name)
+DLLIMPORT double cfg_getfloat(cfg_t *cfg, const char *name)
 {
 	return cfg_getnfloat(cfg, name, 0);
 }
 
-cfgbool_t cfg_getnbool(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT cfg_bool_t cfg_getnbool(cfg_t *cfg, const char *name,
+								  unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt) {
 		assert(opt->type == CFGT_BOOL);
 		assert(index < opt->nvalues);
 		return opt->values[index]->boolean;
 	} else
-		return 0;
+		return cfg_false;
 }
 
-cfgbool_t cfg_getbool(cfg_t *cfg, const char *name)
+DLLIMPORT cfg_bool_t cfg_getbool(cfg_t *cfg, const char *name)
 {
 	return cfg_getnbool(cfg, name, 0);
 }
 
-char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt) {
 		assert(opt->type == CFGT_STR);
 		assert(index < opt->nvalues);
@@ -170,14 +222,14 @@ char *cfg_getnstr(cfg_t *cfg, const char *name, unsigned int index)
 	return 0;
 }
 
-char *cfg_getstr(cfg_t *cfg, const char *name)
+DLLIMPORT char *cfg_getstr(cfg_t *cfg, const char *name)
 {
 	return cfg_getnstr(cfg, name, 0);
 }
 
-cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
+DLLIMPORT cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
 	if(opt) {
 		assert(opt->type == CFGT_SEC);
 		assert(opt->values);
@@ -187,7 +239,7 @@ cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
 	return 0;
 }
 
-cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
+DLLIMPORT cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
 {
 	unsigned int i, n;
 
@@ -206,34 +258,34 @@ cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
 	return 0;
 }
 
-cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
+DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
 {
 	return cfg_getnsec(cfg, name, 0);
 }
 
-static cfgval_t *cfg_addval(cfgopt_t *opt)
+static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 {
-	opt->values = (cfgval_t **)realloc(opt->values,
-									   (opt->nvalues+1) * sizeof(cfgval_t *));
+	opt->values = (cfg_value_t **)realloc(opt->values,
+								  (opt->nvalues+1) * sizeof(cfg_value_t *));
 	assert(opt->values);
-	opt->values[opt->nvalues] = (cfgval_t *)malloc(sizeof(cfgval_t));
-	memset(opt->values[opt->nvalues], 0, sizeof(cfgval_t));
+	opt->values[opt->nvalues] = (cfg_value_t *)malloc(sizeof(cfg_value_t));
+	memset(opt->values[opt->nvalues], 0, sizeof(cfg_value_t));
 	return opt->values[opt->nvalues++];
 }
 
-static cfgopt_t *cfg_dupopts(cfgopt_t *opts)
+static cfg_opt_t *cfg_dupopts(cfg_opt_t *opts)
 {
 	int n;
-	cfgopt_t *dupopts;
+	cfg_opt_t *dupopts;
 
 	for(n = 0; opts[n].name; n++)
 		/* do nothing */ ;
-	dupopts = (cfgopt_t *)malloc(++n * sizeof(cfgopt_t));
-	memcpy(dupopts, opts, n * sizeof(cfgopt_t));
+	dupopts = (cfg_opt_t *)malloc(++n * sizeof(cfg_opt_t));
+	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 	return dupopts;
 }
 
-int cfg_parse_boolean(const char *s)
+DLLIMPORT int cfg_parse_boolean(const char *s)
 {
 	if(strcasecmp(s, "true") == 0
 	   || strcasecmp(s, "on") == 0
@@ -250,19 +302,10 @@ static void cfg_init_defaults(cfg_t *cfg)
 {
 	int i;
 
-	debug("*** cfg_init_defaults(%s)\n", cfg->name);
-
 	for(i = 0; cfg->opts[i].name; i++) {
 		if(cfg->opts[i].type != CFGT_SEC) {
-			if(cfg->opts[i].type == CFGT_STR && cfg->opts[i].def[0] == '\0') {
-				/* special case where a string has a default as ""
-				 * (the empty string, which will be parsed as EOF and
-				 * the option will have no default), otherwise the
-				 * default string must be written as "''" (an empty
-				 * string string)
-				 */
-				cfg_setopt(cfg, &cfg->opts[i], "");
-			} else {
+
+			if(cfg->opts[i].def.parsed) {
 				int xstate, ret;
 
 				/* setup scanning from the string specified for the
@@ -277,7 +320,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 				else
 					xstate = 2;
 
-				cfg_scan_string_begin(cfg->opts[i].def);
+				cfg_scan_string_begin(cfg->opts[i].def.parsed);
 				do {
 					ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
 					xstate = -1;
@@ -293,15 +336,40 @@ static void cfg_init_defaults(cfg_t *cfg)
 					 */
 					fprintf(stderr, "Parse error in default value '%s'"
 							" for option '%s'\n",
-							cfg->opts[i].def, cfg->opts[i].name);
+							cfg->opts[i].def.parsed, cfg->opts[i].name);
 					fprintf(stderr, "Check your initialization macros and the"
-							" libConfuse dcumentation\n");
-					fprintf(stderr, "This is a programming error in the "
-							"program using libConfuse, aborting...\n");
+							" libConfuse documentation\n");
 					abort();
 				}
+			} else {
+				switch(cfg->opts[i].type) {
+					case CFGT_INT:
+						cfg_opt_setnint(cfg, &cfg->opts[i],
+										cfg->opts[i].def.number, 0);
+						break;
+					case CFGT_FLOAT:
+						cfg_opt_setnfloat(cfg, &cfg->opts[i],
+										  cfg->opts[i].def.fpnumber, 0);
+						break;
+					case CFGT_BOOL:
+						cfg_opt_setnbool(cfg, &cfg->opts[i],
+										 cfg->opts[i].def.boolean, 0);
+						break;
+					case CFGT_STR:
+						cfg_opt_setnstr(cfg, &cfg->opts[i],
+										cfg->opts[i].def.string, 0);
+						break;
+					case CFGT_FUNC:
+						break;
+					default:
+						cfg_error(cfg,
+								  "internal error in cfg_init_defaults(%s)",
+								  cfg->opts[i].name);
+						break;
+				}
 			}
-			/* the default value should only be returned if no value
+
+			/* The default value should only be returned if no value
 			 * is given in the configuration file, so we set the RESET
 			 * flag here. When/If cfg_setopt() is called, the value(s)
 			 * will be freed and the flag unset.
@@ -309,12 +377,11 @@ static void cfg_init_defaults(cfg_t *cfg)
 			cfg->opts[i].flags |= CFGF_RESET;
 		}
 	}
-	debug("+++ end of cfg_init_defaults(%s)\n", cfg->name);
 }
 
-cfgval_t *cfg_setopt(cfg_t *cfg, cfgopt_t *opt, char *value)
+static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 {
-	cfgval_t *val;
+	cfg_value_t *val = 0;
 	int b;
 	char *s;
 	double f;
@@ -325,16 +392,36 @@ cfgval_t *cfg_setopt(cfg_t *cfg, cfgopt_t *opt, char *value)
 
 	if(opt->simple_value) {
 		assert(opt->type != CFGT_SEC);
-		val = (cfgval_t *)opt->simple_value;
+		val = (cfg_value_t *)opt->simple_value;
 	} else {
 		if(is_set(CFGF_RESET, opt->flags)) {
-			cfg_free_val(opt);
+			cfg_free_value(opt);
 			opt->flags &= ~CFGF_RESET;
 		}
 		if(opt->nvalues == 0 || is_set(CFGF_MULTI, opt->flags) ||
 		   is_set(CFGF_LIST, opt->flags))
-			val = cfg_addval(opt);
-		else
+		{
+			val = 0;
+			if(opt->type == CFGT_SEC && is_set(CFGF_TITLE, opt->flags)) {
+				unsigned int i;
+
+				/* check if there already is a section with the same title
+				 */
+				assert(value);
+				for(i = 0; i < opt->nvalues; i++) {
+					cfg_t *sec = opt->values[i]->section;
+					if(is_set(CFGF_NOCASE, cfg->flags)) {
+						if(strcasecmp(value, sec->title) == 0)
+							val = opt->values[i];
+					} else {
+						if(strcmp(value, sec->title) == 0)
+							val = opt->values[i];
+					}
+				}
+			}
+			if(val == 0)
+				val = cfg_addval(opt);
+		} else
 			val = opt->values[0];
 	}
 
@@ -381,8 +468,7 @@ cfgval_t *cfg_setopt(cfg_t *cfg, cfgopt_t *opt, char *value)
 			}
 			break;
 		case CFGT_STR:
-			if(val->string)
-				free(val->string);
+			free(val->string);
 			if(opt->cb) {
 				s = 0;
 				if((*opt->cb)(cfg, opt, value, &s) != 0)
@@ -417,7 +503,7 @@ cfgval_t *cfg_setopt(cfg_t *cfg, cfgopt_t *opt, char *value)
 					return 0;
 				}
 			}
-			val->boolean = (cfgbool_t)b;
+			val->boolean = (cfg_bool_t)b;
 			break;
 		default:
 			cfg_error(cfg, "internal error in cfg_setopt(%s, %s)",
@@ -428,11 +514,13 @@ cfgval_t *cfg_setopt(cfg_t *cfg, cfgopt_t *opt, char *value)
 	return val;
 }
 
-void cfg_free_val(cfgopt_t *opt)
+DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
 {
-	int i;
+	unsigned int i;
 
-	assert(opt);
+	if(opt == 0)
+		return;
+
 	for(i = 0; i < opt->nvalues; i++) {
 		if(opt->type == CFGT_STR)
 			free(opt->values[i]->string);
@@ -445,7 +533,8 @@ void cfg_free_val(cfgopt_t *opt)
 	opt->nvalues = 0;
 }
 
-cfg_errfunc_t cfg_set_error_function(cfg_t *cfg, cfg_errfunc_t errfunc)
+DLLIMPORT cfg_errfunc_t cfg_set_error_function(cfg_t *cfg,
+											   cfg_errfunc_t errfunc)
 {
 	cfg_errfunc_t old;
 
@@ -455,13 +544,13 @@ cfg_errfunc_t cfg_set_error_function(cfg_t *cfg, cfg_errfunc_t errfunc)
 	return old;
 }
 
-void cfg_error(cfg_t *cfg, const char *fmt, ...)
+DLLIMPORT void cfg_error(cfg_t *cfg, const char *fmt, ...)
 {
 	va_list ap;
 
 	va_start(ap, fmt);
 
-	if(cfg->errfunc) {
+	if(cfg && cfg->errfunc) {
 		(*cfg->errfunc)(cfg, fmt, ap);
 	} else {
 		if(cfg && cfg->filename && cfg->line)
@@ -475,11 +564,11 @@ void cfg_error(cfg_t *cfg, const char *fmt, ...)
 	va_end(ap);
 }
 
-static int call_function(cfg_t *cfg, cfgopt_t *opt, cfgopt_t *funcopt)
+static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 {
 	int ret;
 	const char **argv;
-	int i;
+	unsigned int i;
 
 	/* create a regular argv string vector and call
 	 * the registered function
@@ -489,32 +578,27 @@ static int call_function(cfg_t *cfg, cfgopt_t *opt, cfgopt_t *funcopt)
 	for(i = 0; i < funcopt->nvalues; i++)
 		argv[i] = funcopt->values[i]->string;
 	ret = (*opt->func)(cfg, opt, funcopt->nvalues, argv);
-	cfg_free_val(funcopt);
-	free(argv);
+	cfg_free_value(funcopt);
+	free((char **)argv);
 	return ret;
 }
 
 static int cfg_parse_internal(cfg_t *cfg, int level,
-							  int force_state, cfgopt_t *force_opt)
+							  int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
 	char *opttitle = 0;
-	cfgopt_t *opt = 0;
-	cfgval_t *val = 0;
-	cfgopt_t funcopt = CFG_END();
+	cfg_opt_t *opt = 0;
+	cfg_value_t *val = 0;
+	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
 
 	if(force_state != -1)
 		state = force_state;
 	if(force_opt)
 		opt = force_opt;
 
-	debug("*** cfg_parse_internal(%s)\n", cfg->name);
-
 	while(1) {
-		int tok = yylex(cfg);
-
-		debug("token: %d (yylval: '%s'), state: %d, level: %d\n",
-			  tok, yylval, state, level);
+		int tok = cfg_yylex(cfg);
 
 		if(tok == 0) {
 			/* lexer.l should have called cfg_error */
@@ -539,10 +623,10 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 					return STATE_EOF;
 				}
 				if(tok != CFGT_STR) {
-					cfg_error(cfg, _("unexpected token '%s'"), yylval);
+					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 					return STATE_ERROR;
 				}
-				opt = cfg_getopt(cfg, yylval);
+				opt = cfg_getopt(cfg, cfg_yylval);
 				if(opt == 0)
 					return STATE_ERROR;
 				if(opt->type == CFGT_SEC) {
@@ -584,11 +668,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 				}
 
 				if(tok != CFGT_STR) {
-					cfg_error(cfg, _("unexpected token '%s'"), yylval);
+					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 					return STATE_ERROR;
 				}
 
-				if(cfg_setopt(cfg, opt, yylval) == 0)
+				if(cfg_setopt(cfg, opt, cfg_yylval) == 0)
 					return STATE_ERROR;
 				if(is_set(CFGF_LIST, opt->flags))
 					state = 4;
@@ -610,7 +694,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 				else if(tok == '}')
 					state = 0;
 				else {
-					cfg_error(cfg, _("unexpected token '%s'"), yylval);
+					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 					return STATE_ERROR;
 				}
 				break;
@@ -637,7 +721,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 							  opt->name);
 					return STATE_ERROR;
 				} else
-					opttitle = strdup(yylval);
+					opttitle = strdup(cfg_yylval);
 				state = 5;
 				break;
 			case 7: /* expecting an opening parenthesis for a function */
@@ -656,10 +740,10 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 					state = 0;
 				} else if(tok == CFGT_STR) {
 					val = cfg_addval(&funcopt);
-					val->string = strdup(yylval);
+					val->string = strdup(cfg_yylval);
 					state = 9;
 				} else {
-					cfg_error(cfg, _("missing parameter for function '%s'"),
+					cfg_error(cfg, _("syntax error in call of function '%s'"),
 							  opt->name);
 					return STATE_ERROR;
 				}
@@ -673,7 +757,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 				} else if(tok == ',') {
 					state = 8;
 				} else {
-					cfg_error(cfg, _("missing comma for function '%s'"),
+					cfg_error(cfg, _("syntax error in call of function '%s'"),
 							  opt->name);
 					return STATE_ERROR;
 				}
@@ -684,31 +768,60 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
 		}
 	}
 
-	debug("+++ end of cfg_parse_internal(%s)\n", cfg->name);
 	return STATE_EOF;
 }
 
-int cfg_parse(cfg_t *cfg, const char *filename)
+DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
 {
 	int ret;
+	assert(cfg && fp);
 
-	assert(cfg && filename);
-
-	cfg->filename = cfg_tilde_expand(filename);
+	if(cfg->filename == 0)
+		cfg->filename = strdup("FILE");
 	cfg->line = 1;
 
-	yyin = fopen(cfg->filename, "r");
-	if(yyin == 0)
-		return CFG_FILE_ERROR;
-
-	cfg_create_buffer_from_fp(yyin);
+	cfg_yyin = fp;
+	cfg_scan_fp_begin(cfg_yyin);
 	ret = cfg_parse_internal(cfg, 0, -1, 0);
+	cfg_scan_fp_end();
 	if(ret == STATE_ERROR)
 		return CFG_PARSE_ERROR;
 	return CFG_SUCCESS;
 }
 
-cfg_t *cfg_init(cfgopt_t *opts, cfg_flag_t flags)
+DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
+{
+	int ret;
+	FILE *fp;
+
+	assert(cfg && filename);
+
+	cfg->filename = cfg_tilde_expand(filename);
+	fp = fopen(cfg->filename, "r");
+	if(fp == 0)
+		return CFG_FILE_ERROR;
+	ret = cfg_parse_fp(cfg, fp);
+	fclose(cfg_yyin);
+	return ret;
+}
+
+DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
+{
+	int ret;
+
+	if(cfg->filename == 0)
+		cfg->filename = strdup("BUF");
+	cfg->line = 1;
+
+	cfg_scan_string_begin(buf);
+	ret = cfg_parse_internal(cfg, 0, -1, 0);
+	cfg_scan_string_end();
+	if(ret == STATE_ERROR)
+		return CFG_PARSE_ERROR;
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 {
 	cfg_t *cfg;
 
@@ -723,7 +836,6 @@ cfg_t *cfg_init(cfgopt_t *opts, cfg_flag_t flags)
 	cfg->line = 0;
 	cfg->errfunc = 0;
 
-
 	cfg_init_defaults(cfg);
 
 #if ENABLE_NLS
@@ -735,7 +847,7 @@ cfg_t *cfg_init(cfgopt_t *opts, cfg_flag_t flags)
 	return cfg;
 }
 
-char *cfg_tilde_expand(const char *filename)
+DLLIMPORT char *cfg_tilde_expand(const char *filename)
 {
 	char *expanded = 0;
 
@@ -757,14 +869,14 @@ char *cfg_tilde_expand(const char *filename)
 			file = strchr(filename, '/');
 			if(file == 0)
 				file = filename + strlen(filename);
-			user = malloc(file - filename);
+			user = (char *)malloc(file - filename);
 			strncpy(user, filename + 1, file - filename - 1);
 			passwd = getpwnam(user);
 			free(user);
 		}
 
 		if(passwd) {
-			expanded = malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
+			expanded = (char *)malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
 			strcpy(expanded, passwd->pw_dir);
 			strcat(expanded, file);
 		}
@@ -775,25 +887,28 @@ char *cfg_tilde_expand(const char *filename)
 	return expanded;
 }
 
-void cfg_free(cfg_t *cfg)
+DLLIMPORT void cfg_free(cfg_t *cfg)
 {
 	int i;
 
-	assert(cfg);
+	if(cfg == 0)
+		return;
 
 	for(i = 0; cfg->opts[i].name; ++i)
-		cfg_free_val(&cfg->opts[i]);
+		cfg_free_value(&cfg->opts[i]);
 
 	if(is_set(CFGF_ALLOCATED, cfg->flags)) {
 		free(cfg->name);
 		free(cfg->opts);
+        free(cfg->title);
 	} else
 		free(cfg->filename);
 
 	free(cfg);
 }
 
-int cfg_include(cfg_t *cfg, cfgopt_t *opt, int argc, const char **argv)
+DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc,
+						  const char **argv)
 {
 	if(argc != 1) {
 		cfg_error(cfg, _("wrong number of arguments to cfg_include()"));
@@ -802,183 +917,171 @@ int cfg_include(cfg_t *cfg, cfgopt_t *opt, int argc, const char **argv)
 	return cfg_lexer_include(cfg, argv[0]);
 }
 
-static void cfg_indent(FILE *fp, int level)
+static cfg_value_t *cfg_getval(cfg_opt_t *opt, unsigned int index)
 {
-	level *= 2;
-	while(level--)
-		fputc(' ', fp);
-}
+	cfg_value_t *val = 0;
 
-static void cfg_output_val(FILE *fp, cfgopt_t *opt, cfgval_t *val)
-{
-	switch(opt->type) {
-		case CFGT_INT:
-			fprintf(fp, "%ld", val->number); break;
-		case CFGT_FLOAT:
-			fprintf(fp, "%f", val->fpnumber); break;
-		case CFGT_BOOL:
-			fprintf(fp, "%s", val->boolean ? "true" : "false"); break;
-		case CFGT_STR:
-			fprintf(fp, "\"%s\"", val->string); break;
-		case CFGT_SEC:
-		case CFGT_NONE:
-		case CFGT_FUNC:
-			break;
-	}
-}
-
-static int cfg_output_fp_internal(cfg_t *cfg, FILE *fp, int level)
-{
-	int i;
-
-	for(i = 0; cfg->opts[i].name; i++) {
-		cfgopt_t *opt = &cfg->opts[i];
-
-		if(opt->nvalues) {
-			cfg_indent(fp, level);
-			if(opt->type == CFGT_SEC) {
-				int j;
-				for(j = 0; j < opt->nvalues; j++) {
-					int ret;
-					cfg_t *sec = opt->values[j]->section;
-
-					fprintf(fp, "%s ", opt->name);
-					if(is_set(CFGF_TITLE, opt->flags))
-						fprintf(fp, "%s ", sec->title);
-					fprintf(fp, "{\n");
-					ret = cfg_output_fp_internal(sec, fp, level + 1);
-					fprintf(fp, "}\n");
-				}
-			} else {
-				fprintf(fp, "%s = ", opt->name);
-				if(is_set(CFGF_LIST, opt->flags)) {
-					int j;
-					fprintf(fp, "{");
-					for(j = 0; j < opt->nvalues - 1; j++) {
-						cfg_output_val(fp, opt, opt->values[j]);
-						fprintf(fp, ", ");
-					}
-					cfg_output_val(fp, opt, opt->values[j]);
-					fprintf(fp, "}");
-				} else
-					cfg_output_val(fp, opt, opt->values[0]);
-				fprintf(fp, "\n");
-			}
-		} else if(opt->type != CFGT_SEC && opt->type != CFGT_FUNC) {
-			cfg_indent(fp, level);
-			fprintf(fp, "#%s =", opt->name);
-			if(opt->def)
-				fprintf(fp, " %s", opt->def);
-			fprintf(fp, "\n");
-		}
-	}
-	return CFG_SUCCESS;
-}
-
-int cfg_output_fp(cfg_t *cfg, FILE *fp)
-{
-	return cfg_output_fp_internal(cfg, fp, 0);
-}
-
-int cfg_output(cfg_t *cfg, const char *filename)
-{
-	int ret;
-	FILE *fp;
-
-	fp = fopen(filename, "w");
-	if(fp == 0)
-		return CFG_FILE_ERROR;
-
-	ret = cfg_output_fp(cfg, fp);
-	fclose(fp);
-	return ret;
-}
-
-static cfgval_t *cfg_getval(cfgopt_t *opt, unsigned int index)
-{
-	cfgval_t *val = 0;
+	assert(index == 0 || is_set(CFGF_LIST, opt->flags));
 
 	if(opt->simple_value) {
-		val = (cfgval_t *)opt->simple_value;
+		val = (cfg_value_t *)opt->simple_value;
 	} else {
 		if(is_set(CFGF_RESET, opt->flags)) {
-			cfg_free_val(opt);
+			cfg_free_value(opt);
 			opt->flags &= ~CFGF_RESET;
 		}
-		if(index >= opt->nvalues)
+		if(index >= opt->nvalues) {
 			val = cfg_addval(opt);
-		else
+		} else
 			val = opt->values[index];
 	}
 	return val;
 }
 
-void cfg_setnint(cfg_t *cfg, const char *name,
-					 long int value, unsigned int index)
+DLLIMPORT void cfg_opt_setnint(cfg_t *cfg, cfg_opt_t *opt, long int value,
+					 unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		cfgval_t *val;
-		assert(opt->type == CFGT_INT);
-		val = cfg_getval(opt, index);
-		val->number = value;
-	}
+	cfg_value_t *val;
+	assert(cfg && opt && opt->type == CFGT_INT);
+	val = cfg_getval(opt, index);
+	val->number = value;
 }
 
-void cfg_setint(cfg_t *cfg, const char *name, long int value)
+DLLIMPORT void cfg_setnint(cfg_t *cfg, const char *name,
+					 long int value, unsigned int index)
+{
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	if(opt)
+		cfg_opt_setnint(cfg, opt, value, index);
+}
+
+DLLIMPORT void cfg_setint(cfg_t *cfg, const char *name, long int value)
 {
 	cfg_setnint(cfg, name, value, 0);
 }
 
-void cfg_setnfloat(cfg_t *cfg, const char *name,
-				   double value, unsigned int index)
+DLLIMPORT void cfg_opt_setnfloat(cfg_t *cfg, cfg_opt_t *opt, double value,
+					   unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		cfgval_t *val;
-		assert(opt->type == CFGT_FLOAT);
-		val = cfg_getval(opt, index);
-		val->fpnumber = value;
-	}
+	cfg_value_t *val;
+	assert(cfg && opt && opt->type == CFGT_FLOAT);
+	val = cfg_getval(opt, index);
+	val->fpnumber = value;
 }
 
-void cfg_setfloat(cfg_t *cfg, const char *name, double value)
+DLLIMPORT void cfg_setnfloat(cfg_t *cfg, const char *name,
+				   double value, unsigned int index)
+{
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	if(opt)
+		cfg_opt_setnfloat(cfg, opt, value, index);
+}
+
+DLLIMPORT void cfg_setfloat(cfg_t *cfg, const char *name, double value)
 {
 	cfg_setnfloat(cfg, name, value, 0);
 }
 
-void cfg_setnbool(cfg_t *cfg, const char *name,
-				  cfgbool_t value, unsigned int index)
+DLLIMPORT void cfg_opt_setnbool(cfg_t *cfg, cfg_opt_t *opt, cfg_bool_t value,
+					  unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		cfgval_t *val;
-		assert(opt->type == CFGT_BOOL);
-		val = cfg_getval(opt, index);
-		val->boolean = value;
-	}
+	cfg_value_t *val;
+	assert(cfg && opt && opt->type == CFGT_BOOL);
+	val = cfg_getval(opt, index);
+	val->boolean = value;
 }
 
-void cfg_setbool(cfg_t *cfg, const char *name, cfgbool_t value)
+DLLIMPORT void cfg_setnbool(cfg_t *cfg, const char *name,
+				  cfg_bool_t value, unsigned int index)
+{
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	if(opt)
+		cfg_opt_setnbool(cfg, opt, value, index);
+}
+
+DLLIMPORT void cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value)
 {
 	cfg_setnbool(cfg, name, value, 0);
 }
 
-void cfg_setnstr(cfg_t *cfg, const char *name,
+DLLIMPORT void cfg_opt_setnstr(cfg_t *cfg, cfg_opt_t *opt, const char *value,
+					 unsigned int index)
+{
+	cfg_value_t *val;
+	assert(cfg && opt && opt->type == CFGT_STR);
+	val = cfg_getval(opt, index);
+	free(val->string);
+	val->string = value ? strdup(value) : 0;
+}
+
+DLLIMPORT void cfg_setnstr(cfg_t *cfg, const char *name,
 				 const char *value, unsigned int index)
 {
-	cfgopt_t *opt = cfg_getopt(cfg, name);
-	if(opt) {
-		cfgval_t *val;
-		assert(opt->type == CFGT_STR);
-		val = cfg_getval(opt, index);
-		if(val->string)
-			free(val->string);
-		val->string = strdup(value);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+	if(opt)
+		cfg_opt_setnstr(cfg, opt, value, index);
+}
+
+DLLIMPORT void cfg_setstr(cfg_t *cfg, const char *name, const char *value)
+{
+	cfg_setnstr(cfg, name, value, 0);
+}
+
+static void cfg_addlist_internal(cfg_t *cfg, cfg_opt_t *opt,
+								 unsigned int nvalues, va_list ap)
+{
+	unsigned int i;
+
+	for(i = 0; i < nvalues; i++) {
+		switch(opt->type) {
+			case CFGT_INT:
+				cfg_opt_setnint(cfg, opt, va_arg(ap, int), opt->nvalues);
+				break;
+			case CFGT_FLOAT:
+				cfg_opt_setnfloat(cfg, opt, va_arg(ap, double),
+								  opt->nvalues);
+				break;
+			case CFGT_BOOL:
+				cfg_opt_setnbool(cfg, opt, va_arg(ap, cfg_bool_t),
+								 opt->nvalues);
+				break;
+			case CFGT_STR:
+				cfg_opt_setnstr(cfg, opt, va_arg(ap, char*), opt->nvalues);
+				break;
+			case CFGT_FUNC:
+			case CFGT_SEC:
+			default:
+				break;
+		}
 	}
 }
 
-void cfg_setstr(cfg_t *cfg, const char *name, const char *value)
+DLLIMPORT void cfg_setlist(cfg_t *cfg, const char *name,
+						   unsigned int nvalues, ...)
 {
-	return cfg_setnstr(cfg, name, value, 0);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+
+	if(opt) {
+		va_list ap;
+
+		cfg_free_value(opt);
+		va_start(ap, nvalues);
+		cfg_addlist_internal(cfg, opt, nvalues, ap);
+		va_end(ap);
+	}
 }
+
+DLLIMPORT void cfg_addlist(cfg_t *cfg, const char *name,
+						   unsigned int nvalues, ...)
+{
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+
+	if(opt) {
+		va_list ap;
+
+		va_start(ap, nvalues);
+		cfg_addlist_internal(cfg, opt, nvalues, ap);
+		va_end(ap);
+	}
+}
+

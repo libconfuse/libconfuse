@@ -38,25 +38,25 @@
 #define N_(str) str
 
 typedef char * YYSTYPE;
-extern YYSTYPE yylval;
+extern YYSTYPE cfg_yylval;
 
-#define YY_DECL int yylex YY_PROTO(( cfg_t *cfg ))
+#define YY_DECL int cfg_yylex YY_PROTO(( cfg_t *cfg ))
 
 /* temporary buffer for the quoted strings scanner
  */
-static char *qstring = NULL;
+char *cfg_qstring = NULL;
 static unsigned int qstring_index = 0;
-static int qstring_len = 0;
+static unsigned int qstring_len = 0;
 static void qputc(char ch);
-#define CFG_QSTRING_BUFSIZ 1
+#define CFG_QSTRING_BUFSIZ 32
 
 #define MAX_INCLUDE_DEPTH 10
 struct {
 	YY_BUFFER_STATE state;
 	char *filename;
 	unsigned int line;
-} include_stack[MAX_INCLUDE_DEPTH];
-int include_stack_ptr = 0;
+} cfg_include_stack[MAX_INCLUDE_DEPTH];
+int cfg_include_stack_ptr = 0;
 
 %}
 
@@ -81,13 +81,13 @@ int include_stack_ptr = 0;
 
  /* special keywords/symbols
   */
-"{"         { yylval = yytext; return '{'; }
-"}"         { yylval = yytext; return '}'; }
-"("         { yylval = yytext; return '('; }
-")"         { yylval = yytext; return ')'; }
-"="         { yylval = yytext; return '='; }
-"+="        { yylval = yytext; return '+'; }
-","         { yylval = yytext; return ','; }
+"{"         { cfg_yylval = yytext; return '{'; }
+"}"         { cfg_yylval = yytext; return '}'; }
+"("         { cfg_yylval = yytext; return '('; }
+")"         { cfg_yylval = yytext; return ')'; }
+"="         { cfg_yylval = yytext; return '='; }
+"+="        { cfg_yylval = yytext; return '+'; }
+","         { cfg_yylval = yytext; return ','; }
 
  /* handle multi-line C-style comments
   */
@@ -106,7 +106,7 @@ int include_stack_ptr = 0;
 <dq_str>\"  { /* saw closing quote - all done */
 	BEGIN(INITIAL);
 	qputc('\0');
-	yylval = qstring;
+	cfg_yylval = cfg_qstring;
 	return CFGT_STR;
  }
 <dq_str>$\{[^}]*\} {
@@ -170,7 +170,7 @@ int include_stack_ptr = 0;
 <sq_str>\' { /* saw closing quite - all done */
     BEGIN(INITIAL);
     qputc('\0');
-    yylval = qstring;
+    cfg_yylval = cfg_qstring;
     return CFGT_STR;
 }
 <sq_str>\\\n {
@@ -198,7 +198,7 @@ int include_stack_ptr = 0;
 }
 
 <<EOF>> {
-             if ( --include_stack_ptr < 0 )
+             if ( --cfg_include_stack_ptr < 0 )
                  {
                  return EOF;
                  }
@@ -207,10 +207,10 @@ int include_stack_ptr = 0;
                  {
                  yy_delete_buffer( YY_CURRENT_BUFFER );
                  yy_switch_to_buffer(
-                      include_stack[include_stack_ptr].state );
+                      cfg_include_stack[cfg_include_stack_ptr].state );
                  free(cfg->filename);
-                 cfg->filename = include_stack[include_stack_ptr].filename;
-                 cfg->line = include_stack[include_stack_ptr].line;
+                 cfg->filename = cfg_include_stack[cfg_include_stack_ptr].filename;
+                 cfg->line = cfg_include_stack[cfg_include_stack_ptr].line;
                  }
 }
 
@@ -228,13 +228,13 @@ $\{[^}]*\} {
 		var = e+2;
 	if(!var)
 		var = "";
-	yylval = var;
+	cfg_yylval = var;
 	return CFGT_STR;
 }
 
  /* an unquoted string
   */
-[^ \"\'\t\n={}()+,]+  yylval = yytext; return CFGT_STR;
+[^ \"\'\t\n={}()+,]+  cfg_yylval = yytext; return CFGT_STR;
 
 %%
 
@@ -250,22 +250,22 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 {
 	char *xfilename;
 
-	if(include_stack_ptr >= MAX_INCLUDE_DEPTH) {
+	if(cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) {
 		cfg_error(cfg, _("includes nested too deeply"));
 		return 1;
 	}
 
-	include_stack[include_stack_ptr].state = YY_CURRENT_BUFFER;
-	include_stack[include_stack_ptr].filename = cfg->filename;
-	include_stack[include_stack_ptr].line = cfg->line;
-	include_stack_ptr++;
+	cfg_include_stack[cfg_include_stack_ptr].state = YY_CURRENT_BUFFER;
+	cfg_include_stack[cfg_include_stack_ptr].filename = cfg->filename;
+	cfg_include_stack[cfg_include_stack_ptr].line = cfg->line;
+	cfg_include_stack_ptr++;
 
 	xfilename = cfg_tilde_expand(filename);
 
 	/*cfg_error(cfg, "opening %s for parsing", xfilename);*/
-	yyin = fopen(xfilename, "r");
+	cfg_yyin = fopen(xfilename, "r");
 
-	if(!yyin) {
+	if(!cfg_yyin) {
 		cfg_error(cfg, "%s: %s", xfilename, strerror(errno));
 		free(xfilename);
 		return 1;
@@ -274,7 +274,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 	cfg->filename = xfilename;
 	cfg->line = 1;
 
-    yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+    yy_switch_to_buffer(yy_create_buffer(cfg_yyin, YY_BUF_SIZE));
 	return 0;
 }
 
@@ -285,11 +285,11 @@ static void qputc(char ch)
 {
 	if(qstring_index >= qstring_len) {
 		qstring_len += CFG_QSTRING_BUFSIZ;
-		qstring = (char *)realloc(qstring, qstring_len);
-		assert(qstring);
-		memset(qstring + qstring_index, 0, CFG_QSTRING_BUFSIZ);
+		cfg_qstring = (char *)realloc(cfg_qstring, qstring_len);
+		assert(cfg_qstring);
+		memset(cfg_qstring + qstring_index, 0, CFG_QSTRING_BUFSIZ);
 	}
-	qstring[qstring_index++] = ch;
+	cfg_qstring[qstring_index++] = ch;
 }
 
 static YY_BUFFER_STATE pre_string_scan_state;
@@ -310,9 +310,28 @@ void cfg_scan_string_end(void)
 	 */
 	yy_delete_buffer(string_scan_state);
 	yy_switch_to_buffer(pre_string_scan_state);
+	free(cfg_qstring);
+	cfg_qstring = 0;
+	qstring_index = qstring_len = 0;
 }
 
-void cfg_create_buffer_from_fp(FILE *fp)
+static YY_BUFFER_STATE pre_fp_scan_state;
+static YY_BUFFER_STATE fp_scan_state;
+
+void cfg_scan_fp_begin(FILE *fp)
 {
-	yy_switch_to_buffer(yy_create_buffer(fp, YY_BUF_SIZE));
+	pre_fp_scan_state = YY_CURRENT_BUFFER;
+	fp_scan_state = yy_create_buffer(fp, YY_BUF_SIZE);
+	yy_switch_to_buffer(fp_scan_state);
+}
+
+void cfg_scan_fp_end(void)
+{
+	/* restore to previous state
+	 */
+	yy_delete_buffer(fp_scan_state);
+	yy_switch_to_buffer(pre_fp_scan_state);
+	free(cfg_qstring);
+	cfg_qstring = 0;
+	qstring_index = qstring_len = 0;
 }
