@@ -1,0 +1,6 @@
+Makefile
+Makefile.in
+Makevars.template
+POTFILES
+stamp-po
+sv.gmo

@@ -1,0 +1,10 @@
+.deps
+.gdb_history
+.libs
+cfgtest
+Makefile
+Makefile.in
+reread
+simple
+simple.conf.out
+test.conf.out

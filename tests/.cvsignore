@@ -1,0 +1,7 @@
+.deps
+.gdb_history
+.libs
+check_confuse
+Makefile
+Makefile.in
+malloc.log
