@@ -1254,6 +1254,10 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 			fprintf(fp, "}");
 		} else {
 			cfg_indent(fp, indent);
+			if(cfg_opt_size(opt) == 0 || (
+				   opt->type == CFGT_STR && (opt->values[0]->string == 0 ||
+											 opt->values[0]->string[0] == 0)))
+				fprintf(fp, "# ");
 			fprintf(fp, "%s = ", opt->name);
 			if(opt->pf)
 				opt->pf(opt, 0, fp);
