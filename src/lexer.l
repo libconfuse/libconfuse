@@ -32,7 +32,7 @@
 #include "confuse.h"
 
 #include <errno.h>
-
+	
 #if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
 # include <libintl.h>
 # define _(str) dgettext(PACKAGE, str)
@@ -61,6 +61,9 @@ struct {
 	unsigned int line;
 } cfg_include_stack[MAX_INCLUDE_DEPTH];
 int cfg_include_stack_ptr = 0;
+
+static YY_BUFFER_STATE pre_string_scan_state = 0;
+static YY_BUFFER_STATE string_scan_state = 0;
 
 %}
 
@@ -223,7 +226,7 @@ int cfg_include_stack_ptr = 0;
 }
 
 <<EOF>> {
-             if ( cfg_include_stack_ptr <= 0 )
+             if( string_scan_state != 0 || cfg_include_stack_ptr <= 0 )
                  {
                  return EOF;
                  }
@@ -324,9 +327,6 @@ static void qputc(char ch)
 	cfg_qstring[qstring_index++] = ch;
 }
 
-static YY_BUFFER_STATE pre_string_scan_state;
-static YY_BUFFER_STATE string_scan_state;
-
 void cfg_scan_string_begin(const char *buf)
 {
 	pre_string_scan_state = YY_CURRENT_BUFFER;
@@ -345,6 +345,7 @@ void cfg_scan_string_end(void)
 	free(cfg_qstring);
 	cfg_qstring = 0;
 	qstring_index = qstring_len = 0;
+	string_scan_state = 0;
 }
 
 static YY_BUFFER_STATE pre_fp_scan_state;
