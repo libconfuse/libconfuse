@@ -1391,6 +1391,7 @@ DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
         case CFGT_NONE:
         case CFGT_SEC:
         case CFGT_FUNC:
+        case CFGT_PTR:
             break;
     }
 }
