@@ -1,3 +1,16 @@
+New in 2.1
+----------
+
+* Reversed logic in cfg_getXXX functions, they now abort if given an
+  undeclared option name, and NULL/false if no value is set. Suggested
+  by Ademar de Souza Reis Jr.
+* Sections without CFGF_MULTI flag now have default values
+* The cfg_getXXX functions now accept an extended syntax for the
+  option name, try cfg_getxxx(cfg, "sectionname|optionname"). This way
+  one doesn't have to first get the section with cfg_getsec().
+* Fixed two more memory leaks. (val->section and cfg->filename)
+
+
 New in 2.0
 ----------
 
