@@ -5,7 +5,7 @@ autopoint || exit
 echo " done"
 
 echo -n "Running aclocal..."
-aclocal || exit
+aclocal -I m4 || exit
 echo " done"
 
 echo -n "Running autoconf..."
