@@ -1182,7 +1182,6 @@ DLLIMPORT void cfg_addlist(cfg_t *cfg, const char *name,
 DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 {
 	const char *str;
-	const char *name = opt->name;
 
 	switch(opt->type)
 	{
@@ -1218,7 +1217,7 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 
 	if(opt->type == CFGT_SEC) {
 		cfg_t *sec;
-		int i;
+		unsigned int i;
 
 		for(i = 0; i < cfg_opt_size(opt); i++) {
 			sec = cfg_opt_getnsec(opt, i);
@@ -1233,7 +1232,7 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 		}
 	} else if(opt->type != CFGT_FUNC && opt->type != CFGT_NONE) {
 		if(is_set(CFGF_LIST, opt->flags)) {
-			int i;
+			unsigned int i;
 
 			cfg_indent(fp, indent);
 			fprintf(fp, "%s = {", opt->name);
