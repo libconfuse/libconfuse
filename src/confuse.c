@@ -45,9 +45,8 @@
 
 #define is_set(f, x) (((f) & (x)) == (f))
 
-#if ENABLE_NLS
+#if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
 # include <libintl.h>
-# include <locale.h>
 # define _(str) dgettext(PACKAGE, str)
 #else
 # define _(str) str
@@ -886,7 +885,7 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 
 	cfg_init_defaults(cfg);
 
-#if ENABLE_NLS
+#if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
