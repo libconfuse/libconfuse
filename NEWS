@@ -2,6 +2,10 @@ New in 2.3
 ----------
 
 * fixes compilation errors with gcc < 3.3
+* options passed to cfg_init() are now dynamically duplicated, so there is no
+  longer necessary to declare the cfg_opt_t array static
+* added tests using 'check' (a unit testing framework for C)
+* added config script 'confuse-config'
 
 
 New in 2.2

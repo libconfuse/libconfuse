@@ -3,10 +3,7 @@ EXTRA_DIST = test.conf simple.conf reread.conf wincfgtest.conf \
 noinst_PROGRAMS = cfgtest simple reread
 INCLUDES = -I$(top_srcdir)/src
 AM_LDFLAGS = -L../src/
-LDADD = -lconfuse
+LDADD = ../src/.libs/libconfuse.a
 CLEANFILES=*~ \#*\#
 LIBS = $(LTLIBINTL)
 
-cfgtest.o: ../src/.libs/libconfuse.a
-simple.o:  ../src/.libs/libconfuse.a
-reread.o: ../src/.libs/libconfuse.a

@@ -25,8 +25,8 @@ Summary:			A library for parsing configuration files
 Name:				%{_name}
 Version:			%{_version}
 Release:			%{_release}
-Source:			http://www.e.kth.se/~e97_mhe/libConfuse/%{_srcname}-%{_version}.tar.gz
-URL:				http://www.e.kth.se/~e97_mhe/confuse.shtml
+Source:			http://savannah.nongnu.org/download/confuse//%{_srcname}-%{_version}.tar.gz
+URL:				http://www.nongnu.org/confuse/
 Group:			%{_group}
 Packager:		Pascal Bleser <guru@unixtech.be>
 Copyright:		LGPL
@@ -62,6 +62,8 @@ Documentation and examples can be found in %{_pkgdoc}/doc
 and %{_pkgdoc}/examples respectively.
 
 %changelog
+* Fre May 21 2004 Martin Hedenfalk <mhe@home.se> 2.3-%{_rel}suse%{_suse_vernum}
+- New upstream version, updated URLs
 * Sat Apr 05 2003 Martin Hedenfalk <mhe@home.se> 2.0-%{_rel}suse%{_suse_vernum}
 - removed doxygen dependence as pre-built documentation are now included
 * Fri Mar 28 2003 Pascal Bleser <guru@unixtech.be> 1.2.3-%{_rel}suse%{_suse_vernum}

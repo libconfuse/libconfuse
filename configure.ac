@@ -17,7 +17,9 @@ AC_PROG_LIBTOOL
 # Checks for libraries.
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION(0.12.1)
+AM_GNU_GETTEXT_VERSION(0.14.1)
+
+AM_PATH_CHECK(, [AC_SUBST([check_confuse], ['check_confuse${EXTEXT}'])], [AC_WARN([Check not found, tests will not be built])])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -32,5 +34,6 @@ AC_C_CONST
 AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
 AC_CONFIG_FILES([Makefile Doxyfile src/Makefile examples/Makefile \
- po/Makefile.in m4/Makefile libconfuse.spec confuse-config])
+ po/Makefile.in m4/Makefile tests/Makefile libconfuse.spec confuse-config])
 AC_OUTPUT
+

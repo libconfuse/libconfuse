@@ -4,7 +4,9 @@
 AUTOMAKE_OPTIONS = foreign
 CLEANFILES=*~ \#*\#
 EXTRA_DIST=Doxyfile.in Doxyfile libconfuse.spec.in libconfuse.spec confuse-config.in
-SUBDIRS = m4 po src examples
+SUBDIRS = m4 po src examples tests
+
+bin_SCRIPTS=confuse-config
 
 doc: doc/html/index.html
 doc/html/index.html: src/confuse.h
