@@ -6,3 +6,7 @@ AM_LDFLAGS = -L../src/
 LDADD = -lconfuse
 CLEANFILES=*~ \#*\#
 LIBS = $(LTLIBINTL)
+
+cfgtest: ../src/.libs/libconfuse.a
+simple:  ../src/.libs/libconfuse.a
+reread: ../src/.libs/libconfuse.a
