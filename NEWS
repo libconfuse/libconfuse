@@ -1,3 +1,9 @@
+New in 2.3
+----------
+
+* fixes compilation errors with gcc < 3.3
+
+
 New in 2.2
 ----------
 

@@ -3,7 +3,7 @@ dnl $Id$
 
 AC_PREREQ(2.50)
 
-AC_INIT(libConfuse, 2.2, confuse-devel@nongnu.org, confuse)
+AC_INIT(libConfuse, 2.3, confuse-devel@nongnu.org, confuse)
 AC_CONFIG_AUX_DIR(support)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
