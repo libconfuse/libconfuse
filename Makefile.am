@@ -61,3 +61,7 @@ dist-hook: doc
 		cp -f $(top_srcdir)/doc/html/$$f $(distdir)/doc/html/; done
 	for f in $(DOC_MAN_MAN3_FILES); do \
 		cp -f $(top_srcdir)/doc/man/man3/$$f $(distdir)/doc/man/man3/; done
+
+rpm: Makefile
+	$(MAKE) dist
+	rpm -ta --clean $(PACKAGE)-$(VERSION).tar.gz
