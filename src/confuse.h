@@ -803,6 +803,22 @@ DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
  */
 DLLIMPORT const char * __export cfg_title(cfg_t *cfg);
 
+/** Return the name of a section.
+ *
+ * @param cfg The configuration file context.
+ * @return Returns the title, or 0 if there is no title. This string
+ * should not be modified.
+ */
+DLLIMPORT const char *cfg_name(cfg_t *cfg);
+
+/** Return the name of an option.
+ *
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @return Returns the title, or 0 if there is no title. This string
+ * should not be modified.
+ */
+DLLIMPORT const char *cfg_opt_name(cfg_opt_t *opt);
+
 /** Predefined include-function. This function can be used in the
  * options passed to cfg_init() to specify a function for including
  * other configuration files in the parsing. For example:

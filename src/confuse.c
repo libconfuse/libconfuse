@@ -184,6 +184,20 @@ DLLIMPORT const char *cfg_title(cfg_t *cfg)
     return 0;
 }
 
+DLLIMPORT const char *cfg_name(cfg_t *cfg)
+{
+    if(cfg)
+        return cfg->name;
+    return 0;
+}
+
+DLLIMPORT const char *cfg_opt_name(cfg_opt_t *opt)
+{
+    if(opt)
+        return opt->name;
+    return 0;
+}
+
 DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
 {
     if(opt)
