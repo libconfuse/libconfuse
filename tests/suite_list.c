@@ -268,6 +268,8 @@ START_TEST(list_section_test)
     fail_unless(cfg_opt_gettsec(opt, "bar") == subsec, NULL);
     fail_unless(cfg_opt_gettsec(opt, "foo") == 0, NULL);
     fail_unless(cfg_gettsec(sec, "subsection", "section") == 0, NULL);
+
+    fail_unless(cfg_gettsec(cfg, "section", "baz") == 0, 0);
 }
 END_TEST
 

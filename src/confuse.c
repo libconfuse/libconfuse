@@ -301,6 +301,8 @@ DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
     unsigned int i, n;
 
     assert(opt && title);
+    if(!is_set(CFGF_TITLE, opt->flags))
+        return 0;
     n = cfg_opt_size(opt);
     for(i = 0; i < n; i++)
     {
@@ -628,7 +630,6 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 val->section->name = strdup(opt->name);
                 val->section->opts = cfg_dupopt_array(opt->subopts);
                 val->section->flags = cfg->flags;
-                val->section->flags |= CFGF_ALLOCATED;
                 val->section->filename = cfg->filename ? strdup(cfg->filename) : 0;
                 val->section->line = cfg->line;
                 val->section->errfunc = cfg->errfunc;
@@ -1041,7 +1042,6 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
     cfg->name = strdup("root");
     cfg->opts = cfg_dupopt_array(opts);
     cfg->flags = flags;
-    cfg->flags |= CFGF_ALLOCATED;
     cfg->filename = 0;
     cfg->line = 0;
     cfg->errfunc = 0;
@@ -1339,6 +1339,7 @@ DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 {
     const char *str;
 
+    assert(opt && fp);
     switch(opt->type)
     {
         case CFGT_INT:
@@ -1369,7 +1370,7 @@ static void cfg_indent(FILE *fp, int indent)
 
 DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 {
-    assert(opt);
+    assert(opt && fp);
 
     if(opt->type == CFGT_SEC)
     {
