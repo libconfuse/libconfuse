@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU libcfg 1.2\n"
 "Report-Msgid-Bugs-To: mhe@home.se\n"
-"POT-Creation-Date: 2004-05-24 08:19+0200\n"
+"POT-Creation-Date: 2004-09-19 15:29+0200\n"
 "PO-Revision-Date: 2003-01-26 14:10+0100\n"
 "Last-Translator: Martin Hedenfalk <mhe@home.se>\n"
 "Language-Team: None <mhe@home.se>\n"
@@ -62,8 +62,8 @@ msgstr "oväntat värde '%s'"
 
 #: src/confuse.c:828
 #, c-format
-msgid "attempt to append to non-list option %s"
-msgstr "försök att lägga till värden till en icke-lista (%s)"
+msgid "attempt to append to non-list option '%s'"
+msgstr "försök att lägga till värden till en icke-lista ('%s')"
 
 #: src/confuse.c:846
 #, c-format
