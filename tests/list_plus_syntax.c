@@ -37,6 +37,8 @@ int main(void)
     fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 1), "that") == 0);
     fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 2), "other") == 0);
 
+    cfg_free(cfg);
+
     return 0;
 }
 
