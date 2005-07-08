@@ -1,5 +1,4 @@
-#include <check.h>
-#include "../src/confuse.h"
+#include "check_confuse.h"
 #include <string.h>
 
 static cfg_t *create_config(void)
@@ -20,44 +19,37 @@ static cfg_t *create_config(void)
     return cfg_init(opts, 0);
 }
 
-START_TEST(dup_test)
+void dup_test(void)
 {
     cfg_t *acfg, *bcfg;
     cfg_t *sec;
 
     acfg = create_config();
-    fail_unless(cfg_parse(acfg, "a.conf") == 0, "unable to parse a.conf");
+    fail_unless(cfg_parse(acfg, "a.conf") == 0);
 
     bcfg = create_config();
-    fail_unless(cfg_parse(bcfg, "b.conf") == 0, "unable to parse b.conf");
+    fail_unless(cfg_parse(bcfg, "b.conf") == 0);
 
     sec = cfg_getnsec(acfg, "sec", 0);
-    fail_unless(sec != 0, "unable to get section sec from a.conf");
-    fail_unless(cfg_size(acfg, "sec") == 1, "there should only be 1 sec in a.conf");
-    fail_unless(strcmp(cfg_title(sec), "acfg") == 0, "wrong section title in a.conf");
-    fail_unless(cfg_getint(sec, "a") == 5, "wrong value a in a.conf");
-    fail_unless(cfg_getint(sec, "b") == 2, "wrong value b in a.conf");
+    fail_unless(sec != 0);
+    fail_unless(cfg_size(acfg, "sec") == 1);
+    fail_unless(strcmp(cfg_title(sec), "acfg") == 0);
+    fail_unless(cfg_getint(sec, "a") == 5);
+    fail_unless(cfg_getint(sec, "b") == 2);
 
     sec = cfg_getnsec(bcfg, "sec", 0);
-    fail_unless(sec != 0, "unable to get section sec from b.conf");
-    fail_unless(cfg_size(bcfg, "sec") == 1, "there should only be 1 sec in b.conf");
-    fail_unless(strcmp(cfg_title(sec), "bcfg") == 0, "wrong section title in b.conf");
-    fail_unless(cfg_getint(sec, "a") == 1, "wrong value a in b.conf");
-    fail_unless(cfg_getint(sec, "b") == 9, "wrong value b in b.conf");
+    fail_unless(sec != 0);
+    fail_unless(cfg_size(bcfg, "sec") == 1);
+    fail_unless(strcmp(cfg_title(sec), "bcfg") == 0);
+    fail_unless(cfg_getint(sec, "a") == 1);
+    fail_unless(cfg_getint(sec, "b") == 9);
 
     cfg_free(acfg);
     cfg_free(bcfg);
 }
-END_TEST
 
-Suite *dup_suite(void) 
-{ 
-    Suite *s = suite_create("dup"); 
-
-    TCase *tc_dup = tcase_create("Duplicate schemas");
-    suite_add_tcase(s, tc_dup);
-    tcase_add_test(tc_dup, dup_test); 
-
-    return s; 
+void run_dup_tests(void)
+{
+    dup_test();
 }
 

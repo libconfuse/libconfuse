@@ -21,8 +21,6 @@ AM_CONDITIONAL([cc_is_gcc], test "$GCC" = "yes")
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.14.1)
 
-AM_PATH_CHECK(, [AC_SUBST([check_confuse], ['check_confuse${EXTEXT}'])], [AC_WARN([Check not found, tests will not be built])])
-
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])

@@ -1,5 +1,4 @@
-#include <check.h>
-#include "../src/confuse.h"
+#include "check_confuse.h"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,17 +10,17 @@ void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 static cfg_t *cfg = 0;
 static int func_alias_called = 0;
 
-int func_alias(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
+static int func_alias(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
 {
     func_alias_called = 1;
 
-    fail_unless(cfg != 0, 0);
-    fail_unless(opt != 0, 0);
-    fail_unless(strcmp(opt->name, "alias") == 0, 0);
-    fail_unless(opt->type == CFGT_FUNC, 0);
-    fail_unless(argv != 0, 0);
-    fail_unless(strcmp(argv[0], "ll") == 0, 0);
-    fail_unless(strcmp(argv[1], "ls -l") == 0, 0);
+    fail_unless(cfg != 0);
+    fail_unless(opt != 0);
+    fail_unless(strcmp(opt->name, "alias") == 0);
+    fail_unless(opt->type == CFGT_FUNC);
+    fail_unless(argv != 0);
+    fail_unless(strcmp(argv[0], "ll") == 0);
+    fail_unless(strcmp(argv[1], "ls -l") == 0);
 
     if(argc != 2)
         return -1;
@@ -29,7 +28,7 @@ int func_alias(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
     return 0;
 }
 
-void func_setup(void)
+static void func_setup(void)
 {
     cfg_opt_t opts[] = 
     {
@@ -41,39 +40,33 @@ void func_setup(void)
     cfg_set_error_function(cfg, suppress_errors);
 }
 
-void func_teardown(void)
+static void func_teardown(void)
 {
     cfg_free(cfg);
 }
 
-START_TEST(func_test)
+static void func_test(void)
 {
     char *buf;
 
     func_alias_called = 0;
     buf = "alias(ll, 'ls -l')";
-    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS, 0);
-    fail_unless(func_alias_called == 1, "alias() function not called");
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+    fail_unless(func_alias_called == 1);
 
     func_alias_called = 0;
     buf = "alias(ll, 'ls -l', 2)";
-    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, 0);
-    fail_unless(func_alias_called == 1, "alias() function not called");
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
+    fail_unless(func_alias_called == 1);
 
     buf = "unalias(ll, 'ls -l')";
-    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR, 0);
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
 }
-END_TEST
 
-Suite *func_suite(void) 
-{ 
-    Suite *s = suite_create("functions"); 
-
-    TCase *tc_func = tcase_create("functions");
-    suite_add_tcase(s, tc_func);
-    tcase_add_checked_fixture(tc_func, func_setup, func_teardown);
-    tcase_add_test(tc_func, func_test); 
-
-    return s; 
+void run_func_tests(void)
+{
+    func_setup();
+    func_test();
+    func_teardown();
 }
 
