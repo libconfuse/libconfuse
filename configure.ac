@@ -16,6 +16,8 @@ AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 # Checks for libraries.
 
+AM_CONDITIONAL([cc_is_gcc], test "$GCC" = "yes")
+
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.14.1)
 
