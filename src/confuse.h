@@ -84,13 +84,17 @@ typedef enum cfg_type_t cfg_type_t;
 
 /** Flags. */
 #define CFGF_NONE 0
-#define CFGF_MULTI 1       /**< option may be specified multiple times */
+#define CFGF_MULTI 1       /**< option may be specified multiple times (only applies to sections) */
 #define CFGF_LIST 2        /**< option is a list */
 #define CFGF_NOCASE 4      /**< configuration file is case insensitive */
-#define CFGF_TITLE 8       /**< option has a title (only applies to section) */
+#define CFGF_TITLE 8       /**< option has a title (only applies to sections) */
 #define CFGF_NODEFAULT 16  /**< option has no default value */
-#define CFGF_RESET 32
-#define CFGF_DEFINIT 64
+#define CFGF_NO_TITLE_DUPES 32  /**< multiple section titles must be unique
+                                  (duplicates raises an error, only applies to
+                                  sections) */
+
+#define CFGF_RESET 64
+#define CFGF_DEFINIT 128
 
 /** Return codes from cfg_parse(). */
 #define CFG_SUCCESS 0

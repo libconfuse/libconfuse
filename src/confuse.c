@@ -582,6 +582,11 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                             val = opt->values[i];
                     }
                 }
+                if(val && is_set(CFGF_NO_TITLE_DUPES, opt->flags))
+                {
+                    cfg_error(cfg, _("found duplicate title '%s'"), value);
+                    return 0;
+                }
             }
             if(val == 0)
                 val = cfg_addval(opt);
