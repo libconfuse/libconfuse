@@ -893,8 +893,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     return STATE_ERROR;
                 if(is_set(CFGF_LIST, opt->flags))
                 {
-                    state = 4;
                     ++num_values;
+                    state = 4;
                 }
                 else
                     state = 0;
@@ -903,11 +903,21 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
             case 3: /* expecting an opening brace for a list option */
                 if(tok != '{')
                 {
-                    cfg_error(cfg, _("missing opening brace for option '%s'"),
-                              opt->name);
-                    return STATE_ERROR;
+                    if(tok != CFGT_STR)
+                    {
+                        cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
+                        return STATE_ERROR;
+                    }
+
+                    if(cfg_setopt(cfg, opt, cfg_yylval) == 0)
+                        return STATE_ERROR;
+                    if(opt->validcb && (*opt->validcb)(cfg, opt) != 0)
+                        return STATE_ERROR;
+                    ++num_values;
+                    state = 0;
                 }
-                state = 2;
+                else
+                    state = 2;
                 break;
 
             case 4: /* expecting a separator for a list option, or
