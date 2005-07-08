@@ -12,6 +12,10 @@ listing5_LDADD = ../src/libconfuse.la
 listing8_LDADD = ../src/libconfuse.la
 LIBS = $(LTLIBINTL)
 
+if cc_is_gcc
+AM_CFLAGS=-Wall -Werror
+endif
+
 #BUILT_SOURCES = tutorial-html/index.html html/index.html
 
 #TUTORIAL_CSOURCES := $(shell grep 'ENTITY listing' tutorial.xml | sed 's/.*ENTITY \(.*\) SYSTEM.*/\1.c/')

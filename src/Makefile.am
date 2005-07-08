@@ -7,6 +7,10 @@ datadir = @datadir@
 localedir = $(datadir)/locale
 DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
+if cc_is_gcc
+AM_CFLAGS=-Wall -Werror
+endif
+
 LIBS = @LIBS@
 
 CLEANFILES=*~ \#*\#

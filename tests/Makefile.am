@@ -7,3 +7,7 @@ check_confuse_LDADD=-L../src/ @CHECK_LIBS@ ../src/libconfuse.la $(LTLIBINTL)
 EXTRA_DIST=a.conf b.conf
 CLEANFILES=*~ \#*\#
 
+if cc_is_gcc
+AM_CFLAGS=-Wall -Werror
+endif
+
