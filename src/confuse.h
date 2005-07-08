@@ -48,8 +48,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifdef _WIN32
-
+#if defined(_WIN32) && !defined(__GNUC__)
 # ifdef HAVE__FILENO
 #  define fileno _fileno
 # endif
@@ -57,16 +56,13 @@ extern "C" {
 # ifdef HAVE__ISATTY
 #  define isatty _isatty
 # endif
-
 # ifdef BUILDING_DLL
 #  define DLLIMPORT __declspec (dllexport)
-# else /* Not BUILDING_DLL */
+# else /* ! BUILDING_DLL */
 #  define DLLIMPORT __declspec (dllimport)
-# endif /* Not BUILDING_DLL */
-
-#else /* ! _WIN32 */
+# endif /* BUILDING_DLL */
+#else /* ! _WIN32 || __GNUC__ */
 # define DLLIMPORT
-
 #endif /* _WIN32 */
 
 #ifndef __BORLANDC__
