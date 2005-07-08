@@ -377,7 +377,7 @@ static cfg_value_t *cfg_addval(cfg_opt_t *opt)
     return opt->values[opt->nvalues++];
 }
 
-int cfg_numopts(cfg_opt_t *opts)
+DLLIMPORT int cfg_numopts(cfg_opt_t *opts)
 {
     int n;
 

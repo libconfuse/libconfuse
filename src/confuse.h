@@ -607,7 +607,7 @@ DLLIMPORT void __export cfg_error(cfg_t *cfg, const char *fmt, ...);
  * @param index Index of the value to get. Zero based.
  * @see cfg_getnint
  */
-DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT signed long __export cfg_opt_getnint(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getint(), used for lists.
  * @param cfg The configuration file context.
@@ -634,7 +634,7 @@ DLLIMPORT long int __export cfg_getint(cfg_t *cfg, const char *name);
  * @param index Index of the value to get. Zero based.
  * @see cfg_getnfloat
  */
-DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT double __export cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getfloat(), used for lists.
  * @param cfg The configuration file context.
@@ -660,7 +660,7 @@ DLLIMPORT double __export cfg_getfloat(cfg_t *cfg, const char *name);
  * @param index Index of the value to get. Zero based.
  * @see cfg_getnstr
  */
-DLLIMPORT char *cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT char * __export cfg_opt_getnstr(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getstr(), used for lists.
  * @param cfg The configuration file context.
@@ -686,7 +686,7 @@ DLLIMPORT char * __export cfg_getstr(cfg_t *cfg, const char *name);
  * @param index Index of the value to get. Zero based.
  * @see cfg_getnbool
  */
-DLLIMPORT cfg_bool_t cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT cfg_bool_t __export cfg_opt_getnbool(cfg_opt_t *opt, unsigned int index);
     
 /** Indexed version of cfg_getbool(), used for lists.
  *
@@ -709,8 +709,8 @@ DLLIMPORT cfg_bool_t __export cfg_getnbool(cfg_t *cfg, const char *name,
 DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
 
 
-DLLIMPORT void *cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index);
-DLLIMPORT void *cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
+DLLIMPORT void * __export cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT void * __export cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
 
 /** Returns the value of a user-defined option (void pointer).
  * @param cfg The configuration file context.
@@ -720,7 +720,7 @@ DLLIMPORT void *cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
  * corresponding cfg_opt_t structure is returned. It is an error to
  * try to get an option that isn't declared.
  */
-DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name);
+DLLIMPORT void * __export cfg_getptr(cfg_t *cfg, const char *name);
 
 
 /** Returns the value of a section option, given a cfg_opt_t pointer.
@@ -728,7 +728,7 @@ DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name);
  * @param index Index of the value to get. Zero based.
  * @see cfg_getnsec
  */
-DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT cfg_t * __export cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_getsec(), used for sections with the
  * CFGF_MULTI flag set.
@@ -748,7 +748,7 @@ DLLIMPORT cfg_t * __export cfg_getnsec(cfg_t *cfg, const char *name,
  * have been set for this option.
  * @see cfg_gettsec
  */
-DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title);
+DLLIMPORT cfg_t * __export cfg_opt_gettsec(cfg_opt_t *opt, const char *title);
 
 /** Return a section given the title, used for section with the
  * CFGF_TITLE flag set.
@@ -779,7 +779,7 @@ DLLIMPORT cfg_t * __export cfg_getsec(cfg_t *cfg, const char *name);
  * 0 will be returned (ie, the option value is not set at all).
  * @param opt The option structure (eg, as returned from cfg_getopt())
  */
-DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt);
+DLLIMPORT unsigned int __export cfg_opt_size(cfg_opt_t *opt);
 
 /** Return the number of values this option has. If no default value
  * is given for the option and no value was found in the config file,
@@ -809,7 +809,7 @@ DLLIMPORT const char * __export cfg_title(cfg_t *cfg);
  * @return Returns the title, or 0 if there is no title. This string
  * should not be modified.
  */
-DLLIMPORT const char *cfg_name(cfg_t *cfg);
+DLLIMPORT const char * __export cfg_name(cfg_t *cfg);
 
 /** Return the name of an option.
  *
@@ -817,7 +817,7 @@ DLLIMPORT const char *cfg_name(cfg_t *cfg);
  * @return Returns the title, or 0 if there is no title. This string
  * should not be modified.
  */
-DLLIMPORT const char *cfg_opt_name(cfg_opt_t *opt);
+DLLIMPORT const char * __export cfg_opt_name(cfg_opt_t *opt);
 
 /** Predefined include-function. This function can be used in the
  * options passed to cfg_init() to specify a function for including
@@ -1002,6 +1002,7 @@ DLLIMPORT void __export cfg_setnstr(cfg_t *cfg, const char *name,
 DLLIMPORT void __export cfg_setlist(cfg_t *cfg, const char *name,
                                     unsigned int nvalues, ...);
 
+DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 
 /** Add values for a list option. The new values are appended to any
  * current values in the list.
@@ -1028,14 +1029,14 @@ DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
  *
  * @see cfg_print, cfg_opt_print
  */
-DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index,
+DLLIMPORT void __export cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index,
                                   FILE *fp);
 
 /** Print an option and its value to a file.
  * Same as cfg_opt_print, but with the indentation level specified.
  * @see cfg_opt_print
  */
-DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
+DLLIMPORT void __export cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
 
 /** Print an option and its value to a file.
  *
@@ -1047,13 +1048,13 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
  *
  * @see cfg_print_func_t
  */
-DLLIMPORT void cfg_opt_print(cfg_opt_t *opt, FILE *fp);
+DLLIMPORT void __export cfg_opt_print(cfg_opt_t *opt, FILE *fp);
 
 /** Print the options and values to a file.
  * Same as cfg_print, but with the indentation level specified.
  * @see cfg_print
  */
-DLLIMPORT void cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
+DLLIMPORT void __export cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
 
 /** Print the options and values to a file.
  *
@@ -1068,7 +1069,7 @@ DLLIMPORT void cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
  *
  * @see cfg_print_func_t, cfg_set_print_func
  */
-DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);
+DLLIMPORT void __export cfg_print(cfg_t *cfg, FILE *fp);
 
 /** Set a print callback function for an option.
  *
@@ -1077,7 +1078,7 @@ DLLIMPORT void cfg_print(cfg_t *cfg, FILE *fp);
  *
  * @see cfg_print_func_t
  */
-DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
+DLLIMPORT cfg_print_func_t __export cfg_opt_set_print_func(cfg_opt_t *opt,
                                                   cfg_print_func_t pf);
 
 /** Set a print callback function for an option given its name.
@@ -1088,7 +1089,7 @@ DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt,
  *
  * @see cfg_print_func_t
  */
-DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
+DLLIMPORT cfg_print_func_t __export cfg_set_print_func(cfg_t *cfg, const char *name,
                                               cfg_print_func_t pf);
 
 /** Register a validating callback function for an option.
@@ -1099,7 +1100,7 @@ DLLIMPORT cfg_print_func_t cfg_set_print_func(cfg_t *cfg, const char *name,
  *
  * @see cfg_validate_callback_t
  */
-DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg,
+DLLIMPORT cfg_validate_callback_t __export cfg_set_validate_func(cfg_t *cfg,
                                                         const char *name,
                                                         cfg_validate_callback_t vf);
 
