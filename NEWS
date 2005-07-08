@@ -1,3 +1,14 @@
+New in 2.6
+----------
+
+* added French translation contributed by Matthieu Sion
+* added build script and instructions for compiling with Mingw under Windows
+   (contributed by Matthieu Sion)
+* now accepts a simplified list append syntax:
+    option += "value"
+      insted of
+    option += {"value"}
+
 New in 2.5
 ----------
 
