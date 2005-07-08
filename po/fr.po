@@ -1,0 +1,121 @@
+# French translations for libcfg package
+# Traductions françaises pour le paquetage libConfuse.
+# Copyright (C) 2002-2003 Martin Hedenfalk
+# This file is distributed under the same license as the libConfuse package.
+# Martin Hedenfalk <mhe@home.se>, 2002.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNU libcfg 1.2\n"
+"Report-Msgid-Bugs-To: mhe@home.se\n"
+"POT-Creation-Date: 2004-10-17 17:47+0200\n"
+"PO-Revision-Date: 2003-01-26 14:10+0100\n"
+"Last-Translator: Matthieu Sion <matt@flandrescartouches.com>\n"
+"Language-Team: None <mhe@home.se>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/confuse.c:154 src/confuse.c:176
+#, c-format
+msgid "no such option '%s'"
+msgstr "il n'y a pas d'option '%s'"
+
+#: src/confuse.c:607
+#, c-format
+msgid "invalid integer value for option '%s'"
+msgstr "valeur entière non valide pour l'option '%s'"
+
+#: src/confuse.c:614
+#, c-format
+msgid "integer value for option '%s' is out of range"
+msgstr "valeur entière de l'option '%s' en dehors des limites"
+
+#: src/confuse.c:634
+#, c-format
+msgid "invalid floating point value for option '%s'"
+msgstr ""
+"la valeur de l'option '%s' est un nombre à virgule flottante non valide"
+
+#: src/confuse.c:641
+#, c-format
+msgid "floating point value for option '%s' is out of range"
+msgstr ""
+"la valeur de l'option '%s' est un nombre à virgule flottante en dehors des "
+"limites"
+
+#: src/confuse.c:691
+#, c-format
+msgid "invalid boolean value for option '%s'"
+msgstr "valeur booléenne incorrecte pour l'option '%s'"
+
+#: src/confuse.c:796
+msgid "premature end of file"
+msgstr "fin de fichier prématurée"
+
+#: src/confuse.c:809
+msgid "unexpected closing brace"
+msgstr "accolade fermante inattendue"
+
+#: src/confuse.c:816 src/confuse.c:886 src/confuse.c:925
+#, c-format
+msgid "unexpected token '%s'"
+msgstr "mot inattendu '%s'"
+
+#: src/confuse.c:843
+#, c-format
+msgid "attempt to append to non-list option '%s'"
+msgstr "tentative d'ajout à une option qui n'est pas une liste ('%s')"
+
+#: src/confuse.c:861
+#, c-format
+msgid "missing equal sign after option '%s'"
+msgstr "signe égal manquant après l'option '%s'"
+
+#: src/confuse.c:906
+#, c-format
+msgid "missing opening brace for option '%s'"
+msgstr "accolade ouvrante manquante pour l'option '%s'"
+
+#: src/confuse.c:933
+#, c-format
+msgid "missing opening brace for section '%s'"
+msgstr "accolade ouvrante manquante à la section '%s'"
+
+#: src/confuse.c:956
+#, c-format
+msgid "missing title for section '%s'"
+msgstr "titre manquant à la section '%s'"
+
+#: src/confuse.c:968
+#, c-format
+msgid "missing parenthesis for function '%s'"
+msgstr "parenthèses manquantes à la fonction '%s'"
+
+#: src/confuse.c:991 src/confuse.c:1009
+#, c-format
+msgid "syntax error in call of function '%s'"
+msgstr "erreur de syntaxe dans l'appel de la fonction '%s'"
+
+#: src/confuse.c:1216
+msgid "wrong number of arguments to cfg_include()"
+msgstr "nombre d'arguments incorrect à cfg_include()"
+
+#: src/lexer.l:143
+#, c-format
+msgid "invalid octal number '%s'"
+msgstr "nombre octal invalide '%s'"
+
+#: src/lexer.l:149
+#, c-format
+msgid "bad escape sequence '%s'"
+msgstr "mauvaise séquence d'échappement '%s'"
+
+#: src/lexer.l:224
+msgid "unterminated string constant"
+msgstr "chaîne constante non terminée"
+
+#: src/lexer.l:290
+msgid "includes nested too deeply"
+msgstr "inclusion de fichier à un niveau trop bas"
