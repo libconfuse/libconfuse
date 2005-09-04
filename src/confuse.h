@@ -1110,7 +1110,7 @@ DLLIMPORT cfg_validate_callback_t __export cfg_set_validate_func(cfg_t *cfg,
 
 #endif
 
-/** @example cfgtest.c
+/** @example ftpconf.c
  */
 
 /** @example simple.c
