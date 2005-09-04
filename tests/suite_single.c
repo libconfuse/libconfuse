@@ -5,10 +5,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <net/ethernet.h>
-#ifdef linux
-# include <netinet/ether.h>
-#endif
 
 void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 static cfg_t *cfg;
@@ -26,18 +22,45 @@ int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result
     return 0;
 }
 
+static unsigned char *my_ether_aton(const char *addr)
+{
+    int i;
+    static unsigned int e[6];
+    static unsigned char ec[6];
+    if(sscanf(addr, "%x:%x:%x:%x:%x:%x", &e[0], &e[1], &e[2], &e[3], &e[4], &e[5]) != 6)
+    {
+        return NULL;
+    }
+    for(i = 0; i < 6; i++)
+    {
+        if(e[i] <= 0xff)
+            ec[i] = e[i];
+        else
+            return NULL;
+    }
+    return ec;
+}
+
+static char *my_ether_ntoa(unsigned char *addr)
+{
+    static char buf[18];
+    sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
+            addr[0], addr[0], addr[0], addr[0], addr[0], addr[0]);
+    return buf;
+}
+
 int parse_ether_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
-    struct ether_addr *tmp;
+    unsigned char *tmp;
 
-    tmp = ether_aton(value);
+    tmp = my_ether_aton(value);
     if(tmp == 0)
     {
         /*cfg_error(cfg, "invalid Ethernet address %s in section %s", value, cfg->name);*/
         return 1;
     }
-    *(void **)result = malloc(sizeof(struct ether_addr));
-    memcpy(*(void **)result, tmp, sizeof(struct ether_addr));
+    *(void **)result = malloc(6);
+    memcpy(*(void **)result, tmp, 6);
     return 0;
 }
 
@@ -216,7 +239,7 @@ void single_ptr_test(void)
 {
     char *buf;
     struct in_addr *ipaddr;
-    struct ether_addr *etheraddr, *cmpether;
+    unsigned char *etheraddr, *cmpether;
 
     fail_unless(cfg_size(cfg, "ip-address") == 0);
 
@@ -233,10 +256,9 @@ void single_ptr_test(void)
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
     etheraddr = cfg_getptr(cfg, "ethernet-address");
     fail_unless(etheraddr != 0);
-    fail_unless(ether_ntoa(etheraddr) != 0);
-
-    cmpether = ether_aton("00:03:93:d4:05:58");
-    fail_unless(memcmp(etheraddr, cmpether, sizeof(struct ether_addr)) == 0);
+    fail_unless(my_ether_ntoa(etheraddr) != 0);
+    cmpether = my_ether_aton("00:03:93:d4:05:58");
+    fail_unless(memcmp(etheraddr, cmpether, 6) == 0);
 
     buf = "ethernet-address = '00:03:93:d4:05'";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
