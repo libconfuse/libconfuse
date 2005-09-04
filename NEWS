@@ -8,6 +8,8 @@ New in 2.6
     option += "value"
       insted of
     option += {"value"}
+* added flag CFGF_NO_TITLE_DUPES: multiple section titles must be unique
+  (duplicates raises an error, only applies to sections) (suggested by Brian Fallik)
 
 New in 2.5
 ----------
