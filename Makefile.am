@@ -6,12 +6,9 @@ CLEANFILES=*~ '\#*\#'
 EXTRA_DIST=libconfuse.spec.in libconfuse.spec
 SUBDIRS = m4 po src examples tests doc
 
-if HAVE_PKGCONFIG
-  pkgconfigdir = $(libdir)/pkgconfig
-  pkgconfig_DATA = libconfuse.pc
-else
-  bin_SCRIPTS = confuse-config
-endif
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libconfuse.pc
+bin_SCRIPTS = confuse-config
 
 celan: clean
 
