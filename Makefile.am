@@ -57,5 +57,5 @@ dist-extra: dist
 
 rpm: Makefile
 	$(MAKE) dist
-	rpm -ta --clean $(PACKAGE)-$(VERSION).tar.gz
+	rpmbuild -ta --clean $(PACKAGE)-$(VERSION).tar.gz
 

@@ -31,6 +31,7 @@ Group:			%{_group}
 Packager:		Pascal Bleser <guru@unixtech.be>
 Copyright:		LGPL
 BuildRoot:		%{_tmppath}/build-%{_name}-%{_version}
+BuildRequires:     xmlto doxygen
 Prefix:			%{_prefix}
 %if %_has_distro
 Distribution:  %_distribution
@@ -62,7 +63,7 @@ Documentation and examples can be found in %{_pkgdoc}/doc
 and %{_pkgdoc}/examples respectively.
 
 %changelog
-* Fre May 21 2004 Martin Hedenfalk <mhe@home.se> 2.3-%{_rel}suse%{_suse_vernum}
+* Fri May 21 2004 Martin Hedenfalk <mhe@home.se> 2.3-%{_rel}suse%{_suse_vernum}
 - New upstream version, updated URLs
 * Sat Apr 05 2003 Martin Hedenfalk <mhe@home.se> 2.0-%{_rel}suse%{_suse_vernum}
 - removed doxygen dependence as pre-built documentation are now included
