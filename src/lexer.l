@@ -44,7 +44,7 @@
 typedef char * YYSTYPE;
 extern YYSTYPE cfg_yylval;
 
-#define YY_DECL int cfg_yylex YY_PROTO(( cfg_t *cfg ))
+#define YY_DECL int cfg_yylex ( cfg_t *cfg )
 
 /* temporary buffer for the quoted strings scanner
  */
