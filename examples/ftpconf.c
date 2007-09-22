@@ -35,7 +35,8 @@ int conf_parse_acb(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
         *(int *)result = ACB_ASK;
     else
     {
-        cfg_error(cfg, "invalid value for option '%s': %s", cfg_opt_name(opt), value);
+        cfg_error(cfg, "invalid value for option '%s': %s",
+	    cfg_opt_name(opt), value);
         return -1;
     }
     return 0;
@@ -78,7 +79,6 @@ cfg_t *parse_conf(const char *filename)
 
     cfg_opt_t opts[] = {
         CFG_SEC("bookmark", bookmark_opts, CFGF_MULTI | CFGF_TITLE),
-        CFG_BOOL("reverse-dns", cfg_true, CFGF_NONE),
         CFG_BOOL("passive-mode", cfg_false, CFGF_NONE),
         CFG_BOOL("remote-completion", cfg_true, CFGF_NONE),
         CFG_FUNC("alias", conf_alias),
@@ -115,9 +115,10 @@ int main(int argc, char **argv)
     /* print the parsed configuration options */
     if(cfg)
     {
-        printf("reverse-dns = %s\n", cfg_getbool(cfg, "reverse-dns") ? "true" : "false");
-        printf("passive-mode = %s\n", cfg_getbool(cfg, "passive-mode") ? "true" : "false");
-        printf("remote-completion = %s\n", cfg_getbool(cfg, "remote-completion") ? "true" : "false");
+        printf("passive-mode = %s\n",
+	    cfg_getbool(cfg, "passive-mode") ? "true" : "false");
+        printf("remote-completion = %s\n",
+	    cfg_getbool(cfg, "remote-completion") ? "true" : "false");
 
         printf("number of bookmarks: %d\n", cfg_size(cfg, "bookmark"));
         for(i = 0; i < cfg_size(cfg, "bookmark"); i++)
@@ -132,9 +133,13 @@ int main(int argc, char **argv)
         }
 
         for(i = 0; i < cfg_size(cfg, "xterm-terminals"); i++)
-            printf("xterm-terminal #%d: %s\n", i+1, cfg_getnstr(cfg, "xterm-terminals", i));
+	{
+            printf("xterm-terminal #%d: %s\n",
+		i+1, cfg_getnstr(cfg, "xterm-terminals", i));
+	}
 
-        printf("auto-create-bookmark = %ld\n", cfg_getint(cfg, "auto-create-bookmark"));
+        printf("auto-create-bookmark = %ld\n",
+	    cfg_getint(cfg, "auto-create-bookmark"));
         cfg_free(cfg);
     }
 
