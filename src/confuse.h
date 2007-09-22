@@ -2,7 +2,7 @@
  *
  * $Id$
  *
- * Copyright (c) 2002-2003, Martin Hedenfalk <mhe@home.se>
+ * Copyright (c) 2002-2003, Martin Hedenfalk <martin@bzero.se>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@
  *
  * \section intro
  *
- * Copyright &copy; 2002-2003 Martin Hedenfalk &lt;mhe@home.se&gt;
+ * Copyright &copy; 2002-2003 Martin Hedenfalk &lt;martin@bzero.se&gt;
  *
  * The latest versions of this manual and the libConfuse software are
  * available at http://www.nongnu.org/confuse/

@@ -2,7 +2,7 @@
  *
  * $Id$
  *
- * Copyright (c) 2002-2003, Martin Hedenfalk <mhe@home.se>
+ * Copyright (c) 2002-2003, Martin Hedenfalk <martin@bzero.se>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -65,8 +65,8 @@ extern char *cfg_qstring;
 char *cfg_yylval = 0;
 
 const char confuse_version[] = PACKAGE_VERSION;
-const char confuse_copyright[] = PACKAGE_STRING" by Martin Hedenfalk <mhe@home.se>";
-const char confuse_author[] = "Martin Hedenfalk <mhe@home.se>";
+const char confuse_copyright[] = PACKAGE_STRING" by Martin Hedenfalk <martin@bzero.se>";
+const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
 
 static int cfg_parse_internal(cfg_t *cfg, int level,
                               int force_state, cfg_opt_t *force_opt);
