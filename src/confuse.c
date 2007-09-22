@@ -565,9 +565,13 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             {
                 unsigned int i;
 
-                /* check if there already is a section with the same title
+                /* Check if there already is a section with the same title.
                  */
-                assert(value);
+
+		/* Assert that there either are no sections at all, or a
+		 * non-NULL section title. */
+                assert(opt->nvalues == 0 || value);
+
                 for(i = 0; i < opt->nvalues; i++)
                 {
                     cfg_t *sec = opt->values[i]->section;

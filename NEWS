@@ -9,10 +9,12 @@ New in 2.6
       insted of
     option += {"value"}
 * added flag CFGF_NO_TITLE_DUPES: multiple section titles must be unique
-  (duplicates raises an error, only applies to sections) (suggested by Brian Fallik)
+  (duplicates raises an error, only applies to sections)
+  (suggested by Brian Fallik)
 * fixed rpm builds, patch by Dan Lipsitt
-* always installs both libconfuse.pc (for pkg-config) and confuse-config scripts,
-  regardless of whether pkg-config is installed or not.
+* always installs both libconfuse.pc (for pkg-config) and confuse-config
+  scripts, regardless of whether pkg-config is installed or not.
+* fixed a bug reported by Josh Kropf with single sections with titles
 
 New in 2.5
 ----------
