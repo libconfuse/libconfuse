@@ -37,7 +37,7 @@ static void func_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
-    cfg_set_error_function(cfg, suppress_errors);
+    /* cfg_set_error_function(cfg, suppress_errors); */
 }
 
 static void func_teardown(void)
@@ -63,10 +63,13 @@ static void func_test(void)
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
 }
 
-void run_func_tests(void)
+int
+main(void)
 {
     func_setup();
     func_test();
     func_teardown();
+
+    return 0;
 }
 

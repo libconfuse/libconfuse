@@ -4,8 +4,6 @@
 static cfg_t *cfg;
 static int numopts = 0;
 
-void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
-
 static void list_setup(void)
 {
     cfg_opt_t subsec_opts[] = 
@@ -38,7 +36,6 @@ static void list_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
-    cfg_set_error_function(cfg, suppress_errors);
     numopts = cfg_numopts(opts);
     fail_unless(numopts == 5);
 
@@ -305,7 +302,8 @@ static void nonexistent_option_test(void)
     fail_unless(cfg_getopt(cfg, "section|subnonexistent") == 0);
 }
 
-void run_list_tests(void)
+int
+main(void)
 {
     list_setup();
 
@@ -318,5 +316,7 @@ void run_list_tests(void)
     nonexistent_option_test();
 
     list_teardown();
+
+    return 0;
 }
 

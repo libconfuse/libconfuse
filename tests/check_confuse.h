@@ -14,11 +14,5 @@
         exit(1); \
     } } while(0)
 
-void run_single_tests(void);
-void run_list_tests(void);
-void run_dup_tests(void);
-void run_validate_tests(void);
-void run_func_tests(void);
-
 #endif
 

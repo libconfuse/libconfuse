@@ -1,19 +1,33 @@
-TESTS=check_confuse list_plus_syntax section_title_dupes
+TESTS = suite_single suite_dup suite_func suite_list \
+	suite_validate list_plus_syntax section_title_dupes \
+	single_title_sections
 check_PROGRAMS=$(TESTS)
-
-check_confuse_SOURCES=check_confuse.c suite_single.c suite_dup.c suite_list.c suite_validate.c \
-					  suite_func.c
 
 ldadd_common=-L../src/ ../src/libconfuse.la $(LTLIBINTL)
 
-check_confuse_INCLUDES=-I$(top_srcdir)/src
-check_confuse_LDADD=$(ldadd_common)
+suite_single_SOURCES=suite_single.c
+suite_single_LDADD=$(ldadd_common)
+
+suite_dup_SOURCES=suite_dup.c
+suite_dup_LDADD=$(ldadd_common)
+
+suite_list_SOURCES=suite_list.c
+suite_list_LDADD=$(ldadd_common)
+
+suite_func_SOURCES=suite_func.c
+suite_func_LDADD=$(ldadd_common)
+
+suite_validate_SOURCES=suite_validate.c
+suite_validate_LDADD=$(ldadd_common)
 
 list_plus_syntax_SOURCES=list_plus_syntax.c
 list_plus_syntax_LDADD=$(ldadd_common)
 
 section_title_dupes_SOURCES=section_title_dupes.c
 section_title_dupes_LDADD=$(ldadd_common)
+
+single_title_sections_SOURCES=single_title_sections.c
+single_title_sections_LDADD=$(ldadd_common)
 
 EXTRA_DIST=a.conf b.conf
 CLEANFILES=*~ \#*\#

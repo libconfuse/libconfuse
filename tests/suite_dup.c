@@ -19,7 +19,8 @@ static cfg_t *create_config(void)
     return cfg_init(opts, 0);
 }
 
-void dup_test(void)
+int
+main(void)
 {
     cfg_t *acfg, *bcfg;
     cfg_t *sec;
@@ -46,10 +47,7 @@ void dup_test(void)
 
     cfg_free(acfg);
     cfg_free(bcfg);
-}
 
-void run_dup_tests(void)
-{
-    dup_test();
+    return 0;
 }
 

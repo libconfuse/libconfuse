@@ -6,7 +6,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 static cfg_t *cfg;
 
 int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
@@ -107,7 +106,6 @@ void single_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
-    cfg_set_error_function(cfg, suppress_errors);
 
     memset(opts, 0, sizeof(opts));
     memset(sec_opts, 0, sizeof(sec_opts));
@@ -305,7 +303,8 @@ void nodefault_test(void)
     fail_unless(cfg_size(nodefsec, "int") == 0);
 }
 
-void run_single_tests(void)
+int
+main(void)
 {
     single_setup();
 
@@ -320,5 +319,7 @@ void run_single_tests(void)
     nodefault_test();
     
     single_teardown();
+
+    return 0;
 }
 

@@ -13,8 +13,6 @@ static cfg_t *cfg = 0;
 #define ACTION_CRAWL 3
 #define ACTION_JUMP 4
 
-void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
-
 int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
     if(strcmp(value, "run") == 0)
@@ -115,7 +113,6 @@ void validate_setup(void)
     };
 
     cfg = cfg_init(opts, 0);
-    cfg_set_error_function(cfg, suppress_errors);
 
     cfg_set_validate_func(cfg, "ip-address", validate_ip);
     fail_unless(cfg_set_validate_func(cfg, "ip-address", validate_ip) == validate_ip);
@@ -205,10 +202,13 @@ void validate_test(void)
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
 }
 
-void run_validate_tests(void)
+int
+main(void)
 {
     validate_setup();
     validate_test();
     validate_teardown();
+
+    return 0;
 }
 

@@ -14,7 +14,8 @@ int main(void)
     };
 
     cfg_opt_t opts_no_dupes[] = {
-        CFG_SEC("section", section_opts, CFGF_TITLE | CFGF_MULTI | CFGF_NO_TITLE_DUPES),
+        CFG_SEC("section", section_opts,
+	    CFGF_TITLE | CFGF_MULTI | CFGF_NO_TITLE_DUPES),
         CFG_END()
     };
 
@@ -33,8 +34,10 @@ int main(void)
 
     fail_unless(cfg_size(cfg, "section") == 2);
 
-    fail_unless(strcmp(cfg_title(cfg_getnsec(cfg, "section", 0)), "title_one") == 0);
-    fail_unless(strcmp(cfg_title(cfg_getnsec(cfg, "section", 1)), "title_two") == 0);
+    fail_unless(
+	strcmp(cfg_title(cfg_getnsec(cfg, "section", 0)), "title_one") == 0);
+    fail_unless(
+	strcmp(cfg_title(cfg_getnsec(cfg, "section", 1)), "title_two") == 0);
 
     cfg_free(cfg);
 
