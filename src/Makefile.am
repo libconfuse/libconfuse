@@ -1,6 +1,8 @@
 lib_LTLIBRARIES = libconfuse.la
 
 libconfuse_la_SOURCES = confuse.c lexer.l
+libconfuse_la_LIBADD = $(LTLIBINTL)
+
 include_HEADERS = confuse.h
 
 datadir = @datadir@
