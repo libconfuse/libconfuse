@@ -1,6 +1,6 @@
 TESTS = suite_single suite_dup suite_func suite_list \
 	suite_validate list_plus_syntax section_title_dupes \
-	single_title_sections
+	single_title_sections quote_before_print
 check_PROGRAMS=$(TESTS)
 
 ldadd_common=-L../src/ ../src/libconfuse.la $(LTLIBINTL)
@@ -28,6 +28,9 @@ section_title_dupes_LDADD=$(ldadd_common)
 
 single_title_sections_SOURCES=single_title_sections.c
 single_title_sections_LDADD=$(ldadd_common)
+
+quote_before_print_SOURCES=quote_before_print.c
+quote_before_print_LDADD=$(ldadd_common)
 
 EXTRA_DIST=a.conf b.conf
 CLEANFILES=*~ \#*\#
