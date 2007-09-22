@@ -1416,7 +1416,18 @@ DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
             break;
         case CFGT_STR:
             str = cfg_opt_getnstr(opt, index);
-            fprintf(fp, "\"%s\"", str ? str : "");
+            fprintf(fp, "\"");
+            while (str && *str)
+	    {
+                if(*str == '"')
+                    fprintf(fp, "\\\"");
+                else if(*str == '\\')
+                    fprintf(fp, "\\\\");
+                else
+                    fprintf(fp, "%c", *str);
+                str++;
+            }
+            fprintf(fp, "\"");
             break;
         case CFGT_BOOL:
             fprintf(fp, "%s", cfg_opt_getnbool(opt, index) ? "true" : "false");
