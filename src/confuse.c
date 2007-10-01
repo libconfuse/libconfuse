@@ -1,4 +1,4 @@
-/* Configuration file parser -*- tab-width: 4; -*-
+/* Configuration file parser
  *
  * $Id$
  *
@@ -87,7 +87,8 @@ static char *strdup(const char *s)
     if(s == 0 || *s == 0)
         return 0;
 
-    r = (char *)malloc(strlen(s) + 1);
+    r = malloc(strlen(s) + 1);
+    assert(r);
     strcpy(r, s);
     return r;
 }
@@ -102,7 +103,8 @@ static char *strndup(const char *s, size_t n)
     if(s == 0)
         return 0;
 
-    r = (char *)malloc(n + 1);
+    r = malloc(n + 1);
+    assert(r);
     strncpy(r, s, n);
     r[n] = 0;
     return r;
@@ -369,10 +371,10 @@ DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
 
 static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 {
-    opt->values = (cfg_value_t **)realloc(opt->values,
+    opt->values = realloc(opt->values,
                                   (opt->nvalues+1) * sizeof(cfg_value_t *));
     assert(opt->values);
-    opt->values[opt->nvalues] = (cfg_value_t *)malloc(sizeof(cfg_value_t));
+    opt->values[opt->nvalues] = malloc(sizeof(cfg_value_t));
     memset(opt->values[opt->nvalues], 0, sizeof(cfg_value_t));
     return opt->values[opt->nvalues++];
 }
@@ -392,8 +394,7 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
     cfg_opt_t *dupopts;
     int n = cfg_numopts(opts);
 
-    dupopts = (cfg_opt_t *)malloc((n+1) * sizeof(cfg_opt_t));
-    memset(dupopts, 0, (n+1) * sizeof(cfg_opt_t));
+    dupopts = calloc(n+1, sizeof(cfg_opt_t));
     memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
     for(i = 0; i < n; i++)
@@ -568,7 +569,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 /* Check if there already is a section with the same title.
                  */
 
-		/* Assert that there either are no sections at all, or a
+		/* Assert that there are either no sections at all, or a
 		 * non-NULL section title. */
                 assert(opt->nvalues == 0 || value);
 
@@ -671,9 +672,8 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             if(is_set(CFGF_MULTI, opt->flags) || val->section == 0)
             {
                 cfg_free(val->section);
-                val->section = (cfg_t *)malloc(sizeof(cfg_t));
+                val->section = calloc(1, sizeof(cfg_t));
                 assert(val->section);
-                memset(val->section, 0, sizeof(cfg_t));
                 val->section->name = strdup(opt->name);
                 val->section->opts = cfg_dupopt_array(opt->subopts);
                 val->section->flags = cfg->flags;
@@ -762,13 +762,12 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
     /* create a regular argv string vector and call
      * the registered function
      */
-    argv = (const char **)malloc(funcopt->nvalues *
-                                 sizeof(char *));
+    argv = calloc(funcopt->nvalues, sizeof(char *));
     for(i = 0; i < funcopt->nvalues; i++)
         argv[i] = funcopt->values[i]->string;
     ret = (*opt->func)(cfg, opt, funcopt->nvalues, argv);
     cfg_free_value(funcopt);
-    free((char **)argv);
+    free(argv);
     return ret;
 }
 
@@ -1099,9 +1098,8 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 {
     cfg_t *cfg;
 
-    cfg = (cfg_t *)malloc(sizeof(cfg_t));
+    cfg = calloc(1, sizeof(cfg_t));
     assert(cfg);
-    memset(cfg, 0, sizeof(cfg_t));
 
     cfg->name = strdup("root");
     cfg->opts = cfg_dupopt_array(opts);
@@ -1147,7 +1145,7 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
             file = strchr(filename, '/');
             if(file == 0)
                 file = filename + strlen(filename);
-            user = (char *)malloc(file - filename);
+            user = malloc(file - filename);
             strncpy(user, filename + 1, file - filename - 1);
             passwd = getpwnam(user);
             free(user);
@@ -1155,7 +1153,7 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 
         if(passwd)
         {
-            expanded = (char *)malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
+            expanded = malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
             strcpy(expanded, passwd->pw_dir);
             strcat(expanded, file);
         }
@@ -1595,8 +1593,12 @@ static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const cha
                 /*fprintf(stderr, "not a section!\n");*/
                 return 0;
             }
-            if(!is_set(CFGF_MULTI, secopt->flags) && (seccfg = cfg_opt_getnsec(secopt, 0)) != 0)
+
+            if(!is_set(CFGF_MULTI, secopt->flags) &&
+	       (seccfg = cfg_opt_getnsec(secopt, 0)) != 0)
+	    {
                 opts = seccfg->opts;
+	    }
             else
                 opts = secopt->subopts;
             if(opts == 0)

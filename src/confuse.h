@@ -1,4 +1,4 @@
-/* Configuration file parser -*- tab-width: 4; -*-
+/* Configuration file parser
  *
  * $Id$
  *
