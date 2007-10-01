@@ -48,5 +48,10 @@ int main(void)
     }
 
     cfg_free(cfg);
+
+    /* You are responsible for freeing string values. */
+    free(server);
+    free(username);
+
     return 0;
 }
