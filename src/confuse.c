@@ -1196,12 +1196,12 @@ static void cfg_free_opt_array(cfg_opt_t *opts)
     for(i = 0; opts[i].name; ++i)
     {
         free(opts[i].name);
-        if(opts[i].type == CFGT_STR)
+        if(opts[i].type == CFGT_FUNC || is_set(CFGF_LIST, opts[i].flags))
+            free(opts[i].def.parsed);
+        else if(opts[i].type == CFGT_STR)
             free(opts[i].def.string);
         else if(opts[i].type == CFGT_SEC)
             cfg_free_opt_array(opts[i].subopts);
-        else if(opts[i].type == CFGT_FUNC || is_set(CFGF_LIST, opts[i].flags))
-            free(opts[i].def.parsed);
     }
     free(opts);
 }
