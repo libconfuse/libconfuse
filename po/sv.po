@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libconfuse 2.6\n"
-"Report-Msgid-Bugs-To: martin@bzero.se\n"
-"POT-Creation-Date: 2007-10-13 12:53+0200\n"
+"Report-Msgid-Bugs-To: confuse-devel@nongnu.org\n"
+"POT-Creation-Date: 2007-10-13 16:54+0200\n"
 "PO-Revision-Date: 2003-01-26 14:10+0100\n"
 "Last-Translator: Martin Hedenfalk <martin@bzero.se>\n"
 "Language-Team: None <martin@bzero.se>\n"
@@ -116,4 +116,3 @@ msgstr "oavslutad teckensträng"
 #: src/lexer.l:290
 msgid "includes nested too deeply"
 msgstr "inkluderingsfiler för djupt nästlade"
-
