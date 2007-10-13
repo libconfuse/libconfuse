@@ -16,8 +16,12 @@ echo -n "Running autoheader..."
 autoheader || exit
 echo " done"
 
+echo -n "Running libtoolize..."
+libtoolize --automake || exit
+echo " done"
+
 echo -n "Running automake..."
-automake || exit
+automake --add-missing || exit
 echo " done"
 
 echo "Running configure $*..."
