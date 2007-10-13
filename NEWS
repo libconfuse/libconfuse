@@ -15,6 +15,9 @@ New in 2.6
 * always installs both libconfuse.pc (for pkg-config) and confuse-config
   scripts, regardless of whether pkg-config is installed or not.
 * fixed a bug reported by Josh Kropf with single sections with titles
+* added patch that escapes values with quotes and backslashes when printing.
+* fixed a memory leak in default values for string lists,
+  reported by Vineeth Neelakant.
 
 New in 2.5
 ----------
