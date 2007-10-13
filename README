@@ -18,10 +18,3 @@ directory. It is also available at http://www.nongnu.org/confuse/manual/.
 There is a project page at http://sv.nongnu.org/projects/confuse.
 Report bugs to <confuse-devel@nongnu.org>
 
-
-
-TODO
-----
-
-* add list support for simple values
-* make thread safe
