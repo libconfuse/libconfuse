@@ -18,6 +18,7 @@ New in 2.6
 * added patch that escapes values with quotes and backslashes when printing.
 * fixed a memory leak in default values for string lists,
   reported by Vineeth Neelakant.
+* windows build files now only in separate zip distribution
 
 New in 2.5
 ----------

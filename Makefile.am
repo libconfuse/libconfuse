@@ -19,7 +19,7 @@ MSVS_FILES=config.h msvs.net.sln unistd.h
 MSVS_CFGTEST_FILES=cfgtest.vcproj
 MSVS_LIBCONFUSE_FILES=libConfuse.vcproj
 
-dist-hook: doc
+add-windows-files:
 	mkdir $(distdir)/windows
 	mkdir $(distdir)/windows/borland
 	mkdir $(distdir)/windows/devcpp
@@ -41,13 +41,16 @@ dist-hook: doc
 	   cp -f $(top_srcdir)/windows/msvs.net/libConfuse/$$f $(distdir)/windows/msvs.net/libConfuse; done
 	for f in $(MSVC6_FILES); do \
 	   cp -f $(top_srcdir)/windows/msvc6/libConfuse/$$f $(distdir)/windows/msvc6/libConfuse; done
+	cp $(top_srcdir)/examples/wincfgtest.c $(distdir)/examples
+	cp $(top_srcdir)/examples/wincfgtest.conf $(distdir)/examples
+	cp $(top_srcdir)/examples/wincfgtest.dev $(distdir)/examples
 
-dist-extra: dist
+unpack:
 	tar zxf $(PACKAGE)-$(VERSION).tar.gz
+
+zip: dist unpack add-windows-files
 	rm -f $(PACKAGE)-$(VERSION).zip
-	zip -9 -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
-	rm -f $(PACKAGE)-$(VERSION).tar.bz2
-	tar jcf $(PACKAGE)-$(VERSION).tar.bz2 $(PACKAGE)-$(VERSION)
+	zip -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION)
 	rm -rf $(PACKAGE)-$(VERSION)
 
 rpm: Makefile
