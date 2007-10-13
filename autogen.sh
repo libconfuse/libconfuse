@@ -2,6 +2,7 @@
 
 echo -n "Running autopoint..."
 autopoint && echo " done"
+rm -f ABOUT-NLS
 
 echo -n "Running aclocal..."
 aclocal -I m4 || exit
