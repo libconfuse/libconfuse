@@ -29,7 +29,7 @@ Source:			http://savannah.nongnu.org/download/confuse//%{_srcname}-%{_version}.t
 URL:				http://www.nongnu.org/confuse/
 Group:			%{_group}
 Packager:		Pascal Bleser <guru@unixtech.be>
-Copyright:		LGPL
+Copyright:		ISC
 BuildRoot:		%{_tmppath}/build-%{_name}-%{_version}
 BuildRequires:     xmlto doxygen
 Prefix:			%{_prefix}
@@ -38,21 +38,18 @@ Distribution:  %_distribution
 %endif
 
 %description
-libConfuse is a configuration file parser library, licensed under the
-terms of the LGPL, and written in C. It supports sections and (lists
-of) values (strings, integers, floats, booleans or other sections), as
-well as some other features (such as single/double-quoted strings,
-environment variable expansion, functions and nested include
-statements).
+libConfuse is a configuration file parser library written in C.
+It supports sections and (lists of) values (strings, integers,
+floats, booleans or other sections), as well as some other features
+(such as single/double-quoted strings, environment variable expansion,
+functions and nested include statements).
 
-It makes it very easy to add configuration file capability to a
-program using a simple API. The goal of libConfuse is not to be *the*
-configuration file parser library with a gazillion of features.
-Instead, it aims to be easy to use and quick to integrate with your
-code.
+It makes it easy to add configuration file capability to a
+program using a simple API. LibConfuse aims to be easy to use and
+quick to integrate with your code.
 
 %package devel
-Summary:			Development Environment for %{_name}
+Summary:		Development Environment for %{_name}
 Group:			%{_group}
 Requires:		%{_name} = %{_version}
 
@@ -73,7 +70,6 @@ and %{_pkgdoc}/examples respectively.
 %prep
 %setup -q -n "%{_srcname}-%{_version}"
 CFLAGS="${RPM_OPT_FLAGS}" \
-CXXFLAGS="${RPM_OPT_FLAGS}" \
 ./configure \
 	--prefix="%{_prefix}" \
 	--enable-shared
@@ -127,7 +123,3 @@ echo Updating dynamic linker cache...
 %{_libdir}/lib*.so
 %doc %{_mandir}/man*/*
 
-# Local Variables:
-# mode: rpm-spec
-# tab-width: 3
-# End:

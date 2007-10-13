@@ -1,22 +1,17 @@
-/* Configuration file parser
+/*
+ * Copyright (c) 2002,2003,2007 Martin Hedenfalk <martin@bzero.se>
  *
- * $Id$
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * Copyright (c) 2002-2003, Martin Hedenfalk <martin@bzero.se>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -112,25 +107,28 @@ static char *strndup(const char *s, size_t n)
 #endif
 
 #ifndef HAVE_STRCASECMP
-/* Implementation from GNU glibc 2.3.1
- * Copyright (C) 1991,1992,1995,1996,1997,2001,2002
- *   Free Software Foundation, Inc.
- * License: GNU LGPL
- */
-static int strcasecmp(const char *a, const char *b)
+int strcasecmp(const char *s1, const char *s2)
 {
-    int r;
+    assert(s1);
+    assert(s2);
 
-    if(a == b)
-        return 0;
-
-    while((r = tolower(*a) - tolower(*b++)) == 0)
+    while(*s1)
     {
-        if(*a++ == '\0')
-            break;
+	int c1 = tolower(*(const unsigned char *)s1);
+	int c2 = tolower(*(const unsigned char *)s2);
+	if(c1 < c2)
+	    return -1;
+	if(c1 > c2)
+	    return +1;
+
+	++s1;
+	++s2;
     }
 
-    return r;
+    if(*s2 != 0)
+	return -1;
+
+    return 0;
 }
 #endif
 

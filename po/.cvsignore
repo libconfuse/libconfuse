@@ -7,3 +7,11 @@ sv.gmo
 remove-potcdate.sed
 fr.gmo
 Makefile.in.in
+Rules-quot
+boldquot.sed
+confuse.pot
+en@boldquot.header
+en@quot.header
+insert-header.sin
+quot.sed
+remove-potcdate.sin
