@@ -1,31 +1,25 @@
-# vim:ft=make
 EXTRA_DIST = doxygen-footer.html doxygen-header.html doxygen.css tutorial.xml \
-			 $(TUTORIAL_CSOURCES) css.xsl tutorial.css Doxyfile.in Doxyfile
+	     $(TUTORIAL_CSOURCES) css.xsl tutorial.css Doxyfile.in Doxyfile
 
-noinst_PROGRAMS = listing1 listing2 listing3 listing4 listing5 listing8
+# I'd like to have these programs only compile at 'make documentation' time.
+# How?
+# noinst_PROGRAMS = listing1 listing2 listing3 listing4 listing5 listing8
+LDADD = ../src/libconfuse.la
 INCLUDES = -I$(top_srcdir)/src
 AM_LDFLAGS = -L../src/
-listing2_LDADD = ../src/libconfuse.la
-listing3_LDADD = ../src/libconfuse.la
-listing4_LDADD = ../src/libconfuse.la
-listing5_LDADD = ../src/libconfuse.la
-listing8_LDADD = ../src/libconfuse.la
 LIBS = $(LTLIBINTL)
 
 if cc_is_gcc
 AM_CFLAGS=-Wall -Werror
 endif
 
-#BUILT_SOURCES = tutorial-html/index.html html/index.html
-
-#TUTORIAL_CSOURCES := $(shell grep 'ENTITY listing' tutorial.xml | sed 's/.*ENTITY \(.*\) SYSTEM.*/\1.c/')
-TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c listing5.c listing6.c \
-					listing7.c listing8.c
+TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c \
+		    listing5.c listing6.c listing7.c listing8.c
 TUTORIAL_LISTINGS = $(TUTORIAL_CSOURCES:.c=.xml)
 
 .c.xml:
 	echo "<programlisting id=\"$*\"><![CDATA[" > $@
-	cat $< | awk 'BEGIN {l=1} /.*/ {printf("%02d   %s\n", l, $$0); l++}' >> $@
+	sed = $< | sed 'N;s/\n/\t/' >> $@
 	echo ']]></programlisting>' >> $@
 
 tutorial-html/index.html: tutorial.xml $(TUTORIAL_LISTINGS) css.xsl tutorial.css
