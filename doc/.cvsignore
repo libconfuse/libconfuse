@@ -8,7 +8,7 @@ listing4.xml
 listing5.xml
 listing6.xml
 listing7.xml
-listing8.c
+listing8.xml
 Makefile
 Makefile.in
 man
@@ -18,3 +18,4 @@ tutorial-source
 valid.c
 .Makefile.am.swp
 tutorial-build.timestamp
+Doxyfile
