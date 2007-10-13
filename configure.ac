@@ -4,6 +4,7 @@ AC_PREREQ(2.50)
 
 AC_INIT(libConfuse, 2.6, confuse-devel@nongnu.org, confuse)
 AC_CONFIG_AUX_DIR(support)
+AM_MAINTAINER_MODE
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR(src/confuse.c)

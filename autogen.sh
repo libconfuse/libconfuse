@@ -25,4 +25,5 @@ automake --add-missing || exit
 echo " done"
 
 echo "Running configure $*..."
-./configure $*
+./configure --enable-maintainer-mode $*
+
