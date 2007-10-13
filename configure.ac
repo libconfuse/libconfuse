@@ -1,5 +1,4 @@
 dnl Process this file with -*- autoconf -*- to produce a configure script.
-dnl $Id$
 
 AC_PREREQ(2.50)
 
@@ -10,16 +9,24 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR(src/confuse.c)
 
 # Checks for programs.
+# disable unnecessary compiler checks
+AC_DEFUN([AC_PROG_F77], [:])
+AC_DEFUN([AC_PROG_FC], [:])
+AC_DEFUN([AC_PROG_CXX], [:])
+AC_DEFUN([AC_PROG_CXXCPP], [:])
+AC_DEFUN([AC_PROG_OBJC], [:])
+AC_DEFUN([AC_PROG_OBJCCPP], [:])
+AC_DEFUN([AC_LIBTOOL_CXX], [:])
+AC_DEFUN([AC_LIBTOOL_F77], [:])
 AC_PROG_CC
 AM_PROG_LEX
 AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
-# Checks for libraries.
 
 AM_CONDITIONAL([cc_is_gcc], test "$GCC" = "yes")
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION(0.14.1)
+AM_GNU_GETTEXT_VERSION([0.16.1])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -29,17 +36,17 @@ AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 AC_C_CONST
 
 # Checks for library functions.
-# AC_FUNC_MALLOC
-# AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
-CONFUSE_VERSION="$VERSION"
-CONFUSE_CPPFLAGS="-I$includedir"
-CONFUSE_LIBS="-lconfuse $LTLIBINTL"
-AC_CONFIG_LIBCONFIG_IN_STATIC
-AC_CONFIG_LIBCONFIG_IN([confuse])
-
-AC_CONFIG_FILES([Makefile doc/Doxyfile src/Makefile examples/Makefile libconfuse.pc \
-                 po/Makefile.in m4/Makefile tests/Makefile doc/Makefile libconfuse.spec confuse-config])
+AC_CONFIG_FILES([Makefile \
+		 src/Makefile \
+		 examples/Makefile \
+                 po/Makefile.in \
+		 m4/Makefile \
+		 tests/Makefile \
+		 doc/Makefile \
+                 doc/Doxyfile \
+		 libconfuse.pc \
+		 libconfuse.spec])
 AC_OUTPUT
 

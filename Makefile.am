@@ -8,7 +8,6 @@ SUBDIRS = m4 po src examples tests doc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libconfuse.pc
-bin_SCRIPTS = confuse-config
 
 celan: clean
 

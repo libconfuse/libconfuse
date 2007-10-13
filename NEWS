@@ -12,8 +12,8 @@ New in 2.6
   (duplicates raises an error, only applies to sections)
   (suggested by Brian Fallik)
 * fixed rpm builds, patch by Dan Lipsitt
-* always installs both libconfuse.pc (for pkg-config) and confuse-config
-  scripts, regardless of whether pkg-config is installed or not.
+* always installs pkg-config .pc script
+* remove obsolete confuse-config script in favour of pkg-config
 * fixed a bug reported by Josh Kropf with single sections with titles
 * added patch that escapes values with quotes and backslashes when printing.
 * fixed a memory leak in default values for string lists,
