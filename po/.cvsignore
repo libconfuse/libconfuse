@@ -6,3 +6,4 @@ stamp-po
 sv.gmo
 remove-potcdate.sed
 fr.gmo
+Makefile.in.in
