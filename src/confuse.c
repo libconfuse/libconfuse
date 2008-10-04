@@ -571,7 +571,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 		 * non-NULL section title. */
                 assert(opt->nvalues == 0 || value);
 
-                for(i = 0; i < opt->nvalues; i++)
+                for(i = 0; i < opt->nvalues && val == NULL; i++)
                 {
                     cfg_t *sec = opt->values[i]->section;
                     if(is_set(CFGF_NOCASE, cfg->flags))
@@ -591,7 +591,7 @@ static cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                     return 0;
                 }
             }
-            if(val == 0)
+            if(val == NULL)
                 val = cfg_addval(opt);
         }
         else
@@ -957,6 +957,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     return STATE_ERROR;
 
                 val->section->line = cfg->line;
+		val->section->errfunc = cfg->errfunc;
                 rc = cfg_parse_internal(val->section, level+1,-1,0);
                 cfg->line = val->section->line;
                 if(rc != STATE_EOF)
@@ -1226,6 +1227,7 @@ DLLIMPORT void cfg_free(cfg_t *cfg)
 DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc,
                           const char **argv)
 {
+    opt = NULL;
     if(argc != 1)
     {
         cfg_error(cfg, _("wrong number of arguments to cfg_include()"));
