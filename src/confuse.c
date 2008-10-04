@@ -18,19 +18,15 @@
 # include <config.h>
 #endif
 
-#ifdef HAVE_STRING_H
-# define _GNU_SOURCE    /* FIXME! */
-# include <string.h>
-#endif
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <sys/types.h>
+#define _GNU_SOURCE
+#include <string.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
 #ifndef _WIN32
 # include <pwd.h>
 #endif
-#include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
