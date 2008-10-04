@@ -39,6 +39,9 @@ AC_C_CONST
 # Checks for library functions.
 AC_CHECK_FUNCS([strcasecmp strdup strndup])
 
+dnl Check for the library containing inet_aton/inet_ntoa (for tests)
+AC_SEARCH_LIBS([inet_ntoa], [socket nsl])
+
 AC_CONFIG_FILES([Makefile \
 		 src/Makefile \
 		 examples/Makefile \
