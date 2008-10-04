@@ -8,6 +8,8 @@ LDADD=-L../src ../src/libconfuse.la $(LTLIBINTL)
 EXTRA_DIST=a.conf b.conf check_confuse.h
 CLEANFILES=*~
 
+DEFS=-DSRC_DIR='"$(srcdir)"'
+
 if cc_is_gcc
 AM_CFLAGS=-Wall -Werror
 endif

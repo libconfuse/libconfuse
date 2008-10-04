@@ -26,10 +26,10 @@ main(void)
     cfg_t *sec;
 
     acfg = create_config();
-    fail_unless(cfg_parse(acfg, "a.conf") == 0);
+    fail_unless(cfg_parse(acfg, SRC_DIR "/a.conf") == 0);
 
     bcfg = create_config();
-    fail_unless(cfg_parse(bcfg, "b.conf") == 0);
+    fail_unless(cfg_parse(bcfg, SRC_DIR "/b.conf") == 0);
 
     sec = cfg_getnsec(acfg, "sec", 0);
     fail_unless(sec != 0);
