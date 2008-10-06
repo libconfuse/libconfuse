@@ -849,6 +849,14 @@ DLLIMPORT int __export cfg_parse_boolean(const char *s);
  */
 DLLIMPORT cfg_opt_t * __export cfg_getopt(cfg_t *cfg, const char *name);
 
+/** Set an option (create an instance of an option).
+ *
+ * @param cfg The configuration file context.
+ * @param opt The option definition.
+ * @param value The initial value for the option.
+ *
+ * @return Returns a pointer to the value object.
+ */
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value);
 
 /** Set a value of an integer option.
