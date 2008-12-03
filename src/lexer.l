@@ -36,6 +36,12 @@
 #endif
 #define N_(str) str
 
+/*
+ * Prevent compilation of static input() function in generated code
+ * This function is never used but GCC 4.3 will warn about it.
+ */
+#define YY_NO_INPUT
+
 typedef char * YYSTYPE;
 extern YYSTYPE cfg_yylval;
 
