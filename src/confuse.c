@@ -18,8 +18,8 @@
 # include <config.h>
 #endif
 
-#include <sys/types.h>
 #define _GNU_SOURCE
+#include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
