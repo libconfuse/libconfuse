@@ -138,7 +138,7 @@ static YY_BUFFER_STATE string_scan_state = 0;
     cfg->line++;
 }
 <dq_str>\\[0-7]{1,3} {  /* octal escape sequence */
-    int result;
+    unsigned int result;
     sscanf(yytext + 1, "%o", &result);
     if(result > 0xFF) {
         cfg_error(cfg, _("invalid octal number '%s'"), yytext);
@@ -151,7 +151,7 @@ static YY_BUFFER_STATE string_scan_state = 0;
     return 0;
 }
 <dq_str>"\\x"[0-9A-Fa-f]{1,2} { /* hexadecimal escape sequence */
-    int result;
+    unsigned int result;
     sscanf(yytext + 2, "%x", &result);
     qputc(result);
 }
