@@ -39,7 +39,7 @@ int main(void)
     printf("verbose: %s\n", verbose ? "true" : "false");
     printf("server: %s\n", server);
     printf("username: %s\n", username);
-    printf("debug: %d\n", debug);
+    printf("debug: %ld\n", debug);
     printf("delay: %G\n", delay);
 
     printf("setting username to 'foo'\n");
