@@ -17,7 +17,7 @@ autoheader || exit
 echo " done"
 
 echo -n "Running libtoolize..."
-libtoolize --automake || exit
+libtoolize --automake || glibtoolize --automake || exit
 echo " done"
 
 echo -n "Running automake..."
