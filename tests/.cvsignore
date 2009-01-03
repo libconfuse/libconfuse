@@ -12,3 +12,6 @@ suite_func
 suite_list
 suite_single
 suite_validate
+include
+quote_before_print
+single_title_sections
