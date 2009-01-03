@@ -227,13 +227,12 @@ static YY_BUFFER_STATE string_scan_state = 0;
 }
 
 <<EOF>> {
-             if( string_scan_state != 0 || cfg_include_stack_ptr <= 0 )
-                 {
+             if (cfg_include_stack_ptr <= 0)
+             {
                  return EOF;
-                 }
-
+             }
              else
-                 {
+             {
                  yy_delete_buffer( YY_CURRENT_BUFFER );
                  fclose(cfg_yyin);
                  cfg_yyin = 0;
@@ -243,7 +242,7 @@ static YY_BUFFER_STATE string_scan_state = 0;
                  free(cfg->filename);
                  cfg->filename = cfg_include_stack[cfg_include_stack_ptr].filename;
                  cfg->line = cfg_include_stack[cfg_include_stack_ptr].line;
-                 }
+             }
 }
 
 $\{[^}]*\} {
