@@ -283,11 +283,18 @@ static void parse_buf_test(void)
     buf = "/* this is a comment */ bool = {true} /*// another comment */";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
+    buf = "/*/*/ bool = {true}//  */";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+
     buf = "/////// this is a comment\nbool = {true} // another /* comment */";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
     buf = "# this is a comment\nbool = {true} # another //* comment *//";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+
+    buf = "string={/usr/local/}";
+    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+    fail_unless(strcmp(cfg_getnstr(cfg, "string", 0), "/usr/local/") == 0);
 }
 
 static void nonexistent_option_test(void)

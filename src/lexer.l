@@ -267,10 +267,12 @@ $\{[^}]*\} {
   * a slash can't be followed by another slash (c++
   * comment) or an asterisk (C multi-line comment)
   */
-(\/[^ #\"\'\t\n\r={}()+,\/*]|[^ \/#\"\'\t\n\r={}()+,])+ {
+(\/[^ #\"\'\t\n\r={}()+,\/*]|[^ #\"\'\t\n\r={}()+,\*])+ {
     cfg_yylval = yytext;
     return CFGT_STR;
  }
+
+. /* eat any non-matching characters */
 
 %%
 
