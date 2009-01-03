@@ -341,7 +341,8 @@ void cfg_scan_string_end(void)
     /* restore to previous state
      */
     yy_delete_buffer(string_scan_state);
-    yy_switch_to_buffer(pre_string_scan_state);
+    if (pre_string_scan_state)
+        yy_switch_to_buffer(pre_string_scan_state);
     free(cfg_qstring);
     cfg_qstring = 0;
     qstring_index = qstring_len = 0;
