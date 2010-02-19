@@ -3,7 +3,12 @@
 AUTOMAKE_OPTIONS = foreign
 CLEANFILES=*~ '\#*\#'
 EXTRA_DIST=libconfuse.spec.in libconfuse.spec
-SUBDIRS = m4 po src examples tests doc
+
+EXAMPLES =
+if ENABLE_EXAMPLES
+  EXAMPLES += examples
+endif
+SUBDIRS = m4 po src $(EXAMPLES) tests doc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libconfuse.pc

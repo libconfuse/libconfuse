@@ -24,6 +24,12 @@ AM_PROG_LEX
 AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
+# optional building of examples:
+AC_ARG_ENABLE([examples],
+	[AC_HELP_STRING([--disable-examples], [don't build examples in examples])],
+	[], [enable_examples=yes])
+AM_CONDITIONAL([ENABLE_EXAMPLES], [test "$enable_examples" = yes])
+
 AM_CONDITIONAL([cc_is_gcc], test "$GCC" = "yes")
 
 AM_GNU_GETTEXT([external])

@@ -11,7 +11,7 @@ CLEANFILES=*~
 DEFS=-DSRC_DIR='"$(srcdir)"'
 
 if cc_is_gcc
-AM_CFLAGS=-Wall -Werror
+AM_CFLAGS=-Wall
 endif
 
 celan: clean

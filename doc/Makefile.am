@@ -10,7 +10,7 @@ AM_LDFLAGS = -L../src/
 LIBS = $(LTLIBINTL)
 
 if cc_is_gcc
-AM_CFLAGS=-Wall -Werror
+AM_CFLAGS=-Wall
 endif
 
 TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c \
