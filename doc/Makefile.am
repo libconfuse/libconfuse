@@ -9,10 +9,6 @@ INCLUDES = -I$(top_srcdir)/src
 AM_LDFLAGS = -L../src/
 LIBS = $(LTLIBINTL)
 
-if cc_is_gcc
-AM_CFLAGS=-Wall
-endif
-
 TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c \
 		    listing5.c listing6.c listing7.c listing8.c
 TUTORIAL_LISTINGS = $(TUTORIAL_CSOURCES:.c=.xml)
