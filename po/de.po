@@ -1,118 +1,118 @@
-# Swedish translations for libConfuse.
-# Svenska översättningar för libConfuse.
+# Translation of confuse to German
 # Copyright (C) 2002-2003 Martin Hedenfalk
-# This file is distributed under the same license as the libConfuse package.
-# Martin Hedenfalk <martin@bzero.se>, 2002.
+# This file is distributed under the same license as the confuse package.
+# Chris Leick <c.leick@vollbio.de>, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libconfuse 2.6\n"
+"Project-Id-Version: confuse 2.6-2\n"
 "Report-Msgid-Bugs-To: confuse-devel@nongnu.org\n"
 "POT-Creation-Date: 2010-02-22 02:11-0500\n"
-"PO-Revision-Date: 2003-01-26 14:10+0100\n"
-"Last-Translator: Martin Hedenfalk <martin@bzero.se>\n"
-"Language-Team: None <martin@bzero.se>\n"
+"PO-Revision-Date: 2010-02-22 02:06-0500\n"
+"Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/confuse.c:150 src/confuse.c:172
 #, c-format
 msgid "no such option '%s'"
-msgstr "ingen flagga '%s' finns"
+msgstr "keine solche Option Â»%sÂ«"
 
 #: src/confuse.c:587
 #, c-format
 msgid "found duplicate title '%s'"
-msgstr "titeln '%s' har dubletter"
+msgstr "doppelter Titel Â»%sÂ« gefunden"
 
 #: src/confuse.c:612
 #, c-format
 msgid "invalid integer value for option '%s'"
-msgstr "felaktigt heltalsvärde för flaggan '%s'"
+msgstr "ungÃ¼ltiger Ganzzahlwert fÃ¼r Option Â»%sÂ«"
 
 #: src/confuse.c:619
 #, c-format
 msgid "integer value for option '%s' is out of range"
-msgstr "heltalsvärdet för flaggan '%s' är för stort"
+msgstr "Ganzzahlwert fÃ¼r Option Â»%sÂ« ist auÃŸerhalb des Abschnitts"
 
 #: src/confuse.c:639
 #, c-format
 msgid "invalid floating point value for option '%s'"
-msgstr "felaktigt flyttalsvärde för flaggan '%s'"
+msgstr "ungÃ¼ltiger FlieÃŸkommawert fÃ¼r Option Â»%sÂ«"
 
 #: src/confuse.c:646
 #, c-format
 msgid "floating point value for option '%s' is out of range"
-msgstr "flyttalsvärdet för flaggan '%s' är utanför tillåten gräns"
+msgstr "FlieÃŸkommawert fÃ¼r Option Â»%sÂ« ist auÃŸerhalb des Abschnitts"
 
 #: src/confuse.c:695
 #, c-format
 msgid "invalid boolean value for option '%s'"
-msgstr "felaktigt boolskt värde för flaggan '%s'"
+msgstr "ungÃ¼ltiger Boolean-Wert fÃ¼r Option Â»%sÂ«"
 
 #: src/confuse.c:799
 msgid "premature end of file"
-msgstr "för tidigt filslut"
+msgstr "vorzeitiges Ende der Datei"
 
+# http://www.dict.cc/deutsch-englisch/Klammer.html
 #: src/confuse.c:812
 msgid "unexpected closing brace"
-msgstr "oväntad avslutande måsvinge"
+msgstr "unerwartete schlieÃŸende eckige Klammer"
 
 #: src/confuse.c:819 src/confuse.c:889 src/confuse.c:911 src/confuse.c:938
 #, c-format
 msgid "unexpected token '%s'"
-msgstr "oväntat värde '%s'"
+msgstr "unerwartetes Element Â»%sÂ«"
 
 #: src/confuse.c:846
 #, c-format
 msgid "attempt to append to non-list option '%s'"
-msgstr "försök att lägga till värden till en icke-lista ('%s')"
+msgstr "Versuch, an die Nicht-Listen-Option Â»%sÂ« anzuhÃ¤ngen"
 
 #: src/confuse.c:864
 #, c-format
 msgid "missing equal sign after option '%s'"
-msgstr "saknar likamed-tecken efter '%s'"
+msgstr "fehlendes Gleichheitszeichen nach Option Â»%sÂ«"
 
 #: src/confuse.c:946
 #, c-format
 msgid "missing opening brace for section '%s'"
-msgstr "öppningsparentes saknas för sektion '%s'"
+msgstr "Ã¶ffnende geschweifte Klammer fÃ¼r Abschnitt Â»%sÂ« fehlt"
 
 #: src/confuse.c:970
 #, c-format
 msgid "missing title for section '%s'"
-msgstr "titel till sektion '%s' saknas"
+msgstr "fehlender Titel fÃ¼r Abschnitt Â»%sÂ«"
 
 #: src/confuse.c:982
 #, c-format
 msgid "missing parenthesis for function '%s'"
-msgstr "parentes saknas i anropet till funktionen '%s'"
+msgstr "runde Klammer fÃ¼r Funktion Â»%sÂ« fehlt"
 
 #: src/confuse.c:1005 src/confuse.c:1023
 #, c-format
 msgid "syntax error in call of function '%s'"
-msgstr "syntaktiskt fel i anrop till funktionen '%s'"
+msgstr "Syntaxfehler im Aufruf der Funktion Â»%sÂ«"
 
 #: src/confuse.c:1230
 msgid "wrong number of arguments to cfg_include()"
-msgstr "fel antal argument till cfg_include()"
+msgstr "falsche Anzahl von Argumenten fÃ¼r cfg_include()"
 
 #: src/lexer.l:144
 #, c-format
 msgid "invalid octal number '%s'"
-msgstr "otillåtet oktalt nummer '%s'"
+msgstr "ungÃ¼ltige Oktalzahl Â»%sÂ«"
 
 #: src/lexer.l:150
 #, c-format
 msgid "bad escape sequence '%s'"
-msgstr "felaktig sekvens '%s'"
+msgstr "falsche Escape-Sequenz Â»%sÂ«"
 
 #: src/lexer.l:225
 msgid "unterminated string constant"
-msgstr "oavslutad teckensträng"
+msgstr "nicht beendete Zeichenkettenkonstante"
 
 #: src/lexer.l:292
 msgid "includes nested too deeply"
-msgstr "inkluderingsfiler för djupt nästlade"
+msgstr "Zu tiefe Verschachtelung von includes"
