@@ -2,6 +2,7 @@ lib_LTLIBRARIES = libconfuse.la
 
 libconfuse_la_SOURCES = confuse.c lexer.l
 libconfuse_la_LIBADD = $(LTLIBINTL)
+libconfuse_la_CPPFLAGS = -D_GNU_SOURCE
 
 include_HEADERS = confuse.h
 
