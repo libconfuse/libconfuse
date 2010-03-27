@@ -8,13 +8,14 @@ int main(void)
         CFG_END()
     };
 
+    int rc;
     cfg_t *cfg = cfg_init(opts, CFGF_NONE);
     fail_unless(cfg);
 
-    int rc = cfg_parse_buf(cfg,
-            " stringproperty = {\"this\"}\n"
-            " stringproperty += {\"that\"}\n"
-            " stringproperty += {\"other\"}\n");
+    rc = cfg_parse_buf(cfg,
+        " stringproperty = {\"this\"}\n"
+        " stringproperty += {\"that\"}\n"
+        " stringproperty += {\"other\"}\n");
 
     fail_unless(rc == CFG_SUCCESS);
 
