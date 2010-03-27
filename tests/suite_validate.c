@@ -98,7 +98,6 @@ void validate_setup(void)
     cfg_opt_t multi_opts[] =
     {
         CFG_INT_LIST("speeds", 0, CFGF_NONE),
-        //{"speeds",CFGT_INT,0,0,CFGF_LIST,0,{0,0,cfg_false,0,0},0,0,0,validate_speed,0},
         CFG_SEC("options", action_opts, CFGF_NONE),
         CFG_END()
     };
