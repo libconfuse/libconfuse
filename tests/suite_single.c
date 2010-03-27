@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "check_confuse.h"
 #include <string.h>
 #include <stdlib.h>
