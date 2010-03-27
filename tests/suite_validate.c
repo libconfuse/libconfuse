@@ -13,7 +13,7 @@ static cfg_t *cfg = 0;
 #define ACTION_CRAWL 3
 #define ACTION_JUMP 4
 
-int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
+static int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
     if(strcmp(value, "run") == 0)
         *(int *)result = ACTION_RUN;
@@ -87,7 +87,7 @@ void validate_setup(void)
 {
     cfg_opt_t *opt = 0;
 
-    cfg_opt_t action_opts[] =
+    static cfg_opt_t action_opts[] =
     {
         CFG_INT("speed", 0, CFGF_NONE),
         CFG_STR("name", 0, CFGF_NONE),
@@ -95,7 +95,7 @@ void validate_setup(void)
         CFG_END()
     };
 
-    cfg_opt_t multi_opts[] =
+    static cfg_opt_t multi_opts[] =
     {
         CFG_INT_LIST("speeds", 0, CFGF_NONE),
         CFG_SEC("options", action_opts, CFGF_NONE),

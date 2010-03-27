@@ -4,10 +4,10 @@
 
 int main(void)
 {
-    cfg_bool_t verbose = cfg_false;
-    char *server = NULL;
-    double delay = 1.356e-32;
-    char *username = NULL;
+    static cfg_bool_t verbose = cfg_false;
+    static char *server = NULL;
+    static double delay = 1.356e-32;
+    static char *username = NULL;
 
     /* Although the macro used to specify an integer option is called
      * CFG_SIMPLE_INT(), it actually expects a long int. On a 64 bit system
@@ -18,7 +18,7 @@ int main(void)
      * cfg_getint(), this is not a problem as the data types are implicitly
      * cast.
      */
-    long int debug = 1;
+    static long int debug = 1;
 
     cfg_opt_t opts[] = {
         CFG_SIMPLE_BOOL("verbose", &verbose),

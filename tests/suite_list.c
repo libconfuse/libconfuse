@@ -6,7 +6,7 @@ static int numopts = 0;
 
 static void list_setup(void)
 {
-    cfg_opt_t subsec_opts[] = 
+    static cfg_opt_t subsec_opts[] = 
     {
         CFG_STR_LIST("subsubstring", 0, CFGF_NONE),
         CFG_INT_LIST("subsubinteger", 0, CFGF_NONE),
@@ -15,7 +15,7 @@ static void list_setup(void)
         CFG_END()
     };
 
-    cfg_opt_t sec_opts[] =
+    static cfg_opt_t sec_opts[] =
     {
         CFG_STR_LIST("substring", "{subdefault1, subdefault2}", CFGF_NONE),
         CFG_INT_LIST("subinteger", "{17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 300}", CFGF_NONE), /* 14 values */

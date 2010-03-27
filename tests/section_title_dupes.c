@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    cfg_opt_t section_opts[] = {
+    static cfg_opt_t section_opts[] = {
         CFG_STR("prop", 0, CFGF_NONE),
         CFG_END()
     };

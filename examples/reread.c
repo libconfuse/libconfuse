@@ -8,7 +8,7 @@ const char *config_filename = "./reread.conf";
 
 void read_config(void)
 {
-    cfg_opt_t arg_opts[] = {
+    static cfg_opt_t arg_opts[] = {
         CFG_STR("value", "default", CFGF_NONE),
         CFG_END()
     };

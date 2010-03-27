@@ -3,7 +3,7 @@
 
 static cfg_t *create_config(void)
 {
-    cfg_opt_t sec_opts[] = 
+    static cfg_opt_t sec_opts[] = 
     {
         CFG_INT("a", 1, CFGF_NONE),
         CFG_INT("b", 2, CFGF_NONE),

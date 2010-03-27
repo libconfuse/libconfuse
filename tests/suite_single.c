@@ -65,7 +65,7 @@ int parse_ether_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *res
 
 void single_setup(void)
 {
-    cfg_opt_t subsec_opts[] = 
+    static cfg_opt_t subsec_opts[] = 
     {
         CFG_STR("subsubstring", "subsubdefault", CFGF_NONE),
         CFG_INT("subsubinteger", -42, CFGF_NONE),
@@ -74,7 +74,7 @@ void single_setup(void)
         CFG_END()
     };
 
-    cfg_opt_t sec_opts[] =
+    static cfg_opt_t sec_opts[] =
     {
         CFG_STR("substring", "subdefault", CFGF_NONE),
         CFG_INT("subinteger", 17, CFGF_NONE),
@@ -84,7 +84,7 @@ void single_setup(void)
         CFG_END()
     };
 
-    cfg_opt_t nodef_opts[] =
+    static cfg_opt_t nodef_opts[] =
     {
         CFG_STR("string", "defvalue", CFGF_NONE),
         CFG_INT("int", -17, CFGF_NODEFAULT),
