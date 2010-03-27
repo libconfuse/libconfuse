@@ -88,7 +88,7 @@ int main(void)
             if(cfg_parse(cfg, "wincfgtest.conf") == CFG_FILE_ERROR)
                 perror("wincfgtest.conf");
 
-           	sprintf(buf, "bool:    %s\nstring:  %s\nnumber:  %ld\nfloat:   %lf\n",
+           	sprintf(buf, "bool:    %s\nstring:  %s\nnumber:  %ld\nfloat:   %f\n",
             	cfg_getbool(cfg, "bool") ? "true" : "false", cfg_getstr(cfg, "string"),
              	cfg_getint(cfg, "number"), cfg_getfloat(cfg, "float"));
            	MessageBox(NULL, buf, "libConfuse", MB_OK);
