@@ -35,11 +35,11 @@ main(void)
        force linked-list traversal
     */
 
-    fail_unless(cfg_add_searchpath(cfg,nodir) == 0);
-    fail_unless(cfg_add_searchpath(cfg,spdir) == 0);
-    fail_unless(cfg_add_searchpath(cfg,nodir) == 0);
+    fail_unless(cfg_add_searchpath(cfg, nodir) == 0);
+    fail_unless(cfg_add_searchpath(cfg, spdir) == 0);
+    fail_unless(cfg_add_searchpath(cfg, nodir) == 0);
 
-    fail_unless(cfg_parse(cfg,"spa.conf") == 0);
+    fail_unless(cfg_parse(cfg, "spa.conf") == 0);
 
     fail_unless(cfg_size(cfg, "sec") == 3);
 

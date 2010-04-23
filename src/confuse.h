@@ -226,7 +226,7 @@ struct cfg_t {
     cfg_errfunc_t errfunc;  /**< This function (if set with
                              * cfg_set_error_function) is called for
                              * any error message. */
-    cfg_searchpath_t* path; /**< Linked list of directories to search */ 
+    cfg_searchpath_t *path; /**< Linked list of directories to search */ 
 };
 
 /** Data structure holding the value of a fundamental option value.
@@ -583,7 +583,8 @@ DLLIMPORT int __export cfg_add_searchpath(cfg_t *cfg, const char *dir);
  * @return If the file is found on the searchpath then the full
  * path to the file is returned. If not found, NULL is returned.  
  */
-DLLIMPORT char* __export cfg_searchpath(cfg_searchpath_t* path,const char *file);
+DLLIMPORT char *__export cfg_searchpath(cfg_searchpath_t* path, 
+					const char *file);
 
 /** Parse a configuration file. Tilde expansion is performed on the
  * filename before it is opened. After a configuration file has been

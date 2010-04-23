@@ -301,7 +301,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 
     if (cfg->path)
     {
-	if ((xfilename = cfg_searchpath(cfg->path,filename)) == NULL)
+	if ((xfilename = cfg_searchpath(cfg->path, filename)) == NULL)
 	{
 	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
 	    return 1;

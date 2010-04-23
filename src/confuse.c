@@ -1098,7 +1098,7 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
 
     assert(path);
 
-    int np = snprintf(path,n,"%s/%s",dir,file);
+    int np = snprintf(path, n, "%s/%s", dir, file);
 
     /* 
        np is the number of characters that would have
@@ -1112,7 +1112,7 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
     return path;
 }
 
-DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p,const char *file)
+DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p, const char *file)
 {
     char *fullpath;
     struct stat st;
@@ -1120,15 +1120,15 @@ DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p,const char *file)
 
     if (!p) return NULL;
 
-    if ((fullpath = cfg_searchpath(p->next,file)) != NULL)
+    if ((fullpath = cfg_searchpath(p->next, file)) != NULL)
         return fullpath;
 
-    if ((fullpath = cfg_make_fullpath(p->dir,file)) == NULL)
+    if ((fullpath = cfg_make_fullpath(p->dir, file)) == NULL)
         return NULL;
 
 #ifdef HAVE_SYS_STAT_H
 
-    err = stat((const char*)fullpath,&st);
+    err = stat((const char*)fullpath, &st);
     if ((!err) && S_ISREG(st.st_mode)) return fullpath;
 
 #else
@@ -1154,7 +1154,7 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
     {
 	char *f;
 
-	if ((f = cfg_searchpath(cfg->path,filename)) == NULL)
+	if ((f = cfg_searchpath(cfg->path, filename)) == NULL)
 	    return CFG_FILE_ERROR;
 
 	free(cfg->filename);
