@@ -288,30 +288,41 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 {
     char *xfilename;
 
-    if(cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) {
+    if (cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) 
+      {
         cfg_error(cfg, _("includes nested too deeply"));
         return 1;
-    }
+      }
 
     cfg_include_stack[cfg_include_stack_ptr].state = YY_CURRENT_BUFFER;
     cfg_include_stack[cfg_include_stack_ptr].filename = cfg->filename;
     cfg_include_stack[cfg_include_stack_ptr].line = cfg->line;
     cfg_include_stack_ptr++;
 
-    xfilename = cfg_tilde_expand(filename);
+    if (cfg->path)
+      {
+	if ((xfilename = cfg_searchpath(cfg->path,filename)) == NULL)
+	  {
+	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
+	    return 1;
+	  }
+      }
+    else xfilename = cfg_tilde_expand(filename);
 
     cfg_yyin = fopen(xfilename, "r");
 
-    if(!cfg_yyin) {
+    if (!cfg_yyin) 
+      {
         cfg_error(cfg, "%s: %s", xfilename, strerror(errno));
         free(xfilename);
         return 1;
-    }
+      }
 
     cfg->filename = xfilename;
     cfg->line = 1;
 
     yy_switch_to_buffer(yy_create_buffer(cfg_yyin, YY_BUF_SIZE));
+
     return 0;
 }
 

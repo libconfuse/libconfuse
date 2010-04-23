@@ -36,6 +36,7 @@ AM_GNU_GETTEXT_VERSION([0.16.1])
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([unistd.h])
+AC_CHECK_HEADERS([sys/stat.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

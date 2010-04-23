@@ -102,6 +102,7 @@ typedef struct cfg_opt_t cfg_opt_t;
 typedef struct cfg_t cfg_t;
 typedef struct cfg_defvalue_t cfg_defvalue_t;
 typedef int cfg_flag_t;
+typedef struct cfg_searchpath_t cfg_searchpath_t;
 
 /** Function prototype used by CFGT_FUNC options.
  *
@@ -225,6 +226,7 @@ struct cfg_t {
     cfg_errfunc_t errfunc;  /**< This function (if set with
                              * cfg_set_error_function) is called for
                              * any error message. */
+    cfg_searchpath_t* path; /**< Linked list of directories to search */ 
 };
 
 /** Data structure holding the value of a fundamental option value.
@@ -551,6 +553,37 @@ extern const char __export confuse_author[];
  * to almost all other functions as the first parameter.
  */
 DLLIMPORT cfg_t * __export cfg_init(cfg_opt_t *opts, cfg_flag_t flags);
+
+/** Add a searchpath directory to the configuration context, the 
+ * const char* argument will be duplicated and then freed as part 
+ * of the usual context takedown.
+ *
+ * All directories added to the context in this manner will be searched
+ * for the file specified in cfg_parse(), and for those included.
+ * All directories added with this function will be "tilde expanded".
+ * Note that the current directory is not added to the searchpath
+ * by default. 
+ *
+ * @param cfg The configuration file context as returned from cfg_init().
+ * @param dir Directory to be added to the search path.
+ *
+ * @return On success, CFG_SUCCESS, on failure (which can only be 
+ * caused by a failed malloc()), CFG_PARSE_ERROR.
+ */
+DLLIMPORT int __export cfg_add_searchpath(cfg_t *cfg, const char *dir);
+
+/** Search the linked-list of cfg_searchpath_t for the specified
+ * file.  If not NULL, the return value is freshly allocated and
+ * and should be freed by the caller.
+ *
+ * @param path The linked list of cfg_searchpath_t structs, each 
+ * containg a directory to be searched
+ * @param file The file for which to search
+ *
+ * @return If the file is found on the searchpath then the full
+ * path to the file is returned. If not found, NULL is returned.  
+ */
+DLLIMPORT char* __export cfg_searchpath(cfg_searchpath_t* path,const char *file);
 
 /** Parse a configuration file. Tilde expansion is performed on the
  * filename before it is opened. After a configuration file has been
