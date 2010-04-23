@@ -721,35 +721,34 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
 
 /* searchpath */
 
-struct cfg_searchpath_t 
-{
-  char* dir;
-  cfg_searchpath_t* next;
+struct cfg_searchpath_t {
+    char *dir;               /**< directory to search */
+    cfg_searchpath_t *next;  /**< next in list */
 };
 
 /* prepend a new cfg_searchpath_t to the linked list */
 
 DLLIMPORT int cfg_add_searchpath(cfg_t *cfg, const char *dir)
 {
-  cfg_searchpath_t *p;
-  char *d;
+    cfg_searchpath_t *p;
+    char *d;
 
-  assert(cfg && dir);
+    assert(cfg && dir);
 
-  if ((d = cfg_tilde_expand(dir)) == NULL) return CFG_PARSE_ERROR;
+    if ((d = cfg_tilde_expand(dir)) == NULL) return CFG_PARSE_ERROR;
 
-  if ((p = malloc(sizeof(cfg_searchpath_t))) == NULL)
+    if ((p = malloc(sizeof(cfg_searchpath_t))) == NULL)
     {
-      free(d);
-      return CFG_PARSE_ERROR;
+	free(d);
+	return CFG_PARSE_ERROR;
     }
 
-  p->next = cfg->path;
-  p->dir  = d;
+    p->next = cfg->path;
+    p->dir  = d;
+    
+    cfg->path = p;
 
-  cfg->path = p;
-
-  return CFG_SUCCESS;
+    return CFG_SUCCESS;
 }
 
 DLLIMPORT cfg_errfunc_t cfg_set_error_function(cfg_t *cfg,
@@ -1090,58 +1089,58 @@ DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
     return CFG_SUCCESS;
 }
 
-static char* cfg_make_fullpath(const char* dir, const char* file)
+static char *cfg_make_fullpath(const char *dir, const char *file)
 {
-  assert(dir && file);
+    assert(dir && file);
 
-  size_t n = strlen(dir) + strlen(file) + 2;
-  char *path = malloc(n);
+    size_t n = strlen(dir) + strlen(file) + 2;
+    char *path = malloc(n);
 
-  assert(path);
+    assert(path);
 
-  int np = snprintf(path,n,"%s/%s",dir,file);
+    int np = snprintf(path,n,"%s/%s",dir,file);
 
-  /* 
-     np is the number of characters that would have
-     been printed if there was enough room in path.
-     if np >= n then the snprintf() was truncated
-     (which must be a bug).
-  */
+    /* 
+       np is the number of characters that would have
+       been printed if there was enough room in path.
+       if np >= n then the snprintf() was truncated
+       (which must be a bug).
+    */
 
-  assert(np < n);
+    assert(np < n);
 
-  return path;
+    return path;
 }
 
-DLLIMPORT char* cfg_searchpath(cfg_searchpath_t* p,const char *file)
+DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p,const char *file)
 {
-  char *fullpath;
-  struct stat st;
-  int err;
+    char *fullpath;
+    struct stat st;
+    int err;
 
-  if (!p) return NULL;
+    if (!p) return NULL;
 
-  if ( (fullpath = cfg_searchpath(p->next,file)) != NULL )
-    return fullpath;
+    if ((fullpath = cfg_searchpath(p->next,file)) != NULL)
+        return fullpath;
 
-  if ( (fullpath = cfg_make_fullpath(p->dir,file)) == NULL )
-    return NULL;
+    if ((fullpath = cfg_make_fullpath(p->dir,file)) == NULL)
+        return NULL;
 
 #ifdef HAVE_SYS_STAT_H
 
-  err = stat((const char*)fullpath,&st);
-  if ( (!err) && S_ISREG(st.st_mode)) return fullpath;
+    err = stat((const char*)fullpath,&st);
+    if ((!err) && S_ISREG(st.st_mode)) return fullpath;
 
 #else
 
-  /* needs an alternative check here for win32 */
+    /* needs an alternative check here for win32 */
 
-  err = 1;
+    err = 1;
 
 #endif
 
-  free(fullpath);
-  return NULL;
+    free(fullpath);
+    return NULL;
 }
 
 DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
@@ -1152,24 +1151,24 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
     assert(cfg && filename);
 
     if (cfg->path)
-      {
+    {
 	char *f;
 
 	if ((f = cfg_searchpath(cfg->path,filename)) == NULL)
-	  return CFG_FILE_ERROR;
+	    return CFG_FILE_ERROR;
 
 	free(cfg->filename);
 	cfg->filename = f;
 
-      }
+    }
     else
-      {
+    {
 	free(cfg->filename);
 	cfg->filename = cfg_tilde_expand(filename);
-      }
+    }
 
     if ((fp = fopen(cfg->filename,"r")) == 0)
-      return CFG_FILE_ERROR;
+        return CFG_FILE_ERROR;
 
     ret = cfg_parse_fp(cfg, fp);
     fclose(fp);

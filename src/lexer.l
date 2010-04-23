@@ -300,13 +300,13 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
     cfg_include_stack_ptr++;
 
     if (cfg->path)
-      {
+    {
 	if ((xfilename = cfg_searchpath(cfg->path,filename)) == NULL)
-	  {
+	{
 	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
 	    return 1;
-	  }
-      }
+	}
+    }
     else xfilename = cfg_tilde_expand(filename);
 
     cfg_yyin = fopen(xfilename, "r");

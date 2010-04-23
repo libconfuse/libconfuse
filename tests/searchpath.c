@@ -5,7 +5,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-const char tmp[] = SRC_DIR "/" "spdir";
+const char spdir[] = SRC_DIR "/" "spdir";
+const char nodir[] = SRC_DIR "/" "no-such-directory";
 
 int
 main(void)
@@ -14,22 +15,30 @@ main(void)
     cfg_t *sec;
 
     cfg_opt_t sec_opts[] = 
-      {
+    {
 	CFG_FUNC("include", cfg_include),
         CFG_INT("val", 0, CFGF_NONE),
         CFG_END()
-      };
+    };
 
     cfg_opt_t opts[] = 
-      {
+    {
 	CFG_FUNC("include", cfg_include),
 	CFG_SEC("sec", sec_opts, CFGF_MULTI | CFGF_TITLE),
 	CFG_END()
-      };
+    };
 
     cfg = cfg_init(opts, 0);
 
-    fail_unless(cfg_add_searchpath(cfg,tmp) == 0);
+    /* 
+       include some non-existent directories to 
+       force linked-list traversal
+    */
+
+    fail_unless(cfg_add_searchpath(cfg,nodir) == 0);
+    fail_unless(cfg_add_searchpath(cfg,spdir) == 0);
+    fail_unless(cfg_add_searchpath(cfg,nodir) == 0);
+
     fail_unless(cfg_parse(cfg,"spa.conf") == 0);
 
     fail_unless(cfg_size(cfg, "sec") == 3);
