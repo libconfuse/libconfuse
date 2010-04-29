@@ -19,11 +19,11 @@ TUTORIAL_LISTINGS = $(TUTORIAL_CSOURCES:.c=.xml)
 	echo ']]></programlisting>' >> $@
 
 tutorial-html/index.html: tutorial.xml $(TUTORIAL_LISTINGS) css.xsl tutorial.css
-	xmllint --valid --noout $< && xmlto -o tutorial-html --extensions -m css.xsl xhtml $<
-	cp -f tutorial.css tutorial-html/
+	xmllint --valid --noout --path . $< && xmlto -v --searchpath . -o tutorial-html --extensions -m $(top_srcdir)/doc/css.xsl xhtml $<
+	cp -f $(top_srcdir)/doc/tutorial.css tutorial-html/
 
 tutorial.pdf: tutorial.xml $(TUTORIAL_LISTINGS)
-	xmllint --valid --noout $< && xmlto pdf $<
+	xmllint --valid --noout --path . $< && xmlto pdf $<
 
 tutorial: tutorial-html
 tutorial-html: tutorial-html/index.html
@@ -44,5 +44,9 @@ CLEANFILES=*~ '\#*\#' $(TUTORIAL_LISTINGS)
 DISTCLEANFILES=
 MOSTLYCLEANFILES=tutorial.pdf
 
+# seriously? :-p
 celan: clean
 
+# remove directories created by DoxyGen and xmlto to pass distcheck
+distclean-local:
+	rm -rfv html man tutorial-html
