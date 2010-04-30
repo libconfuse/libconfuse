@@ -384,6 +384,9 @@ extern const char __export confuse_author[];
 
 /** Initialize a "simple" integer option (see documentation for
  * CFG_SIMPLE_STR for more information).
+ * Note that confuse uses long integers, so make sure that any pointer
+ * you provide for svalue points to a long int rather than a normal int.
+ * Otherwise, you will have strange problems on 64-bit architectures.
  */
 #define CFG_SIMPLE_INT(name, svalue) \
   __CFG_INT(name, 0, CFGF_NONE, svalue, 0)
