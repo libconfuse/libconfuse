@@ -6,6 +6,7 @@ stamp-po
 sv.gmo
 remove-potcdate.sed
 fr.gmo
+de.gmo
 Makefile.in.in
 Rules-quot
 boldquot.sed

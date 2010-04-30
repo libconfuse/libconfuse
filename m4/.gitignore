@@ -15,9 +15,14 @@ lcmessage.m4
 lib-ld.m4
 lib-link.m4
 lib-prefix.m4
+libtool.m4
 lock.m4
 longdouble.m4
 longlong.m4
+ltoptions.m4
+ltsugar.m4
+ltversion.m4
+lt~obsolete.m4
 nls.m4
 po.m4
 printf-posix.m4

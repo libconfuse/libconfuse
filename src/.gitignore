@@ -1,8 +1,8 @@
 .deps
 .libs
-confuse.lo
+*confuse*.lo
 lexer.c
-lexer.lo
-libconfuse.la
+*lexer*.lo
+*libconfuse*.la
 Makefile
 Makefile.in
