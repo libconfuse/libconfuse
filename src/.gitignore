@@ -6,3 +6,4 @@ lexer.c
 *libconfuse*.la
 Makefile
 Makefile.in
+*.o
