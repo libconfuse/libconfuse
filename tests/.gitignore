@@ -12,4 +12,5 @@ suite_validate
 include
 quote_before_print
 single_title_sections
+searchpath
 *.o
