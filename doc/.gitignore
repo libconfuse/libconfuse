@@ -1,4 +1,3 @@
-.gdb_history
 conf.d
 html
 listing1.xml
@@ -9,8 +8,6 @@ listing5.xml
 listing6.xml
 listing7.xml
 listing8.xml
-Makefile
-Makefile.in
 man
 tutorial
 tutorial-html

@@ -1,5 +1,3 @@
-Makefile
-Makefile.in
 Makevars.template
 POTFILES
 stamp-po

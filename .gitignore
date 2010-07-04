@@ -7,7 +7,6 @@ config.log
 config.status
 configure
 confuse-config
-Doxyfile
 libconfuse.pc
 libconfuse.spec
 libtool

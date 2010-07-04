@@ -1,5 +1,3 @@
-Makefile
-Makefile.in
 codeset.m4
 gettext.m4
 glibc2.m4
