@@ -6,7 +6,7 @@ check_PROGRAMS=$(TESTS)
 
 LDADD=-L../src ../src/libconfuse.la $(LTLIBINTL)
 
-EXTRA_DIST=a.conf b.conf check_confuse.h
+EXTRA_DIST=a.conf b.conf spdir check_confuse.h
 CLEANFILES=*~
 
 DEFS=-DSRC_DIR='"$(srcdir)"'
