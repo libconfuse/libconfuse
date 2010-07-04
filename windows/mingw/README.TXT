@@ -20,9 +20,6 @@ directory and the compilation flags. Then, it runs the appropriate gcc
 commands to produce the object files. Finally, it uses the 'ar' command to
 produce the static library 'libconfuse.a'.
 
-There is no file 'config.h' in this directory because this is not necessary.
-The script uses the Borland one from directory "../borland" as is.
-
 Once you've built the library, you need only two files to add libConfuse to
 your project: 'confuse.h' located in the source directory and 'libconfuse.a'.
 

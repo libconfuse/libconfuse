@@ -9,9 +9,7 @@ echo.
 rem Source directory
 set SRC_DIR=..\..\src
 
-rem  The Borland "config.h" file can be used as is
-rem  by adding -DHAVE_STRCASECMP on the gcc command line.
-set INCLUDE=-I..\borland -I%SRC_DIR%
+set INCLUDE=-I. -I%SRC_DIR%
 set CFLAGS=-Wall -DHAVE_CONFIG_H -DHAVE_STRCASECMP %INCLUDE% -c
 
 set COMPILE=gcc %CFLAGS% %SRC_DIR%\confuse.c
@@ -41,4 +39,3 @@ echo.
 
 :end
 pause
-
