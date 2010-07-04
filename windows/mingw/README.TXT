@@ -7,9 +7,11 @@ Compilation of the static library with MinGW.
 1) In order to build the library successfully, you should first check that the
    MinGW 'bin' directory is in the PATH environment variable.
 
-2) Then, launch the script 'build.bat' to produce 'libconfuse.a'.
+2) Then, if running in Windows launch the script 'build.bat' to produce
+   'libconfuse.a' or if crosscompiling just run ming32-make
 
 This script has been tested with MinGW 3.1.0 under Windows 2000.
+The Makefile has been tested with MinGW 3.15.2 under Fedora 13.
 It should also work with other versions of MinGW and Windows.
 
 
