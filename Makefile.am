@@ -67,3 +67,4 @@ rpm: Makefile
 	$(MAKE) dist
 	rpmbuild -ta --clean $(PACKAGE)-$(VERSION).tar.gz
 
+dist-zip: zip
