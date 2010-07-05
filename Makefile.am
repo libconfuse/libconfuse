@@ -23,6 +23,7 @@ MSVC6_FILES=config.h libConfuse.dsp libConfuse.dsw unistd.h
 MSVS_FILES=config.h msvs.net.sln unistd.h
 MSVS_CFGTEST_FILES=cfgtest.vcproj
 MSVS_LIBCONFUSE_FILES=libConfuse.vcproj
+MINGW_FILES=build.bat config.h Makefile
 
 add-windows-files:
 	mkdir $(distdir)/windows
@@ -33,6 +34,7 @@ add-windows-files:
 	mkdir $(distdir)/windows/msvs.net
 	mkdir $(distdir)/windows/msvs.net/cfgtest
 	mkdir $(distdir)/windows/msvs.net/libConfuse
+	mkdir $(distdir)/windows/mingw
 
 	for f in $(BORLAND_FILES); do \
 		cp -f $(top_srcdir)/windows/borland/$$f $(distdir)/windows/borland/; done
@@ -46,6 +48,9 @@ add-windows-files:
 	   cp -f $(top_srcdir)/windows/msvs.net/libConfuse/$$f $(distdir)/windows/msvs.net/libConfuse; done
 	for f in $(MSVC6_FILES); do \
 	   cp -f $(top_srcdir)/windows/msvc6/libConfuse/$$f $(distdir)/windows/msvc6/libConfuse; done
+	for f in $(MINGW_FILES); do \
+	   cp -f $(top_srcdir)/windows/mingw/$$f $(distdir)/windows/mingw; done
+
 	cp $(top_srcdir)/examples/wincfgtest.c $(distdir)/examples
 	cp $(top_srcdir)/examples/wincfgtest.conf $(distdir)/examples
 	cp $(top_srcdir)/examples/wincfgtest.dev $(distdir)/examples
