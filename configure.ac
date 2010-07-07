@@ -22,7 +22,8 @@ AC_DEFUN([AC_LIBTOOL_F77], [:])
 AC_PROG_CC
 AM_PROG_LEX
 AC_DISABLE_SHARED
-AC_PROG_LIBTOOL
+
+LT_INIT([win32-dll])
 
 # optional building of examples:
 AC_ARG_ENABLE([examples],
