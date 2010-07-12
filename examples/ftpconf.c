@@ -109,7 +109,7 @@ cfg_t *parse_conf(const char *filename)
 
 int main(int argc, char **argv)
 {
-    int i;
+    unsigned int i;
     cfg_t *cfg = parse_conf(argc > 1 ? argv[1] : "ftp.conf");
 
     /* print the parsed configuration options */

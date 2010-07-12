@@ -34,7 +34,7 @@ static int parse_action(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *res
 
 int validate_speed(cfg_t *cfg, cfg_opt_t *opt)
 {
-    int i;
+    unsigned int i;
 
     for(i = 0; i < cfg_opt_size(opt); i++)
     {
@@ -49,7 +49,7 @@ int validate_speed(cfg_t *cfg, cfg_opt_t *opt)
 
 int validate_ip(cfg_t *cfg, cfg_opt_t *opt)
 {
-    int i;
+    unsigned int i;
 
     for(i = 0; i < cfg_opt_size(opt); i++)
     {
@@ -147,7 +147,7 @@ void validate_teardown(void)
 void validate_test(void)
 {
     char *buf;
-    int i;
+    unsigned int i;
 
     buf = "action = wlak";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
