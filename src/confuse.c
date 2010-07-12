@@ -1550,7 +1550,7 @@ DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
             fprintf(fp, "%ld", cfg_opt_getnint(opt, index));
             break;
         case CFGT_FLOAT:
-            fprintf(fp, "%lf", cfg_opt_getnfloat(opt, index));
+            fprintf(fp, "%f", cfg_opt_getnfloat(opt, index));
             break;
         case CFGT_STR:
             str = cfg_opt_getnstr(opt, index);
