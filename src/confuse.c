@@ -1162,8 +1162,6 @@ DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p, const char *file)
 
     /* needs an alternative check here for win32 */
 
-    err = 1;
-
 #endif
 
     free(fullpath);

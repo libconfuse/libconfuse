@@ -18,7 +18,6 @@ void read_config(void)
         CFG_SEC("argument", arg_opts, CFGF_MULTI | CFGF_TITLE),
         CFG_END()
     };
-    int ret;
 
     char *buf = "" \
         " delay = 3\n" \
@@ -29,8 +28,8 @@ void read_config(void)
     cfg_free(cfg);
 
     cfg = cfg_init(opts, 0);
-    ret = cfg_parse_buf(cfg, buf);
-    ret = cfg_parse(cfg, config_filename);
+    cfg_parse_buf(cfg, buf);
+    cfg_parse(cfg, config_filename);
 }
 
 void sighandler(int sig)
