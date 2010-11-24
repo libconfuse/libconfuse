@@ -1295,13 +1295,13 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 
 DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
 {
-    unsigned int i;
-
     if(opt == 0)
         return;
 
     if(opt->values)
     {
+        unsigned int i;
+
         for(i = 0; i < opt->nvalues; i++)
         {
             if(opt->type == CFGT_STR)
@@ -1610,13 +1610,13 @@ DLLIMPORT void cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
     {
         if(is_set(CFGF_LIST, opt->flags))
         {
-            unsigned int i;
-
             cfg_indent(fp, indent);
             fprintf(fp, "%s = {", opt->name);
 
             if(opt->nvalues)
             {
+                unsigned int i;
+
                 if(opt->pf)
                     opt->pf(opt, 0, fp);
                 else

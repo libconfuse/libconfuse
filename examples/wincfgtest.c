@@ -58,7 +58,6 @@ int main(void)
         CFG_FUNC("message", &cb_message),
         CFG_END()
     };
-    cfg_t *cfg;
     HINSTANCE hinstLib;
     char buf[1024];
 
@@ -84,7 +83,7 @@ int main(void)
         cfg_getfloat = (CFG_GETFLOAT_FPTR)GetProcAddress(hinstLib, DLLSYM("cfg_getfloat"));
 
         if(cfg_init) { /* assume the other functions also are valid */
-            cfg = cfg_init(opts, 0);
+            cfg_t *cfg = cfg_init(opts, 0);
             if(cfg_parse(cfg, "wincfgtest.conf") == CFG_FILE_ERROR)
                 perror("wincfgtest.conf");
 

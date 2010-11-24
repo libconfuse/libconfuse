@@ -109,12 +109,13 @@ cfg_t *parse_conf(const char *filename)
 
 int main(int argc, char **argv)
 {
-    unsigned int i;
     cfg_t *cfg = parse_conf(argc > 1 ? argv[1] : "ftp.conf");
 
     /* print the parsed configuration options */
     if(cfg)
     {
+        unsigned int i;
+
         printf("passive-mode = %s\n",
 	    cfg_getbool(cfg, "passive-mode") ? "true" : "false");
         printf("remote-completion = %s\n",
