@@ -258,7 +258,7 @@ struct cfg_defvalue_t {
     long int number;        /**< default integer value */
     double fpnumber;        /**< default floating point value */
     cfg_bool_t boolean;     /**< default boolean value */
-    char *string;           /**< default string value */
+    const char *string;     /**< default string value */
     char *parsed;           /**< default value that is parsed by
                              * libConfuse, used for lists and
                              * functions */
@@ -269,7 +269,7 @@ struct cfg_defvalue_t {
  * etc).
  */
 struct cfg_opt_t {
-    char *name;             /**< The name of the option */
+    const char *name;       /**< The name of the option */
     cfg_type_t type;        /**< Type of option */
     unsigned int nvalues;   /**< Number of values parsed */
     cfg_value_t **values;   /**< Array of found values */
