@@ -182,11 +182,8 @@ static YY_BUFFER_STATE string_scan_state = 0;
 <dq_str>\\.  {
     qputc(yytext[1]);
 }
-<dq_str>[^\\\"\n]+  {
-    char *yptr = yytext;
-    while(*yptr) {
-        qputc(*yptr++);
-    }
+<dq_str>[^\\\"\n]  {
+    qputc(yytext[0]);
 }
 
     /* single-quoted string ('...') */
