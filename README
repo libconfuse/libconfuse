@@ -1,9 +1,1 @@
-This is libConfuse, a library for parsing configuration files.
-
-Documentation can be built by running doxygen in the top-level
-directory. It is also available at http://www.nongnu.org/confuse/manual/.
-
-There is a project page at http://sv.nongnu.org/projects/confuse.
-
-Report bugs at the github issue tracker:
-https://github.com/martinh/libconfuse/issues.
+README.md
