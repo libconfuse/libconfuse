@@ -56,6 +56,7 @@ extern void cfg_scan_string_end(void);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
 extern char *cfg_qstring;
+extern int cfg_yylex_destroy  (void);
 
 char *cfg_yylval = 0;
 
@@ -1011,6 +1012,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                 }
 
                 val = cfg_setopt(cfg, opt, opttitle);
+                free(opttitle);
                 opttitle = 0;
                 if(!val)
                     return STATE_ERROR;
