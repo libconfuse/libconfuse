@@ -1011,6 +1011,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                 }
 
                 val = cfg_setopt(cfg, opt, opttitle);
+                free(opttitle);
                 opttitle = 0;
                 if(!val)
                     return STATE_ERROR;
