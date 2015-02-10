@@ -705,7 +705,12 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 val->section->filename = cfg->filename ? strdup(cfg->filename) : 0;
                 val->section->line = cfg->line;
                 val->section->errfunc = cfg->errfunc;
-                val->section->title = value;
+                if (value != NULL) {
+                  val->section->title = strdup(value);
+                }
+                else {
+                  val->section->title = value;
+                }
             }
             if(!is_set(CFGF_DEFINIT, opt->flags))
                 cfg_init_defaults(val->section);
@@ -1305,8 +1310,13 @@ DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
         {
             if(opt->type == CFGT_STR)
                 free(opt->values[i]->string);
-            else if(opt->type == CFGT_SEC)
-                cfg_free(opt->values[i]->section);
+            else if(opt->type == CFGT_SEC) {
+              if (opt->values[i]->section->title != NULL) {
+                free(opt->values[i]->section->title);
+                opt->values[i]->section->title = 0;
+              }
+              cfg_free(opt->values[i]->section);
+            }
             else if(opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr)
                 (opt->freecb)(opt->values[i]->ptr);
             free(opt->values[i]);
