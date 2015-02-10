@@ -56,7 +56,6 @@ extern void cfg_scan_string_end(void);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
 extern char *cfg_qstring;
-extern int cfg_yylex_destroy  (void);
 
 char *cfg_yylval = 0;
 
