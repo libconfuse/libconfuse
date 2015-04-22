@@ -1,7 +1,7 @@
 TESTS = suite_single suite_dup suite_func suite_list \
 	suite_validate list_plus_syntax section_title_dupes \
 	single_title_sections quote_before_print include \
-	searchpath env
+	searchpath env ignore_parm
 check_PROGRAMS=$(TESTS)
 
 LDADD=-L../src ../src/libconfuse.la $(LTLIBINTL)
