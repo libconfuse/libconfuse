@@ -14,6 +14,7 @@ TESTS            += quote_before_print
 TESTS            += include
 TESTS            += searchpath
 TESTS            += env
+TESTS            += ignore_parm
 
 check_PROGRAMS    = $(TESTS)
 

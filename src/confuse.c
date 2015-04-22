@@ -884,8 +884,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                     return STATE_ERROR;
                 }
                 opt = cfg_getopt(cfg, cfg_yylval);
-                if(opt == 0)
-                    return STATE_ERROR;
+                if(opt == 0) {
+                    if(cfg->flags & CFGF_IGNORE_UNKNOWN)
+                        opt = cfg_getopt(cfg, "__unknown");
+                    if(opt == 0)       
+                        return STATE_ERROR;
+                }
                 if(opt->type == CFGT_SEC)
                 {
                     if(is_set(CFGF_TITLE, opt->flags))
