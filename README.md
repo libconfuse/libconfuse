@@ -1,27 +1,40 @@
 libConfuse
 ==========
 
+Table of Contents
+-----------------
+
+* [Introduction](#introduction)
+* [Examples](#examples)
+* [Download](#download)
+* [Building](#building)
+* [Documentation](#documentation)
+* [News](#news)
+
+
+Introduction
+------------
+
 libConfuse is a configuration file parser library, licensed under the
 terms of the [ISC license](http://en.wikipedia.org/wiki/ISC_license),
-and written in C. It supports sections and (lists of) values (strings,
+and written in C.  It supports sections and (lists of) values (strings,
 integers, floats, booleans or other sections), as well as some other
 features (such as single/double-quoted strings, environment variable
-expansion, functions and nested include statements). It makes it very
+expansion, functions and nested include statements).  It makes it very
 easy to add configuration file capability to a program using a simple
 API.
 
 The goal of libConfuse is not to be _the_ configuration file parser
-library with a gazillion of features. Instead, it aims to be easy to use
-and quick to integrate with your code. libConfuse was called libcfg
-before, but its name was changed to not confuse itself with other
-similar libraries.
+library with a gazillion of features.  Instead, it aims to be easy to
+use and quick to integrate with your code.
 
 libConfuse was called libcfg before, but was changed to not confuse with
 other similar libraries.
 
-Please report bugs at [GitHub](https://github.com/martinh/libconfuse/issues)
+Please report bugs to the GitHub [issue tracker](https://github.com/martinh/libconfuse/issues)
 
-examples
+
+Examples
 --------
 
 Example configuration files:
@@ -34,7 +47,7 @@ Example configuration files:
   [source](blob/master/examples/simple.c).
 
 
-download
+Download
 --------
 
 The source code is distributed in two files: a .tar.gz with source and
@@ -48,15 +61,18 @@ makefiles, and a .zip file also including build files for windows.
 * [confuse-2.6](http://bzero.se/confuse/): source code
 
 
-building
+Building
 --------
 
 libConfuse employs the GNU configure and build system.  Simply enter
 <kbd>./configure --help</kbd> to list available options and see the
 INSTALL file for the full installation instructions.
 
+When checking out the code from GitHub, use <kbd>./autogen.sh</kbd> to
+generate a `configure` script.
 
-documentation
+
+Documentation
 -------------
 
 For the time being, the following documentation is published at the
@@ -68,11 +84,11 @@ with the source:
 * [ChangeLog](ChangeLog.md) (check what's new!)
 
 
-news
+News
 ----
 
 * 2015-10-12: New patch monkey at the helm of GitHub.
-  [Joachim]((https://github.com/troglobit)) will help out auditing pull
+  [Joachim](https://github.com/troglobit) will help out auditing pull
   requests and do occasional releases.
 * 2014-01-10: code moved to
   [github](https://github.com/martinh/libconfuse)
