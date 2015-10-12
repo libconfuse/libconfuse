@@ -57,7 +57,7 @@
 #define PACKAGE "confuse"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "confuse-devel@nongnu.org"
+#define PACKAGE_BUGREPORT "https://github.com/martinh/libconfuse/issues"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "libConfuse"

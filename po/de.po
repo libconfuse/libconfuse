@@ -6,96 +6,97 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: confuse 2.6-2\n"
-"Report-Msgid-Bugs-To: confuse-devel@nongnu.org\n"
-"POT-Creation-Date: 2010-02-22 02:11-0500\n"
+"Report-Msgid-Bugs-To: https://github.com/martinh/libconfuse/issues\n"
+"POT-Creation-Date: 2015-10-12 21:48+0200\n"
 "PO-Revision-Date: 2010-02-22 02:06-0500\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/confuse.c:150 src/confuse.c:172
+#: src/confuse.c:180 src/confuse.c:202
 #, c-format
 msgid "no such option '%s'"
 msgstr "keine solche Option »%s«"
 
-#: src/confuse.c:587
+#: src/confuse.c:617
 #, c-format
 msgid "found duplicate title '%s'"
 msgstr "doppelter Titel »%s« gefunden"
 
-#: src/confuse.c:612
+#: src/confuse.c:642
 #, c-format
 msgid "invalid integer value for option '%s'"
 msgstr "ungültiger Ganzzahlwert für Option »%s«"
 
-#: src/confuse.c:619
+#: src/confuse.c:649
 #, c-format
 msgid "integer value for option '%s' is out of range"
 msgstr "Ganzzahlwert für Option »%s« ist außerhalb des Abschnitts"
 
-#: src/confuse.c:639
+#: src/confuse.c:669
 #, c-format
 msgid "invalid floating point value for option '%s'"
 msgstr "ungültiger Fließkommawert für Option »%s«"
 
-#: src/confuse.c:646
+#: src/confuse.c:676
 #, c-format
 msgid "floating point value for option '%s' is out of range"
 msgstr "Fließkommawert für Option »%s« ist außerhalb des Abschnitts"
 
-#: src/confuse.c:695
+#: src/confuse.c:725
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr "ungültiger Boolean-Wert für Option »%s«"
 
-#: src/confuse.c:799
+#: src/confuse.c:861
 msgid "premature end of file"
 msgstr "vorzeitiges Ende der Datei"
 
 # http://www.dict.cc/deutsch-englisch/Klammer.html
-#: src/confuse.c:812
+#: src/confuse.c:874
 msgid "unexpected closing brace"
 msgstr "unerwartete schließende eckige Klammer"
 
-#: src/confuse.c:819 src/confuse.c:889 src/confuse.c:911 src/confuse.c:938
+#: src/confuse.c:881 src/confuse.c:951 src/confuse.c:973 src/confuse.c:1000
 #, c-format
 msgid "unexpected token '%s'"
 msgstr "unerwartetes Element »%s«"
 
-#: src/confuse.c:846
+#: src/confuse.c:908
 #, c-format
 msgid "attempt to append to non-list option '%s'"
 msgstr "Versuch, an die Nicht-Listen-Option »%s« anzuhängen"
 
-#: src/confuse.c:864
+#: src/confuse.c:926
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr "fehlendes Gleichheitszeichen nach Option »%s«"
 
-#: src/confuse.c:946
+#: src/confuse.c:1008
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr "öffnende geschweifte Klammer für Abschnitt »%s« fehlt"
 
-#: src/confuse.c:970
+#: src/confuse.c:1033
 #, c-format
 msgid "missing title for section '%s'"
 msgstr "fehlender Titel für Abschnitt »%s«"
 
-#: src/confuse.c:982
+#: src/confuse.c:1045
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr "runde Klammer für Funktion »%s« fehlt"
 
-#: src/confuse.c:1005 src/confuse.c:1023
+#: src/confuse.c:1068 src/confuse.c:1086
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr "Syntaxfehler im Aufruf der Funktion »%s«"
 
-#: src/confuse.c:1230
+#: src/confuse.c:1371
 msgid "wrong number of arguments to cfg_include()"
 msgstr "falsche Anzahl von Argumenten für cfg_include()"
 
@@ -109,10 +110,10 @@ msgstr "ungültige Oktalzahl »%s«"
 msgid "bad escape sequence '%s'"
 msgstr "falsche Escape-Sequenz »%s«"
 
-#: src/lexer.l:225
+#: src/lexer.l:222
 msgid "unterminated string constant"
 msgstr "nicht beendete Zeichenkettenkonstante"
 
-#: src/lexer.l:292
+#: src/lexer.l:290
 msgid "includes nested too deeply"
 msgstr "Zu tiefe Verschachtelung von includes"
