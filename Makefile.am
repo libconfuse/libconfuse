@@ -1,8 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
 AUTOMAKE_OPTIONS = foreign
-CLEANFILES=*~ '\#*\#'
-EXTRA_DIST=libconfuse.spec.in libconfuse.spec
+CLEANFILES       = *~ '\#*\#'
+doc_DATA         = README AUTHORS LICENSE ChangeLog
+EXTRA_DIST       = libconfuse.spec.in libconfuse.spec
 
 EXAMPLES =
 if ENABLE_EXAMPLES
