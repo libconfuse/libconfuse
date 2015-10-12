@@ -51,32 +51,29 @@ makefiles, and a .zip file also including build files for windows.
 building
 --------
 
-libConfuse employs the GNU configure and build system.  Simply run
-`./configure --help` for available options and see the INSTALL file for
-installation instructions.  By default, only a static library is built.
-Specify `--enable-shared` to the configure script to also build a shared
-library.
-
-With libtool 1.4.2 (and/or automake 1.6.3) there is a problem building
-the sources.  The libtool script expects the environment variable SED to
-point to a usable sed binary, but this variable does not get set. You'll
-have to do a "export SED=sed" (if using bash) or "setenv SED sed" (if
-using csh) before running make.
+libConfuse employs the GNU configure and build system.  Simply enter
+<kbd>./configure --help</kbd> to list available options and see the
+INSTALL file for the full installation instructions.
 
 
 documentation
 -------------
 
-The following documentation is published here and also distributed with
-the source.
+For the time being, the following documentation is published at the
+[old homepage](http://www.nongnu.org/confuse/), but also distributed
+with the source:
 
 * [API reference/manual](http://www.nongnu.org/confuse/manual/) (generated with doxygen)
 * [Tutorial](http://www.nongnu.org/confuse/tutorial-html/) (a work in progress)
-* [NEWS](NEWS.md) (check what's new!)
+* [ChangeLog](ChangeLog.md) (check what's new!)
+
 
 news
 ----
 
+* 2015-10-12: New patch monkey at the helm of GitHub.
+  [Joachim]((https://github.com/troglobit)) will help out auditing pull
+  requests and do occasional releases.
 * 2014-01-10: code moved to
   [github](https://github.com/martinh/libconfuse)
 * 2010-02-21: libConfuse version 2.7 released. This is primarily a
