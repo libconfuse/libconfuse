@@ -235,11 +235,12 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/troglobit/inadyn/compare/v2.7...HEAD
-[v2.7]: https://github.com/troglobit/inadyn/compare/v2.6...v2.7
-[v2.6]: https://github.com/troglobit/inadyn/compare/v2.5...v2.6
-[v2.5]: https://github.com/troglobit/inadyn/compare/v2.4...v2.5
-[v2.4]: https://github.com/troglobit/inadyn/compare/v2.3...v2.4
-[v2.3]: https://github.com/troglobit/inadyn/compare/v2.2...v2.3
-[v2.2]: https://github.com/troglobit/inadyn/compare/v2.1...v2.2
-[v2.1]: https://github.com/troglobit/inadyn/compare/v2.0...v2.1
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.7...HEAD
+[v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...HEAD
+[v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
+[v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
+[v2.5]: https://github.com/martinh/libconfuse/compare/v2.4...v2.5
+[v2.4]: https://github.com/martinh/libconfuse/compare/v2.3...v2.4
+[v2.3]: https://github.com/martinh/libconfuse/compare/v2.2...v2.3
+[v2.2]: https://github.com/martinh/libconfuse/compare/v2.1...v2.2
+[v2.1]: https://github.com/martinh/libconfuse/compare/v2.0...v2.1
