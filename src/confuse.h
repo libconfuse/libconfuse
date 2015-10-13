@@ -1071,6 +1071,50 @@ DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
                                     unsigned int nvalues, ...);
 
+/** Removes and frees a config section, given a cfg_opt_t pointer.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the section to remove. Zero based.
+ * @see cfg_rmnsec
+ */
+DLLIMPORT void __export cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index);
+
+/** Indexed version of cfg_rmsec(), used for CFGF_MULTI sections.
+ * @param cfg The configuration file context.
+ * @param name The name of the section.
+ * @param index Index of the section to remove. Zero based.
+ * @see cfg_rmsec
+ */
+DLLIMPORT void __export cfg_rmnsec(cfg_t *cfg, const char *name,
+                                   unsigned int index);
+
+/** Removes and frees a config section. This is the same as
+ * calling cfg_rmnsec with index 0.
+ * @param cfg The configuration file context.
+ * @param name The name of the section.
+ */
+DLLIMPORT void __export cfg_rmsec(cfg_t *cfg, const char *name);
+
+/** Removes and frees a config section, given a cfg_opt_t pointer
+ * and the title.
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param title The title of this section. The CFGF_TITLE flag must
+ * have been set for this option.
+ * @see cfg_rmtsec
+ */
+DLLIMPORT void __export cfg_opt_rmtsec(cfg_opt_t *opt, const char *title);
+
+/** Removes and frees a section given the title, used for section with the
+ * CFGF_TITLE flag set.
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the section.
+ * @param title The title of this section. The CFGF_TITLE flag must
+ * have been set for this option.
+ * @see cfg_rmsec
+ */
+DLLIMPORT void __export cfg_rmtsec(cfg_t *cfg, const char *name,
+                                   const char *title);
+
 /** Default value print function.
  *
  * Print only the value of a given option. Does not handle sections or
