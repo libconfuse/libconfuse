@@ -696,6 +696,8 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
         case CFGT_SEC:
             if(is_set(CFGF_MULTI, opt->flags) || val->section == 0)
             {
+                if (val->section)
+                    val->section->path = 0;
                 cfg_free(val->section);
                 val->section = calloc(1, sizeof(cfg_t));
                 assert(val->section);
@@ -1304,8 +1306,10 @@ DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
         {
             if(opt->type == CFGT_STR)
                 free(opt->values[i]->string);
-            else if(opt->type == CFGT_SEC)
+            else if(opt->type == CFGT_SEC) {
+                opt->values[i]->section->path = 0;
                 cfg_free(opt->values[i]->section);
+            }
             else if(opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr)
                 (opt->freecb)(opt->values[i]->ptr);
             free(opt->values[i]);
@@ -1338,6 +1342,7 @@ static void cfg_free_searchpath(cfg_searchpath_t* p)
   if (p)
     {
       cfg_free_searchpath(p->next);
+      free(p->dir);
       free(p);
     }
 }
