@@ -88,7 +88,7 @@ cp -R doc/man/* "${RPM_BUILD_ROOT}%{_mandir}/"
 
 %{__mkdir_p} "${RPM_BUILD_ROOT}%{_pkgdoc}"
 echo -n > _rpm_doc_files_
-for f in AUTHORS LICENSE ChangeLog README; do
+for f in AUTHORS LICENSE ChangeLog README.md; do
 	%{__cp} "$f" "${RPM_BUILD_ROOT}%{_pkgdoc}/$f"
 	echo "%doc %{_pkgdoc}/$f" >> _rpm_doc_files_
 done
