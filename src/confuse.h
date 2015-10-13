@@ -90,6 +90,7 @@ typedef enum cfg_type_t cfg_type_t;
 
 #define CFGF_RESET 64
 #define CFGF_DEFINIT 128
+#define CFGF_IGNORE_UNKNOWN 256 /**< ignore unknown options in configuration files */
 
 /** Return codes from cfg_parse(). */
 #define CFG_SUCCESS 0
@@ -544,10 +545,15 @@ extern const char __export confuse_author[];
  *
  * The options must no longer be defined in the same scope as where the cfg_xxx
  * functions are used (since version 2.3). 
+ * 
+ * CFG_IGNORE_UNKNOWN can be specified to use the "__unknown" option
+ * whenever an unknown option is parsed. Be sure to define an "__unknown"
+ * option in each scope that unknown parameters are allowed.
  *
  * @param opts An arrary of options
  * @param flags One or more flags (bitwise or'ed together). Currently only
- * CFGF_NOCASE is available. Use 0 if no flags are needed.
+ * CFGF_NOCASE and CFGF_IGNORE_UNKNOWN are available. Use 0 if no flags are
+ * needed.
  *
  * @return A configuration context structure. This pointer is passed
  * to almost all other functions as the first parameter.
