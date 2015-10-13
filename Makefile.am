@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 CLEANFILES       = *~ '\#*\#'
-doc_DATA         = README.md AUTHORS LICENSE ChangeLog
+doc_DATA         = README.md AUTHORS LICENSE ChangeLog.md
 EXTRA_DIST       = libconfuse.spec.in libconfuse.spec
 
 EXAMPLES =
