@@ -60,6 +60,15 @@ static char *my_ether_ntoa(unsigned char *addr)
     return buf;
 }
 
+static char *my_inet_ntoa(unsigned char *addr)
+{
+    static char buf[18];
+
+    sprintf(buf, "%d.%d.%d.%d", addr[0], addr[1], addr[2], addr[3]);
+
+    return buf;
+}
+
 int parse_ether_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
     unsigned char *tmp;
@@ -248,17 +257,21 @@ void single_section_test(void)
 void single_ptr_test(void)
 {
     char *buf;
+    char tmp[80];
+    char addr[] = { 0xC0, 0xA8, 0x00, 0x01, 0 }; /* 192.168.0.1 */
     struct in_addr *ipaddr;
     unsigned char *etheraddr, *cmpether;
 
     fail_unless(cfg_size(cfg, "ip-address") == 0);
 
-    buf = "ip-address = 192.168.0.1";
-    fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+    /* Test valid IPv4 address */
+    snprintf(tmp, sizeof(tmp), "ip-address = %s", my_inet_ntoa(addr));
+    fail_unless(cfg_parse_buf(cfg, tmp) == CFG_SUCCESS);
     ipaddr = cfg_getptr(cfg, "ip-address");
     fail_unless(ipaddr != 0);
-    fail_unless(memcmp("\xC0\xA8\x00\x01", ipaddr, 4) == 0);
+    fail_unless(memcmp(addr, ipaddr, 4) == 0);
 
+    /* Test invalid IPv4 address */
     buf = "ip-address = 192.168.0.325";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);
 
