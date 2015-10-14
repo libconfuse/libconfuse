@@ -1,8 +1,7 @@
 Change Log
 ==========
 
-All notable changes to the project are documented, in human readable
-form, in this file.
+All notable changes in libConfuse are documented in this file.
 
 
 [v2.8][] - [UNRELEASED]
@@ -10,7 +9,7 @@ form, in this file.
 
 ### Changes
 
-* Support for specifying a sarch path for `cfg_parse()`, by J.J. Green
+* Support for specifying a searchpath for `cfg_parse()`, by J.J. Green
 * Restore build of shared library by default, by Nathan Phillip Brink
 * Added German translation, contributed by Chris Leick, Aurelien Jarno,
   and Tux^verdreifelt.
@@ -26,9 +25,11 @@ form, in this file.
 * Fix missing `.gitignore` files, by Carlo Marcelo Arenas Belon
 * Fix `CFG_SIMPLE_INT` on 64-bit systems, by Carlo Marcelo Arenas Belon
 * Coding style cleanup by J.J. Green
+* Fix issue #27: searchpath free problems.  Fix to new feature
+  introduced in this release cycle.
 
 
-[v2.7][] - 2007-10-13
+[v2.7][] - 2010-02-20
 ---------------------
 
 ### Changes
@@ -64,7 +65,7 @@ form, in this file.
 * now accepts a simplified list append syntax:
     
     option += "value"
-      insted of
+      instead of
     option += {"value"}
     
 * added flag `CFGF_NO_TITLE_DUPES`: multiple section titles must be
@@ -157,7 +158,7 @@ form, in this file.
 * Added project files for MS Visual C++ 6.0
 * Includes io.h on windows
 * Setting a list to the empty list in the config file now possible.
-* Appending to default values in a list is now ok.
+* Appending to default values in a list is now OK.
 * Hexadecimal escape sequences allowed in double-quoted strings
 * Only include NLS support if gettext found in libc or preinstalled
 * Documented the `cfg_setlist` and `cfg_addlist` functions
@@ -229,14 +230,14 @@ v1.2.2 - 2002-11-27
 
 * changed name to libConfuse (libcfg was way too common)
 * Don't build shared libraries by default (only static)
-* More swedish translations
+* More Swedish translations
 * Implemented the `cfg_free()` function (previous versions had only a stub)
 * New function: `cfg_free_val()`
 * updated the manual
 
 
 [UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.7...HEAD
-[v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...HEAD
+[v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
 [v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
 [v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
 [v2.5]: https://github.com/martinh/libconfuse/compare/v2.4...v2.5
