@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "check_confuse.h"
+#include "config.h"
 
 cfg_opt_t opts[] =
 {
@@ -35,8 +36,15 @@ testconfig(const char *buf, const char *parameter)
 int
 main(void)
 {
+#if defined(HAVE_SETENV) && defined(HAVE_UNSETENV)
 	fail_unless(setenv("MYVAR", "testing", 1) == 0);
 	fail_unless(unsetenv("MYUNSETVAR") == 0);
+#elif defined(HAVE__PUTENV)
+	fail_unless(_putenv("MYVAR=testing") == 0);
+	fail_unless(_putenv("MYUNSETVAR=") == 0);
+#else
+#error "Not sure how to set environment variables."
+#endif
 
         /* Check basic string parsing */
         fail_unless(testconfig("parameter=\"abc\\ndef\"", "abc\ndef"));
