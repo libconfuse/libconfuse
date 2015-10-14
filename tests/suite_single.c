@@ -3,20 +3,31 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 static cfg_t *cfg;
 
 int parse_ip_address(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
-    struct in_addr *addr = (struct in_addr *)malloc(sizeof(struct in_addr));
-    if(inet_aton(value, addr) == 0)
+    int i;
+    unsigned int e[4];
+    unsigned char *addr;
+    if (sscanf(value, "%u.%u.%u.%u", e + 0, e + 1, e + 2, e + 3) != 4)
     {
         /*cfg_error(cfg, "invalid IP address %s in section %s", value, cfg->name);*/
-        free(addr);
         return 1;
+    }
+    addr = (unsigned char *)malloc(sizeof(4));
+    for (i = 0; i < 4; i++)
+    {
+        if (e[i] <= 0xff)
+        {
+            addr[i] = e[i];
+        }
+        else
+        {
+            free(addr);
+            return 1;
+        }
     }
     *(void **)result = (void *)addr;
     return 0;
@@ -246,7 +257,7 @@ void single_ptr_test(void)
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
     ipaddr = cfg_getptr(cfg, "ip-address");
     fail_unless(ipaddr != 0);
-    fail_unless(strcmp("192.168.0.1", inet_ntoa(*ipaddr)) == 0);
+    fail_unless(memcmp("\xC0\xA8\x00\x01", ipaddr, 4) == 0);
 
     buf = "ip-address = 192.168.0.325";
     fail_unless(cfg_parse_buf(cfg, buf) == CFG_PARSE_ERROR);

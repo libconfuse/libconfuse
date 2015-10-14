@@ -2,9 +2,6 @@
 #include "check_confuse.h"
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 static cfg_t *cfg = 0;
 
@@ -49,16 +46,23 @@ int validate_speed(cfg_t *cfg, cfg_opt_t *opt)
 
 int validate_ip(cfg_t *cfg, cfg_opt_t *opt)
 {
-    unsigned int i;
+    unsigned int i, j;
 
     for(i = 0; i < cfg_opt_size(opt); i++)
     {
-        struct in_addr addr;
+        unsigned int v[4];
         char *ip = cfg_opt_getnstr(opt, i);
-        if(inet_aton(ip, &addr) == 0)
+        if (sscanf(ip, "%u.%u.%u.%u", v + 0, v + 1, v + 2, v + 3) != 4)
         {
             /* cfg_error(cfg, "invalid IP address %s in section %s", ip, cfg->name); */
             return 1;
+        }
+        for (j = 0; j < 4; j++)
+        {
+            if (v[j] > 0xff)
+            {
+                return 1;
+            }
         }
     }
     return 0;
