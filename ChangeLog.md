@@ -4,8 +4,8 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-[v2.8][] - [UNRELEASED]
------------------------
+[v2.8][] - 2015-10-14
+---------------------
 
 ### Changes
 
@@ -27,6 +27,7 @@ All notable changes in libConfuse are documented in this file.
 * Coding style cleanup by J.J. Green
 * Fix issue #27: searchpath free problems.  Fix to new feature
   introduced in this release cycle.
+* Improved support for MSYS2 by David Grayson.
 
 
 [v2.7][] - 2010-02-20
@@ -236,7 +237,7 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.7...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.8...HEAD
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
 [v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
 [v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
