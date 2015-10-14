@@ -50,15 +50,15 @@ Example configuration files:
 Download
 --------
 
-The source code is distributed in two files: a .tar.gz with source and
-makefiles, and a .zip file also including build files for windows.
+The source code is distributed in three files: Two tarballs in .tar.gz
+and .tar.xz formats with source code and Makefiles for UNIX systems, and
+a .zip file with Windows build files.
 
-* confuse-2.7:
-  [tar.gz](http://savannah.nongnu.org/download/confuse/confuse-2.7.tar.gz),
-  [zip](http://savannah.nongnu.org/download/confuse/confuse-2.7.zip)
-* [**new** and old versions](http://savannah.nongnu.org/download/confuse/)
-  available here.
-* [confuse-2.6](http://bzero.se/confuse/): source code
+* confuse-2.8:
+  [UNIX tar.gz](https://github.com/martinh/libconfuse/releases/download/v2.8/confuse-2.8.tar.gz),
+  [Windows ZIP](https://github.com/martinh/libconfuse/releases/download/v2.8/confuse-2.8.zip)
+* [New releases](https://github.com/martinh/libconfuse/releases)
+* [Old releases](http://savannah.nongnu.org/download/confuse/)
 
 
 Building
