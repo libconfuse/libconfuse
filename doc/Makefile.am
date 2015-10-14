@@ -4,10 +4,10 @@ EXTRA_DIST = doxygen-footer.html doxygen-header.html doxygen.css tutorial.xml \
 # I'd like to have these programs only compile at 'make documentation' time.
 # How?
 # noinst_PROGRAMS = listing1 listing2 listing3 listing4 listing5 listing8
-LDADD = ../src/libconfuse.la
-INCLUDES = -I$(top_srcdir)/src
-AM_LDFLAGS = -L../src/
-LIBS = $(LTLIBINTL)
+LDADD       = ../src/libconfuse.la
+AM_CPPFLAGS = -I$(top_srcdir)/src
+AM_LDFLAGS  = -L../src/
+LIBS        = $(LTLIBINTL)
 
 TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c \
 		    listing5.c listing6.c listing7.c listing8.c
