@@ -1,9 +1,6 @@
 #include "check_confuse.h"
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 void suppress_errors(cfg_t *cfg, const char *fmt, va_list ap);
 

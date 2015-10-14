@@ -83,3 +83,12 @@
 
 /* Define to 1 if you have the strndup function */
 /*#undef HAVE_STRNDUP */
+
+/* Define to 1 if you have the `setenv' function. */
+/* #undef HAVE_SETENV */
+
+/* Define to 1 if you have the `unsetenv' function. */
+/* #undef HAVE_UNSETENV */
+
+/* Define to 1 if you have the `_putenv' function. */
+#define HAVE__PUTENV 1
