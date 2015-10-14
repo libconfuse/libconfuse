@@ -55,14 +55,16 @@ static unsigned char *my_ether_aton(const char *addr)
 static char *my_ether_ntoa(unsigned char *addr)
 {
     static char buf[18];
+
     sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
-            addr[0], addr[0], addr[0], addr[0], addr[0], addr[0]);
+            addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+
     return buf;
 }
 
 static char *my_inet_ntoa(unsigned char *addr)
 {
-    static char buf[18];
+    static char buf[16];
 
     sprintf(buf, "%d.%d.%d.%d", addr[0], addr[1], addr[2], addr[3]);
 
