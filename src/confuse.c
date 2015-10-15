@@ -632,11 +632,10 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             {
                 if((*opt->parsecb)(cfg, opt, value, &i) != 0)
                     return 0;
-                val->number = i;
             }
             else
             {
-                val->number = strtol(value, &endptr, 0);
+                i = strtol(value, &endptr, 0);
                 if(*endptr != '\0')
                 {
                     cfg_error(cfg, _("invalid integer value for option '%s'"),
@@ -651,6 +650,7 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                     return 0;
                 }
             }
+            val->number = i;
             break;
 
         case CFGT_FLOAT:
@@ -658,11 +658,10 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
             {
                 if((*opt->parsecb)(cfg, opt, value, &f) != 0)
                     return 0;
-                val->fpnumber = f;
             }
             else
             {
-                val->fpnumber = strtod(value, &endptr);
+                f = strtod(value, &endptr);
                 if(*endptr != '\0')
                 {
                     cfg_error(cfg,
@@ -678,19 +677,20 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                     return 0;
                 }
             }
+            val->fpnumber = f;
             break;
 
         case CFGT_STR:
-            free(val->string);
             if(opt->parsecb)
             {
                 s = 0;
                 if((*opt->parsecb)(cfg, opt, value, &s) != 0)
                     return 0;
-                val->string = strdup(s);
             }
             else
-                val->string = strdup(value);
+                s = value;
+            free(val->string);
+            val->string = strdup(s);
             break;
 
         case CFGT_SEC:
