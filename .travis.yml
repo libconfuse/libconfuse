@@ -1,0 +1,31 @@
+# Travis CI integration
+# Defaults to GNU GCC and autotools: ./configure && make && make test
+language: c
+
+# We need to install autopoint, so we cannot use dockerized build
+sudo: true
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "kFrbrFEPt+f2UTSoKymheDJiLOcuXqvCDeV8EqCIsQT7oMpwHxLogJio3BIAUfP9Ykm73roJPKOt5YVv6k8IGDvKuR5XOJDl4gfLM8S1L9shGuQwk8E7nC3/96IoVRnkuqsWseDbHBm/K6jV6TRIVRVyc4Dcbjdb7qBTuVF5VNE="
+
+addons:
+  coverity_scan:
+    project:
+      name: "troglobit/libconfuse"
+      description: "Small configuration file parser library for C"
+    notification_email: troglobit@gmail.com
+    build_command_prepend: "sudo apt-get install autopoint && ./autogen.sh"
+    build_command:   "make check"
+    branch_pattern: master
+
+# We don't store generated files (configure and Makefile) in GIT,
+# so we must customize the default build script to run ./autogen.sh
+script:
+  - sudo apt-get install autopoint
+  - ./autogen.sh
+  - ./configure
+  - make
+  - make check

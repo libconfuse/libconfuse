@@ -1,5 +1,6 @@
 libConfuse
 ==========
+[![Travis Status][]][Travis] [![Coverity Status][]][Coverity Scan]
 
 Table of Contents
 -----------------
@@ -125,3 +126,14 @@ News
 ----
 
 Copyright &copy; Martin Hedenfalk <[martin.nospam@bzero.se](mailto:martin@bzero.se)>
+
+[Travis]:           https://travis-ci.org/troglobit/libconfuse
+[Travis Status]:    https://travis-ci.org/troglobit/libconfuse.png?branch=master
+[Coverity Scan]:    https://scan.coverity.com/projects/6674
+[Coverity Status]:  https://scan.coverity.com/projects/6674/badge.svg
+
+<!--
+  -- Local Variables:
+  -- mode: markdown
+  -- End:
+  -->
