@@ -33,6 +33,9 @@
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
+# ifndef S_ISREG
+#  define S_ISREG(mode) ((mode) & S_IFREG)
+# endif
 #endif
 
 #include "compat.h"
