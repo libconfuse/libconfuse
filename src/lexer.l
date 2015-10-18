@@ -21,6 +21,8 @@
 
 #include <assert.h>
 
+#define YY_NO_UNISTD_H
+
 #ifdef HAVE_STRING_H
 # include <string.h>
 #endif
