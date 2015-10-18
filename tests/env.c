@@ -1,10 +1,10 @@
 /* Test cfg_include when called from a buffer
  */
 
+#include "config.h"
 #include <string.h>
 #include <stdlib.h>
 #include "check_confuse.h"
-#include "config.h"
 
 cfg_opt_t opts[] =
 {
