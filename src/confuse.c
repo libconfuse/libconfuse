@@ -35,6 +35,7 @@
 # include <sys/stat.h>
 #endif
 
+#include "compat.h"
 #include "confuse.h"
 
 #define is_set(f, x) (((f) & (x)) == (f))
