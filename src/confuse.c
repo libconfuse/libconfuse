@@ -1542,6 +1542,72 @@ DLLIMPORT void cfg_addlist(cfg_t *cfg, const char *name,
     va_end(ap);
 }
 
+DLLIMPORT void cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index)
+{
+    unsigned int n;
+    cfg_value_t *val;
+
+    assert(opt && opt->type == CFGT_SEC);
+    n = cfg_opt_size(opt);
+    if (index >= n)
+        return;
+    val = cfg_opt_getval(opt, index);
+    if (index + 1 != n)
+    {
+        /* not removing last, move the tail */
+        memmove(&opt->values[index], &opt->values[index + 1],
+                sizeof(opt->values[index]) * (n - index - 1));
+    }
+    --opt->nvalues;
+    val->section->path = 0;
+    cfg_free(val->section);
+    free(val);
+}
+
+DLLIMPORT void cfg_rmnsec(cfg_t *cfg, const char *name,
+                     unsigned int index)
+{
+    cfg_opt_rmnsec(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT void cfg_rmsec(cfg_t *cfg, const char *name)
+{
+    cfg_rmnsec(cfg, name, 0);
+}
+
+DLLIMPORT void cfg_opt_rmtsec(cfg_opt_t *opt, const char *title)
+{
+    unsigned int i, n;
+
+    assert(opt && title);
+    if(!is_set(CFGF_TITLE, opt->flags))
+        return;
+    n = cfg_opt_size(opt);
+    for(i = 0; i < n; i++)
+    {
+        cfg_t *sec = cfg_opt_getnsec(opt, i);
+        assert(sec && sec->title);
+        if(is_set(CFGF_NOCASE, opt->flags))
+        {
+            if(strcasecmp(title, sec->title) == 0)
+                break;
+        }
+        else
+        {
+            if(strcmp(title, sec->title) == 0)
+                break;
+        }
+    }
+    if (i == n)
+        return;
+    cfg_opt_rmnsec(opt, i);
+}
+
+DLLIMPORT void cfg_rmtsec(cfg_t *cfg, const char *name, const char *title)
+{
+    cfg_opt_rmtsec(cfg_getopt(cfg, name), title);
+}
+
 DLLIMPORT void cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 {
     const char *str;
