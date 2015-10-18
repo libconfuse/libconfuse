@@ -558,7 +558,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 }
 
 DLLIMPORT cfg_value_t *
-cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
+cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 {
     cfg_value_t *val = 0;
     int b;
@@ -707,7 +707,7 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value)
                 val->section->filename = cfg->filename ? strdup(cfg->filename) : 0;
                 val->section->line = cfg->line;
                 val->section->errfunc = cfg->errfunc;
-                val->section->title = value;
+                val->section->title = value ? strdup(value) : 0;
             }
             if(!is_set(CFGF_DEFINIT, opt->flags))
                 cfg_init_defaults(val->section);
@@ -1013,6 +1013,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level,
                 }
 
                 val = cfg_setopt(cfg, opt, opttitle);
+                free(opttitle);
                 opttitle = 0;
                 if(!val)
                     return STATE_ERROR;

@@ -906,7 +906,7 @@ DLLIMPORT cfg_opt_t * __export cfg_getopt(cfg_t *cfg, const char *name);
  *
  * @return Returns a pointer to the value object.
  */
-DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, char *value);
+DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value);
 
 /** Set a value of an integer option.
  *
