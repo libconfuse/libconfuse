@@ -1384,7 +1384,7 @@ static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 {
     cfg_value_t *val = 0;
 
-    assert(index == 0 || is_set(CFGF_LIST, opt->flags));
+    assert(index == 0 || is_set(CFGF_LIST, opt->flags) || is_set(CFGF_MULTI, opt->flags));
 
     if(opt->simple_value.ptr)
         val = (cfg_value_t *)opt->simple_value.ptr;
