@@ -12,16 +12,8 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_SRCDIR(src/confuse.c)
 
 # Checks for programs.
-# disable unnecessary compiler checks
-AC_DEFUN([AC_PROG_F77], [:])
-AC_DEFUN([AC_PROG_FC], [:])
-AC_DEFUN([AC_PROG_CXX], [:])
-AC_DEFUN([AC_PROG_CXXCPP], [:])
-AC_DEFUN([AC_PROG_OBJC], [:])
-AC_DEFUN([AC_PROG_OBJCCPP], [:])
-AC_DEFUN([AC_LIBTOOL_CXX], [:])
-AC_DEFUN([AC_LIBTOOL_F77], [:])
 AC_PROG_CC
+AM_PROG_AR
 AM_PROG_LEX
 
 LT_INIT([win32-dll])
