@@ -1077,6 +1077,32 @@ DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name,
                                     unsigned int nvalues, ...);
 
+/** Set an option (create an instance of an option).
+ *
+ * @param cfg The configuration file context.
+ * @param opt The option definition.
+ * @param nvalues The number of values to set for the option.
+ * @param values The value(s) for the option.
+ *
+ * @return Returns 0 if the option values where set correctly,
+ * or -1 if an error occurred.
+ */
+DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt,
+			       unsigned int nvalues, char **values);
+
+/** Set an option (create an instance of an option).
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param nvalues The number of values to set for the option.
+ * @param values The value(s) for the option.
+ *
+ * @return Returns 0 if the option values where set correctly,
+ * or -1 if an error occurred.
+ */
+DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name,
+			   unsigned int nvalues, char **values);
+
 /** Removes and frees a config section, given a cfg_opt_t pointer.
  * @param opt The option structure (eg, as returned from cfg_getopt())
  * @param index Index of the section to remove. Zero based.
