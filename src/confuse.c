@@ -1125,23 +1125,26 @@ DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
 
 static char *cfg_make_fullpath(const char *dir, const char *file)
 {
+    int np;
+    char *path;
+    size_t len;
+
     assert(dir && file);
 
-    ssize_t n = strlen(dir) + strlen(file) + 2;
-    char *path = malloc(n);
+    len = strlen(dir) + strlen(file) + 2;
+    path = calloc(len, sizeof(char));
 
     assert(path);
 
-    int np = snprintf(path, n, "%s/%s", dir, file);
+    np = snprintf(path, len, "%s/%s", dir, file);
 
     /* 
-       np is the number of characters that would have
-       been printed if there was enough room in path.
-       if np >= n then the snprintf() was truncated
-       (which must be a bug).
-    */
-
-    assert(np < n);
+     * np is the number of characters that would have
+     * been printed if there was enough room in path.
+     * if np >= n then the snprintf() was truncated
+     * (which must be a bug).
+     */
+    assert(np < len);
 
     return path;
 }
