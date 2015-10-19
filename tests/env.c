@@ -15,6 +15,7 @@ cfg_opt_t opts[] =
 static int
 testconfig(const char *buf, const char *parameter)
 {
+	char *param;
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
         if (!cfg)
             return 0;
@@ -22,7 +23,7 @@ testconfig(const char *buf, const char *parameter)
 	if (cfg_parse_buf(cfg, buf) != CFG_SUCCESS)
             return 0;
 
-        char *param = cfg_getstr(cfg, "parameter");
+        param = cfg_getstr(cfg, "parameter");
         if (!param)
             return 0;
 
