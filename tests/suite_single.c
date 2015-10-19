@@ -155,6 +155,9 @@ void single_string_test(void)
     fail_unless(strcmp(cfg_getstr(cfg, "string"), "set") == 0);
     cfg_setstr(cfg, "string", "manually set");
     fail_unless(strcmp(cfg_getstr(cfg, "string"), "manually set") == 0);
+    buf = "multi set";
+    fail_unless(cfg_setmulti(cfg, "string", 1, &buf) == 0);
+    fail_unless(strcmp(cfg_getstr(cfg, "string"), "multi set") == 0);
 }
 
 void single_integer_test(void)
@@ -171,6 +174,12 @@ void single_integer_test(void)
     fail_unless(cfg_getint(cfg, "integer") == -46);
     cfg_setint(cfg, "integer", 999999);
     fail_unless(cfg_getint(cfg, "integer") == 999999);
+    buf = "42";
+    fail_unless(cfg_setmulti(cfg, "integer", 1, &buf) == 0);
+    fail_unless(cfg_getint(cfg, "integer") == 42);
+    buf = "ouch";
+    fail_unless(cfg_setmulti(cfg, "integer", 1, &buf) == -1);
+    fail_unless(cfg_getint(cfg, "integer") == 42);
 }
 
 void single_float_test(void)
@@ -187,6 +196,12 @@ void single_float_test(void)
     fail_unless(cfg_getfloat(cfg, "float") == -46.777);
     cfg_setfloat(cfg, "float", 5.1234e2);
     fail_unless(cfg_getfloat(cfg, "float") == 5.1234e2);
+    buf = "4.2";
+    fail_unless(cfg_setmulti(cfg, "float", 1, &buf) == 0);
+    fail_unless(cfg_getfloat(cfg, "float") == 4.2);
+    buf = "ouch";
+    fail_unless(cfg_setmulti(cfg, "float", 1, &buf) == -1);
+    fail_unless(cfg_getfloat(cfg, "float") == 4.2);
 }
 
 void single_bool_test(void)
@@ -220,6 +235,13 @@ void single_bool_test(void)
     fail_unless(cfg_getbool(cfg, "bool") == cfg_true);
     cfg_setbool(cfg, "bool", cfg_false);
     fail_unless(cfg_getbool(cfg, "bool") == cfg_false);
+
+    buf = "true";
+    fail_unless(cfg_setmulti(cfg, "bool", 1, &buf) == 0);
+    fail_unless(cfg_getbool(cfg, "bool") == cfg_true);
+    buf = "later";
+    fail_unless(cfg_setmulti(cfg, "bool", 1, &buf) == -1);
+    fail_unless(cfg_getbool(cfg, "bool") == cfg_true);
 }
 
 void single_section_test(void)

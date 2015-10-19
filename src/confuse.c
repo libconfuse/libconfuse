@@ -752,6 +752,42 @@ cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
     return val;
 }
 
+DLLIMPORT int
+cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues, char **values)
+{
+    cfg_opt_t old;
+    unsigned int i;
+
+    if(!opt || !nvalues)
+        return -1;
+
+    old = *opt;
+    opt->nvalues = 0;
+    opt->values = 0;
+
+    for(i = 0; i < nvalues; i++) {
+        if(cfg_setopt(cfg, opt, values[i]))
+            continue;
+        /* ouch, revert */
+        cfg_free_value(opt);
+        opt->nvalues = old.nvalues;
+        opt->values = old.values;
+        return -1;
+    }
+
+    cfg_free_value(&old);
+    return 0;
+}
+
+DLLIMPORT int
+cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, char **values)
+{
+    cfg_opt_t *opt = cfg_getopt(cfg, name);
+    if(!opt)
+        return -1;
+    return cfg_opt_setmulti(cfg, opt, nvalues, values);
+}
+
 /* searchpath */
 
 struct cfg_searchpath_t {

@@ -52,6 +52,7 @@ static void list_teardown(void)
 static void list_string_test(void)
 {
     char *buf;
+    char *multi[2];
 
     fail_unless(cfg_size(cfg, "string") == 3);
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "string")) == 3);
@@ -81,11 +82,19 @@ static void list_string_test(void)
     fail_unless(cfg_size(cfg, "string") == 5);
     fail_unless(strcmp(cfg_getnstr(cfg, "string", 3), "gaz") == 0);
     fail_unless(strcmp(cfg_getnstr(cfg, "string", 4), "onk") == 0);
+
+    multi[0] = "bar";
+    multi[1] = "foo";
+    fail_unless(cfg_setmulti(cfg, "string", 2, multi) == 0);
+    fail_unless(cfg_size(cfg, "string") == 2);
+    fail_unless(strcmp(cfg_getnstr(cfg, "string", 0), "bar") == 0);
+    fail_unless(strcmp(cfg_getnstr(cfg, "string", 1), "foo") == 0);
 }
 
 static void list_integer_test(void)
 {
     char *buf;
+    char *multi[3];
 
     fail_unless(cfg_size(cfg, "integer") == 2);
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "integer")) == 2);
@@ -113,11 +122,27 @@ static void list_integer_test(void)
     fail_unless(cfg_size(cfg, "integer") == 5);
     fail_unless(cfg_getnint(cfg, "integer", 3) == -1234567890);
     fail_unless(cfg_getnint(cfg, "integer", 4) == 1234567890);
+
+    multi[0] = "42";
+    multi[1] = "17";
+    fail_unless(cfg_setmulti(cfg, "integer", 2, multi) == 0);
+    fail_unless(cfg_size(cfg, "integer") == 2);
+    fail_unless(cfg_getnint(cfg, "integer", 0) == 42);
+    fail_unless(cfg_getnint(cfg, "integer", 1) == 17);
+
+    multi[0] = "17";
+    multi[1] = "bad";
+    multi[2] = "42";
+    fail_unless(cfg_setmulti(cfg, "integer", 3, multi) == -1);
+    fail_unless(cfg_size(cfg, "integer") == 2);
+    fail_unless(cfg_getnint(cfg, "integer", 0) == 42);
+    fail_unless(cfg_getnint(cfg, "integer", 1) == 17);
 }
 
 static void list_float_test(void)
 {
     char *buf;
+    char *multi[3];
 
     fail_unless(cfg_size(cfg, "float") == 1);
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "float")) == 1);
@@ -151,11 +176,27 @@ static void list_float_test(void)
     fail_unless(cfg_size(cfg, "float") == 4);
     fail_unless(cfg_getnfloat(cfg, "float", 2) == 64.64);
     fail_unless(cfg_getnfloat(cfg, "float", 3) == 1234.567890);
+
+    multi[0] = "42";
+    multi[1] = "0.17";
+    fail_unless(cfg_setmulti(cfg, "float", 2, multi) == 0);
+    fail_unless(cfg_size(cfg, "float") == 2);
+    fail_unless(cfg_getnfloat(cfg, "float", 0) == 42);
+    fail_unless(cfg_getnfloat(cfg, "float", 1) == 0.17);
+
+    multi[0] = "42";
+    multi[1] = "bad";
+    multi[2] = "0.17";
+    fail_unless(cfg_setmulti(cfg, "float", 3, multi) == -1);
+    fail_unless(cfg_size(cfg, "float") == 2);
+    fail_unless(cfg_getnfloat(cfg, "float", 0) == 42);
+    fail_unless(cfg_getnfloat(cfg, "float", 1) == 0.17);
 }
 
 static void list_bool_test(void)
 {
     char *buf;
+    char *multi[3];
 
     fail_unless(cfg_size(cfg, "bool") == 6);
     fail_unless(cfg_opt_size(cfg_getopt(cfg, "bool")) == 6);
@@ -196,6 +237,21 @@ static void list_bool_test(void)
     fail_unless(cfg_size(cfg, "bool") == 6);
     fail_unless(cfg_getnbool(cfg, "bool", 4) == cfg_false);
     fail_unless(cfg_getnbool(cfg, "bool", 5) == cfg_false);
+
+    multi[0] = "true";
+    multi[1] = "no";
+    fail_unless(cfg_setmulti(cfg, "bool", 2, multi) == 0);
+    fail_unless(cfg_size(cfg, "bool") == 2);
+    fail_unless(cfg_getnbool(cfg, "bool", 0) == cfg_true);
+    fail_unless(cfg_getnbool(cfg, "bool", 1) == cfg_false);
+
+    multi[0] = "false";
+    multi[1] = "maybe";
+    multi[2] = "yes";
+    fail_unless(cfg_setmulti(cfg, "bool", 3, multi) == -1);
+    fail_unless(cfg_size(cfg, "bool") == 2);
+    fail_unless(cfg_getnbool(cfg, "bool", 0) == cfg_true);
+    fail_unless(cfg_getnbool(cfg, "bool", 1) == cfg_false);
 }
 
 static void list_section_test(void)
