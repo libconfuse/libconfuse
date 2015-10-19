@@ -4,6 +4,36 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
+v2.9 - [UNRELEASED]
+-------------------
+
+Special thanks in this release goes out to Frank Hunleth, Peter Rosin
+and David Grayson for their tireless efforts in helping improve this
+library!
+
+### Changes
+
+* Add public API for removing sections at runtime, by Peter Rosin.
+* Allow `cfg_opt_getval()` on options that are `CFGF_MULTI` sections,
+  by Peter Rosin.
+* Support for Travis-CI and Coverity Scan, by Joachim Nilsson
+* Use `autoreconf` in `autogen.sh` instead of calling tools separtely.
+* Powershell script for AppVeyor CI to build libConfuse with MSYS2
+  by David Grayson
+* Support for handling unknown options.  The idea is to provide future
+  proofing of configuration files, i.e. if a new parameter is added, the
+  new config file will not fail if loaded in an older version of your
+  program.  Idea and implementation by Frank Hunleth
+
+### Fixes
+
+* Protect callers arguments to `cfg_setopt()`, by Peter Rosin
+* If new value to `cfg_setopt()` fails parsing, do not lose old value,
+  by Peter Rosin.
+* Fixes to update support for older versions of Microsoft Visual Studio
+  as well as MSYS2/mingw-w64 by Peter Rosin and David Grayson.
+
+
 [v2.8][] - 2015-10-14
 ---------------------
 
