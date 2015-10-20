@@ -13,17 +13,20 @@ library!
 
 ### Changes
 
-* Add public API for removing sections at runtime, by Peter Rosin.
-* Allow `cfg_opt_getval()` on options that are `CFGF_MULTI` sections,
-  by Peter Rosin.
-* Support for Travis-CI and Coverity Scan, by Joachim Nilsson
-* Use `autoreconf` in `autogen.sh` instead of calling tools separtely.
-* Powershell script for AppVeyor CI to build libConfuse with MSYS2
-  by David Grayson
 * Support for handling unknown options.  The idea is to provide future
   proofing of configuration files, i.e. if a new parameter is added, the
   new config file will not fail if loaded in an older version of your
-  program.  Idea and implementation by Frank Hunleth
+  program.  Idea and implementation by Frank Hunleth.
+* Add public API for removing sections at runtime, by Peter Rosin.
+* Allow `cfg_opt_getval()` on options that are `CFGF_MULTI` sections,
+  by Peter Rosin.
+* Add `cfg_setmulti()` and `cfg_opt_setmulti()`, by Peter Rosin.
+* Add CLI example of how to manage configuration changes at runtime,
+  also by Peter Rosin.
+* Support for Travis-CI and Coverity Scan, by Joachim Nilsson.
+* Use `autoreconf` in `autogen.sh` instead of calling tools separtely.
+* Powershell script for AppVeyor CI to build libConfuse with MSYS2
+  by David Grayson,
 
 ### Fixes
 
