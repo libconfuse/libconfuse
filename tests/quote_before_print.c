@@ -7,18 +7,17 @@
 
 #include "check_confuse.h"
 
-cfg_opt_t opts[] = 
-{
+cfg_opt_t opts[] = {
 	CFG_STR("parameter", NULL, CFGF_NONE),
 	CFG_END()
 };
 
-int
-main(void)
+int main(void)
 {
 	FILE *fp;
 	char *param;
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
+
 	fail_unless(cfg);
 
 	/* set a string parameter to a string including a quote character
@@ -48,4 +47,3 @@ main(void)
 
 	return 0;
 }
-

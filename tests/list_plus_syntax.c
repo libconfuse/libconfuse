@@ -3,43 +3,51 @@
 
 int main(void)
 {
-    cfg_opt_t opts[] = {
-        CFG_STR_LIST("stringproperty", 0, CFGF_NONE),
-        CFG_END()
-    };
+	cfg_opt_t opts[] = {
+		CFG_STR_LIST("stringproperty", 0, CFGF_NONE),
+		CFG_END()
+	};
 
-    int rc;
-    cfg_t *cfg = cfg_init(opts, CFGF_NONE);
-    fail_unless(cfg);
+	int rc;
+	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
 
-    rc = cfg_parse_buf(cfg,
-        " stringproperty = {\"this\"}\n"
-        " stringproperty += {\"that\"}\n"
-        " stringproperty += {\"other\"}\n");
+	fail_unless(cfg);
 
-    fail_unless(rc == CFG_SUCCESS);
+	rc = cfg_parse_buf(cfg,
+			   " stringproperty = {\"this\"}\n"
+			   " stringproperty += {\"that\"}\n"
+			   " stringproperty += {\"other\"}\n");
 
-    fail_unless(cfg_size(cfg, "stringproperty") == 3);
+	fail_unless(rc == CFG_SUCCESS);
 
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 0), "this") == 0);
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 1), "that") == 0);
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 2), "other") == 0);
+	fail_unless(cfg_size(cfg, "stringproperty") == 3);
 
-    rc = cfg_parse_buf(cfg,
-            " stringproperty = \"this\"\n"
-            " stringproperty += \"that\"\n"
-            " stringproperty += \"other\"\n");
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 0), "this") == 0);
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 1), "that") == 0);
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 2), "other") == 0);
 
-    fail_unless(rc == CFG_SUCCESS);
+	rc = cfg_parse_buf(cfg,
+			   " stringproperty = \"this\"\n"
+			   " stringproperty += \"that\"\n"
+			   " stringproperty += \"other\"\n");
 
-    fail_unless(cfg_size(cfg, "stringproperty") == 3);
+	fail_unless(rc == CFG_SUCCESS);
 
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 0), "this") == 0);
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 1), "that") == 0);
-    fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 2), "other") == 0);
+	fail_unless(cfg_size(cfg, "stringproperty") == 3);
 
-    cfg_free(cfg);
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 0), "this") == 0);
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 1), "that") == 0);
+	fail_unless(strcmp(cfg_getnstr(cfg, "stringproperty", 2), "other") == 0);
 
-    return 0;
+	cfg_free(cfg);
+
+	return 0;
 }
 
+/**
+ * Local Variables:
+ *  version-control: t
+ *  indent-tabs-mode: t
+ *  c-file-style: "linux"
+ * End:
+ */

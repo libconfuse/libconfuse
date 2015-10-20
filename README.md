@@ -17,13 +17,12 @@ Introduction
 ------------
 
 libConfuse is a configuration file parser library, licensed under the
-terms of the [ISC license](http://en.wikipedia.org/wiki/ISC_license),
-and written in C.  It supports sections and (lists of) values (strings,
-integers, floats, booleans or other sections), as well as some other
-features (such as single/double-quoted strings, environment variable
-expansion, functions and nested include statements).  It makes it very
-easy to add configuration file capability to a program using a simple
-API.
+terms of the [ISC license][1], and written in C.  It supports sections
+and (lists of) values (strings, integers, floats, booleans or other
+sections), as well as some other features (such as single/double-quoted
+strings, environment variable expansion, functions and nested include
+statements).  It makes it very easy to add configuration file capability
+to a program using a simple API.
 
 The goal of libConfuse is not to be _the_ configuration file parser
 library with a gazillion of features.  Instead, it aims to be easy to
@@ -32,7 +31,8 @@ use and quick to integrate with your code.
 libConfuse was called libcfg before, but was changed to not confuse with
 other similar libraries.
 
-Please report bugs to the GitHub [issue tracker](https://github.com/martinh/libconfuse/issues)
+Please report bugs to the GitHub [issue tracker][2].  If you want to
+contribute fixes or new features, see the file [CONTRIBUTING.md][3]
 
 
 Examples
@@ -127,6 +127,9 @@ News
 
 Copyright &copy; Martin Hedenfalk <[martin.nospam@bzero.se](mailto:martin@bzero.se)>
 
+[1]:                http://en.wikipedia.org/wiki/ISC_license
+[2]:                https://github.com/martinh/libconfuse/issues
+[3]:                https://github.com/martinh/libconfuse/blob/master/CONTRIBUTING.md
 [Travis]:           https://travis-ci.org/troglobit/libconfuse
 [Travis Status]:    https://travis-ci.org/troglobit/libconfuse.png?branch=master
 [Coverity Scan]:    https://scan.coverity.com/projects/6674
