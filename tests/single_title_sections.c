@@ -13,13 +13,12 @@ cfg_opt_t opts[] = {
 	CFG_END()
 };
 
-int
-main(void)
+int main(void)
 {
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
+
 	fail_unless(cfg);
 	cfg_free(cfg);
 
 	return 0;
 }
-

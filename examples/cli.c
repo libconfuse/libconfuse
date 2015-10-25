@@ -23,8 +23,7 @@ static int cmdc;
 static char **cmdv;
 static int cmdv_max;
 
-static int
-reserve_cmdv(int cmdc)
+static int reserve_cmdv(int cmdc)
 {
 	int cmd_max = cmdv_max;
 	char **tmp;
@@ -45,8 +44,7 @@ reserve_cmdv(int cmdc)
 	return 0;
 }
 
-static int
-split_cmd(char *cmd)
+static int split_cmd(char *cmd)
 {
 	char *out = cmd;
 	int arg;
@@ -55,13 +53,15 @@ split_cmd(char *cmd)
 
 	for (;;) {
 		char ch;
+
 		arg = 0;
 		while (*cmd == ' ')
 			++cmd;
-next_char:
+ next_char:
 		ch = *cmd++;
 		if (ch == '"' || ch == '\'') {
 			char end = ch;
+
 			if (!arg) {
 				if (reserve_cmdv(cmdc + 1))
 					return -1;
@@ -91,8 +91,7 @@ next_char:
 	return cmdc;
 }
 
-static char *
-input_cmd(void)
+static char *input_cmd(void)
 {
 	int ch;
 	char *cmd = malloc(128);
@@ -114,6 +113,7 @@ input_cmd(void)
 		default:
 			if (pos == len) {
 				char *tmp = realloc(cmd, len * 2);
+
 				if (!tmp)
 					goto cleanup;
 				cmd = tmp;
@@ -124,30 +124,27 @@ input_cmd(void)
 				return cmd;
 		}
 	}
-cleanup:
+ cleanup:
 	free(cmd);
 	return NULL;
 }
 
-static const char *
-help(int argc, char *argv[])
+static const char *help(int argc, char *argv[])
 {
-	return
-"available commands:\n"
-"\n"
-"help\n"
-"set <option> <value> ...\n"
-"subset <section> <option> <value>\n"
-"create <section>\n"
-"destroy <section>\n"
-"dump\n"
-"quit\n"
-"\n"
-"<option> is one of 'bool', 'int' 'string' and 'float'.\n";
+	return  "Available commands:\n"
+		"\n"
+		"help\n"
+		"set <option> <value> ...\n"
+		"subset <section> <option> <value>\n"
+		"create <section>\n"
+		"destroy <section>\n"
+		"dump\n"
+		"quit\n"
+		"\n"
+		"<option> is one of 'bool', 'int' 'string' and 'float'.\n";
 }
 
-static const char *
-set(int argc, char *argv[])
+static const char *set(int argc, char *argv[])
 {
 	if (argc < 3)
 		return "Need more args\n";
@@ -161,8 +158,7 @@ set(int argc, char *argv[])
 	return "OK\n";
 }
 
-static const char *
-subset(int argc, char *argv[])
+static const char *subset(int argc, char *argv[])
 {
 	cfg_t *sub;
 
@@ -184,8 +180,7 @@ subset(int argc, char *argv[])
 	return "OK\n";
 }
 
-static const char *
-create(int argc, char *argv[])
+static const char *create(int argc, char *argv[])
 {
 	char *buf;
 
@@ -206,8 +201,7 @@ create(int argc, char *argv[])
 	return "OK\n";
 }
 
-static const char *
-destroy(int argc, char *argv[])
+static const char *destroy(int argc, char *argv[])
 {
 	if (argc < 2)
 		return "Need one arg\n";
@@ -219,22 +213,20 @@ destroy(int argc, char *argv[])
 	return "OK\n";
 }
 
-static const char *
-dump(int argc, char *argv[])
+static const char *dump(int argc, char *argv[])
 {
 	cfg_print(cfg, stdout);
 	return "";
 }
 
-static const char *
-quit(int argc, char *argv[])
+static const char *quit(int argc, char *argv[])
 {
 	return NULL;
 }
 
 struct cmd_handler {
 	const char *cmd;
-	const char *(*handler)(int argc, char *argv[]);
+	const char *(*handler) (int argc, char *argv[]);
 };
 
 static const struct cmd_handler cmds[] = {

@@ -17,11 +17,11 @@ cfg_opt_t opts[] = {
 	CFG_END()
 };
 
-int
-main(void)
+int main(void)
 {
 	char *buf = "include (\"" SRC_DIR "/a.conf\")\n";
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
+
 	fail_unless(cfg);
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 	fail_unless(cfg_size(cfg, "sec") == 1);
@@ -31,4 +31,3 @@ main(void)
 
 	return 0;
 }
-
