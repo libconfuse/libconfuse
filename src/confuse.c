@@ -68,6 +68,7 @@ const char confuse_copyright[] = PACKAGE_STRING " by Martin Hedenfalk <martin@bz
 const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
+static void cfg_free_opt_array(cfg_opt_t *opts);
 
 #define STATE_CONTINUE 0
 #define STATE_EOF -1
@@ -446,16 +447,39 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 
 	for (i = 0; i < n; i++) {
 		dupopts[i].name = strdup(opts[i].name);
-		if (opts[i].type == CFGT_SEC && opts[i].subopts)
-			dupopts[i].subopts = cfg_dupopt_array(opts[i].subopts);
+		if (!dupopts[i].name)
+			goto err;
 
-		if (is_set(CFGF_LIST, opts[i].flags) || opts[i].type == CFGT_FUNC)
-			dupopts[i].def.parsed = opts[i].def.parsed ? strdup(opts[i].def.parsed) : 0;
-		else if (opts[i].type == CFGT_STR)
-			dupopts[i].def.string = opts[i].def.string ? strdup(opts[i].def.string) : 0;
+		if (opts[i].type == CFGT_SEC && opts[i].subopts) {
+			dupopts[i].subopts = cfg_dupopt_array(opts[i].subopts);
+			if (!dupopts[i].subopts)
+				goto err;
+		}
+
+		if (is_set(CFGF_LIST, opts[i].flags) || opts[i].type == CFGT_FUNC) {
+			dupopts[i].def.parsed = opts[i].def.parsed ? strdup(opts[i].def.parsed) : NULL;
+			if (opts[i].def.parsed && !dupopts[i].def.parsed)
+				goto err;
+		}
+		else if (opts[i].type == CFGT_STR) {
+			dupopts[i].def.string = opts[i].def.string ? strdup(opts[i].def.string) : NULL;
+			if (opts[i].def.string && !dupopts[i].def.string)
+				goto err;
+		}
 	}
 
 	return dupopts;
+err:
+	if (dupopts[i].subopts)
+		cfg_free_opt_array(dupopts[i].subopts);
+	if (dupopts[i].def.parsed)
+		free(dupopts[i].def.parsed);
+	if (dupopts[i].def.string)
+		free((void *)dupopts[i].def.string);
+
+	cfg_free_opt_array(dupopts);
+
+	return NULL;
 }
 
 DLLIMPORT int cfg_parse_boolean(const char *s)
@@ -1491,13 +1515,25 @@ DLLIMPORT void cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value)
 
 DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int index)
 {
+	char *newstr, *oldstr = NULL;
 	cfg_value_t *val;
 
 	assert(opt && opt->type == CFGT_STR);
 	val = cfg_opt_getval(opt, index);
 	if (val->string)
-		free(val->string);
-	val->string = value ? strdup(value) : 0;
+		oldstr = val->string;
+
+	if (value) {
+		newstr = strdup(value);
+		if (!newstr)
+			return;
+		val->string = newstr;
+	} else {
+		val->string = NULL;
+	}
+
+	if (oldstr)
+		free(oldstr);
 }
 
 DLLIMPORT void cfg_setnstr(cfg_t *cfg, const char *name, const char *value, unsigned int index)
