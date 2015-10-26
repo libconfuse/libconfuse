@@ -716,9 +716,8 @@ DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, c
 /* searchpath */
 
 struct cfg_searchpath_t {
-	char *dir;	     /**< directory to search */
-	cfg_searchpath_t *next;
-			     /**< next in list */
+	char *dir;	        /**< directory to search */
+	cfg_searchpath_t *next; /**< next in list */
 };
 
 /* prepend a new cfg_searchpath_t to the linked list */
