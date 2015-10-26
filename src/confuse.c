@@ -111,7 +111,8 @@ static char *strdup(const char *s)
 	char *copy;
 
 	siz = strlen(str) + 1;
-	if ((copy = malloc(siz)) == NULL)
+	copy = malloc(siz);
+	if (!copy)
 		return NULL;
 
 	memcpy(copy, str, siz);
@@ -130,7 +131,9 @@ static char *strndup(const char *s, size_t n)
 		return NULL;
 
 	r = malloc(n + 1);
-	assert(r);
+	if (!r)
+		return NULL;
+
 	strncpy(r, s, n);
 	r[n] = 0;
 
@@ -180,12 +183,17 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 			break;
 		if (len) {
 			secname = strndup(name, len);
+			if (!secname)
+				return NULL;
+
 			sec = cfg_getsec(sec, secname);
-			if (sec == 0)
+			if (sec == 0) {
 				cfg_error(cfg, _("no such option '%s'"), secname);
+				free(secname);
+				return NULL;
+			}
+
 			free(secname);
-			if (sec == 0)
-				return 0;
 		}
 		name += len;
 		name += strspn(name, "|");
@@ -401,10 +409,17 @@ DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
 
 static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 {
-	opt->values = realloc(opt->values, (opt->nvalues + 1) * sizeof(cfg_value_t *));
-	assert(opt->values);
-	opt->values[opt->nvalues] = malloc(sizeof(cfg_value_t));
-	memset(opt->values[opt->nvalues], 0, sizeof(cfg_value_t));
+	void *ptr;
+
+	ptr = realloc(opt->values, (opt->nvalues + 1) * sizeof(cfg_value_t *));
+	if (!ptr)
+		return NULL;
+
+	opt->values = ptr;
+	opt->values[opt->nvalues] = calloc(1, sizeof(cfg_value_t));
+	if (!opt->values[opt->nvalues])
+		return NULL;
+
 	return opt->values[opt->nvalues++];
 }
 
@@ -424,6 +439,9 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 	int n = cfg_numopts(opts);
 
 	dupopts = calloc(n + 1, sizeof(cfg_opt_t));
+	if (!dupopts)
+		return NULL;
+
 	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
 	for (i = 0; i < n; i++) {
@@ -590,8 +608,12 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 					return NULL;
 				}
 			}
-			if (val == NULL)
+
+			if (!val) {
 				val = cfg_addval(opt);
+				if (!val)
+					return NULL;
+			}
 		} else
 			val = opt->values[0];
 	}
@@ -644,6 +666,8 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 		free(val->string);
 		val->string = strdup(s);
+		if (!val->string)
+			return NULL;
 		break;
 
 	case CFGT_SEC:
@@ -652,14 +676,43 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				val->section->path = 0;
 			cfg_free(val->section);
 			val->section = calloc(1, sizeof(cfg_t));
-			assert(val->section);
+			if (!val->section)
+				return NULL;
+
 			val->section->name = strdup(opt->name);
-			val->section->opts = cfg_dupopt_array(opt->subopts);
+			if (!val->section->name) {
+				free(val->section);
+				return NULL;
+			}
+
 			val->section->flags = cfg->flags;
-			val->section->filename = cfg->filename ? strdup(cfg->filename) : 0;
+			val->section->filename = cfg->filename ? strdup(cfg->filename) : NULL;
+			if (cfg->filename && !val->section->filename) {
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
+
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
-			val->section->title = value ? strdup(value) : 0;
+			val->section->title = value ? strdup(value) : NULL;
+			if (value && !val->section->title) {
+				free(val->section->filename);
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
+
+			val->section->opts = cfg_dupopt_array(opt->subopts);
+			if (!val->section->opts) {
+				if (val->section->title)
+					free(val->section->title);
+				if (val->section->filename)
+					free(val->section->filename);
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
 		}
 		if (!is_set(CFGF_DEFINIT, opt->flags))
 			cfg_init_defaults(val->section);
@@ -749,10 +802,12 @@ DLLIMPORT int cfg_add_searchpath(cfg_t *cfg, const char *dir)
 
 	assert(cfg && dir);
 
-	if ((d = cfg_tilde_expand(dir)) == NULL)
+	d = cfg_tilde_expand(dir);
+	if (!d)
 		return CFG_PARSE_ERROR;
 
-	if ((p = malloc(sizeof(cfg_searchpath_t))) == NULL) {
+	p = malloc(sizeof(cfg_searchpath_t));
+	if (!p) {
 		free(d);
 		return CFG_PARSE_ERROR;
 	}
@@ -805,11 +860,15 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 	 * the registered function
 	 */
 	argv = calloc(funcopt->nvalues, sizeof(char *));
+	if (!argv)
+		return 1;
+
 	for (i = 0; i < funcopt->nvalues; i++)
 		argv[i] = funcopt->values[i]->string;
 	ret = (*opt->func) (cfg, opt, funcopt->nvalues, argv);
 	cfg_free_value(funcopt);
 	free(argv);
+
 	return ret;
 }
 
@@ -986,8 +1045,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (tok != CFGT_STR) {
 				cfg_error(cfg, _("missing title for section '%s'"), opt->name);
 				return STATE_ERROR;
-			} else
+			} else {
 				opttitle = strdup(cfg_yylval);
+				if (!opttitle)
+					return STATE_ERROR;
+			}
 			state = 5;
 			break;
 
@@ -1008,7 +1070,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				state = 0;
 			} else if (tok == CFGT_STR) {
 				val = cfg_addval(&funcopt);
+				if (!val)
+					return STATE_ERROR;
+
 				val->string = strdup(cfg_yylval);
+				if (!val->string)
+					return STATE_ERROR;
+
 				state = 9;
 			} else {
 				cfg_error(cfg, _("syntax error in call of function '%s'"), opt->name);
@@ -1046,8 +1114,11 @@ DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
 
 	assert(cfg && fp);
 
-	if (cfg->filename == 0)
+	if (!cfg->filename)
 		cfg->filename = strdup("FILE");
+	if (!cfg->filename)
+		return CFG_PARSE_ERROR;
+
 	cfg->line = 1;
 
 	cfg_yyin = fp;
@@ -1070,8 +1141,8 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
 
 	len = strlen(dir) + strlen(file) + 2;
 	path = malloc(len);
-
-	assert(path);
+	if (!path)
+		return NULL;
 
 	np = snprintf(path, len, "%s/%s", dir, file);
 
@@ -1136,9 +1207,12 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 	} else {
 		free(cfg->filename);
 		cfg->filename = cfg_tilde_expand(filename);
+		if (!cfg->filename)
+			return CFG_FILE_ERROR;
 	}
 
-	if ((fp = fopen(cfg->filename, "r")) == 0)
+	fp = fopen(cfg->filename, "r");
+	if (!fp)
 		return CFG_FILE_ERROR;
 
 	ret = cfg_parse_fp(cfg, fp);
@@ -1157,13 +1231,17 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 
 	free(cfg->filename);
 	cfg->filename = strdup("[buf]");
-	cfg->line = 1;
+	if (!cfg->filename)
+		return CFG_PARSE_ERROR;
 
+	cfg->line = 1;
 	cfg_scan_string_begin(buf);
 	ret = cfg_parse_internal(cfg, 0, -1, 0);
 	cfg_scan_string_end();
+
 	if (ret == STATE_ERROR)
 		return CFG_PARSE_ERROR;
+
 	return CFG_SUCCESS;
 }
 
@@ -1172,10 +1250,22 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 	cfg_t *cfg;
 
 	cfg = calloc(1, sizeof(cfg_t));
-	assert(cfg);
+	if (!cfg)
+		return NULL;
 
 	cfg->name = strdup("root");
+	if (!cfg->name) {
+		free(cfg);
+		return NULL;
+	}
+
 	cfg->opts = cfg_dupopt_array(opts);
+	if (!cfg->opts) {
+		free(cfg->name);
+		free(cfg);
+		return NULL;
+	}
+
 	cfg->flags = flags;
 	cfg->filename = 0;
 	cfg->line = 0;
@@ -1213,7 +1303,11 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 			file = strchr(filename, '/');
 			if (file == 0)
 				file = filename + strlen(filename);
+
 			user = malloc(file - filename);
+			if (!user)
+				return NULL;
+
 			strncpy(user, filename + 1, file - filename - 1);
 			passwd = getpwnam(user);
 			free(user);
@@ -1221,6 +1315,9 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 
 		if (passwd) {
 			expanded = malloc(strlen(passwd->pw_dir) + strlen(file) + 1);
+			if (!expanded)
+				return NULL;
+
 			strcpy(expanded, passwd->pw_dir);
 			strcat(expanded, file);
 		}
@@ -1242,7 +1339,7 @@ DLLIMPORT void cfg_free_value(cfg_opt_t *opt)
 
 		for (i = 0; i < opt->nvalues; i++) {
 			if (opt->type == CFGT_STR)
-				free(opt->values[i]->string);
+				free((void *)opt->values[i]->string);
 			else if (opt->type == CFGT_SEC) {
 				opt->values[i]->section->path = 0;
 				cfg_free(opt->values[i]->section);
@@ -1398,7 +1495,8 @@ DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int i
 
 	assert(opt && opt->type == CFGT_STR);
 	val = cfg_opt_getval(opt, index);
-	free(val->string);
+	if (val->string)
+		free(val->string);
 	val->string = value ? strdup(value) : 0;
 }
 
@@ -1696,6 +1794,9 @@ static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const cha
 			cfg_opt_t *secopt;
 
 			secname = strndup(name, len);
+			if (!secname)
+				return NULL;
+
 			secopt = cfg_getopt_array(opts, cfg_flags, secname);
 			free(secname);
 			if (!secopt) {
@@ -1736,12 +1837,16 @@ static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const cha
 
 DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg, const char *name, cfg_validate_callback_t vf)
 {
-	cfg_opt_t *opt = cfg_getopt_array(cfg->opts, cfg->flags, name);
+	cfg_opt_t *opt;
 	cfg_validate_callback_t oldvf;
 
-	assert(opt);
+	opt = cfg_getopt_array(cfg->opts, cfg->flags, name);
+	if (!opt)
+		return NULL;
+
 	oldvf = opt->validcb;
 	opt->validcb = vf;
+
 	return oldvf;
 }
 
