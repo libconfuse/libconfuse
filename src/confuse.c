@@ -128,7 +128,7 @@ static char *strndup(const char *s, size_t n)
 {
 	char *r;
 
-	if (s == 0)
+	if (!s)
 		return NULL;
 
 	r = malloc(n + 1);
@@ -188,7 +188,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 				return NULL;
 
 			sec = cfg_getsec(sec, secname);
-			if (sec == 0) {
+			if (!sec) {
 				cfg_error(cfg, _("no such option '%s'"), secname);
 				free(secname);
 				return NULL;
@@ -807,6 +807,7 @@ DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, c
 
 	if (!opt)
 		return -1;
+
 	return cfg_opt_setmulti(cfg, opt, nvalues, values);
 }
 
@@ -941,7 +942,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				return STATE_ERROR;
 			}
 			opt = cfg_getopt(cfg, cfg_yylval);
-			if (opt == 0) {
+			if (!opt) {
 				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
 					opt = cfg_getopt(cfg, "__unknown");
 				if (opt == 0)
@@ -1462,7 +1463,8 @@ DLLIMPORT void cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int inde
 
 	assert(opt && opt->type == CFGT_INT);
 	val = cfg_opt_getval(opt, index);
-	val->number = value;
+	if (val)
+		val->number = value;
 }
 
 DLLIMPORT void cfg_setnint(cfg_t *cfg, const char *name, long int value, unsigned int index)
@@ -1481,7 +1483,8 @@ DLLIMPORT void cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int inde
 
 	assert(opt && opt->type == CFGT_FLOAT);
 	val = cfg_opt_getval(opt, index);
-	val->fpnumber = value;
+	if (val)
+		val->fpnumber = value;
 }
 
 DLLIMPORT void cfg_setnfloat(cfg_t *cfg, const char *name, double value, unsigned int index)
@@ -1500,7 +1503,8 @@ DLLIMPORT void cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value, unsigned int i
 
 	assert(opt && opt->type == CFGT_BOOL);
 	val = cfg_opt_getval(opt, index);
-	val->boolean = value;
+	if (val)
+		val->boolean = value;
 }
 
 DLLIMPORT void cfg_setnbool(cfg_t *cfg, const char *name, cfg_bool_t value, unsigned int index)
@@ -1520,6 +1524,11 @@ DLLIMPORT void cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int i
 
 	assert(opt && opt->type == CFGT_STR);
 	val = cfg_opt_getval(opt, index);
+	if (!val) {
+		errno = ENOENT;
+		return;
+	}
+
 	if (val->string)
 		oldstr = val->string;
 
@@ -1612,6 +1621,11 @@ DLLIMPORT void cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index)
 		return;
 
 	val = cfg_opt_getval(opt, index);
+	if (!val) {
+		errno = ENOENT;
+		return;
+	}
+
 	if (index + 1 != n) {
 		/* not removing last, move the tail */
 		memmove(&opt->values[index], &opt->values[index + 1], sizeof(opt->values[index]) * (n - index - 1));
