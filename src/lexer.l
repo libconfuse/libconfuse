@@ -288,10 +288,10 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
     char *xfilename;
 
     if (cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) 
-      {
+    {
         cfg_error(cfg, _("includes nested too deeply"));
-        return 1;
-      }
+        return CFG_PARSE_ERROR;
+    }
 
     cfg_include_stack[cfg_include_stack_ptr].state = YY_CURRENT_BUFFER;
     cfg_include_stack[cfg_include_stack_ptr].filename = cfg->filename;
@@ -303,7 +303,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 	if ((xfilename = cfg_searchpath(cfg->path, filename)) == NULL)
 	{
 	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
-	    return 1;
+	    return CFG_PARSE_ERROR;
 	}
     }
     else xfilename = cfg_tilde_expand(filename);
@@ -314,7 +314,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
       {
         cfg_error(cfg, "%s: %s", xfilename, strerror(errno));
         free(xfilename);
-        return 1;
+        return CFG_PARSE_ERROR;
       }
 
     cfg->filename = xfilename;
@@ -322,7 +322,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 
     yy_switch_to_buffer(yy_create_buffer(cfg_yyin, YY_BUF_SIZE));
 
-    return 0;
+    return CFG_SUCCESS;
 }
 
 /* write a character to the quoted string buffer, and reallocate as
