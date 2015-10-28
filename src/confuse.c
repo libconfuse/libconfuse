@@ -177,14 +177,17 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 		if (name[len] == 0 /*len == strlen(name) */ )
 			/* no more subsections */
 			break;
+
 		if (len) {
 			secname = strndup(name, len);
 			sec = cfg_getsec(sec, secname);
-			if (sec == 0)
-				cfg_error(cfg, _("no such option '%s'"), secname);
+			if (!sec) {
+				if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+					cfg_error(cfg, _("no such option '%s'"), secname);
+				free(secname);
+				return NULL;
+			}
 			free(secname);
-			if (sec == 0)
-				return 0;
 		}
 		name += len;
 		name += strspn(name, "|");
@@ -199,8 +202,11 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 				return &sec->opts[i];
 		}
 	}
-	cfg_error(cfg, _("no such option '%s'"), name);
-	return 0;
+
+	if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+		cfg_error(cfg, _("no such option '%s'"), name);
+
+	return NULL;
 }
 
 DLLIMPORT const char *cfg_title(cfg_t *cfg)
