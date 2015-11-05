@@ -92,8 +92,9 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_DEFINIT 128
 #define CFGF_IGNORE_UNKNOWN 256 /**< ignore unknown options in configuration files */
 
-/** Return codes from cfg_parse(). */
-#define CFG_SUCCESS 0
+/** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
+#define CFG_SUCCESS     0
+#define CFG_FAIL       -1
 #define CFG_FILE_ERROR -1
 #define CFG_PARSE_ERROR 1
 
@@ -613,6 +614,8 @@ DLLIMPORT int __export cfg_parse(cfg_t *cfg, const char *filename);
  * @param fp An open file stream.
  *
  * @see cfg_parse()
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int __export cfg_parse_fp(cfg_t *cfg, FILE *fp);
 
@@ -623,6 +626,8 @@ DLLIMPORT int __export cfg_parse_fp(cfg_t *cfg, FILE *fp);
  * @param buf A zero-terminated string with configuration directives.
  *
  * @see cfg_parse()
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int __export cfg_parse_buf(cfg_t *cfg, const char *buf);
 
@@ -630,13 +635,17 @@ DLLIMPORT int __export cfg_parse_buf(cfg_t *cfg, const char *buf);
  * the values are freed, not the option itself (it is freed by cfg_free()).
  *
  * @see cfg_free()
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_free_value(cfg_opt_t *opt);
+DLLIMPORT int __export cfg_free_value(cfg_opt_t *opt);
 
 /** Free a cfg_t context. All memory allocated by the cfg_t context
  * structure are freed, and can't be used in any further cfg_* calls.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_free(cfg_t *cfg);
+DLLIMPORT int __export cfg_free(cfg_t *cfg);
 
 /** Install a user-defined error reporting function.
  * @return The old error reporting function is returned.
@@ -910,8 +919,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int index);
+DLLIMPORT int __export cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int index);
 
 /** Set the value of an integer option given its name.
  *
@@ -919,8 +930,10 @@ DLLIMPORT void __export cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned
  * @param name The name of the option.
  * @param value The value to set. If the option is a list (the CFGF_LIST flag
  * is set), only the first value (with index 0) is set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setint(cfg_t *cfg, const char *name, long int value);
+DLLIMPORT int __export cfg_setint(cfg_t *cfg, const char *name, long int value);
 
 /** Set a value of an integer option given its name and index.
  *
@@ -930,8 +943,10 @@ DLLIMPORT void __export cfg_setint(cfg_t *cfg, const char *name, long int value)
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setnint(cfg_t *cfg, const char *name, long int value, unsigned int index);
+DLLIMPORT int __export cfg_setnint(cfg_t *cfg, const char *name, long int value, unsigned int index);
 
 /** Set a value of a floating point option.
  *
@@ -940,8 +955,10 @@ DLLIMPORT void __export cfg_setnint(cfg_t *cfg, const char *name, long int value
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int index);
+DLLIMPORT int __export cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int index);
 
 /** Set the value of a floating point option given its name.
  *
@@ -949,8 +966,10 @@ DLLIMPORT void __export cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned
  * @param name The name of the option.
  * @param value The value to set. If the option is a list (the CFGF_LIST flag
  * is set), only the first value (with index 0) is set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setfloat(cfg_t *cfg, const char *name, double value);
+DLLIMPORT int __export cfg_setfloat(cfg_t *cfg, const char *name, double value);
 
 /** Set a value of a floating point option given its name and index.
  *
@@ -960,8 +979,10 @@ DLLIMPORT void __export cfg_setfloat(cfg_t *cfg, const char *name, double value)
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setnfloat(cfg_t *cfg, const char *name, double value, unsigned int index);
+DLLIMPORT int __export cfg_setnfloat(cfg_t *cfg, const char *name, double value, unsigned int index);
 
 /** Set a value of a boolean option.
  *
@@ -970,8 +991,10 @@ DLLIMPORT void __export cfg_setnfloat(cfg_t *cfg, const char *name, double value
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value, unsigned int index);
+DLLIMPORT int __export cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value, unsigned int index);
 
 /** Set the value of a boolean option given its name.
  *
@@ -979,8 +1002,10 @@ DLLIMPORT void __export cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value, unsig
  * @param name The name of the option.
  * @param value The value to set. If the option is a list (the CFGF_LIST flag
  * is set), only the first value (with index 0) is set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value);
+DLLIMPORT int __export cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t value);
 
 /** Set a value of a boolean option given its name and index.
  *
@@ -990,8 +1015,10 @@ DLLIMPORT void __export cfg_setbool(cfg_t *cfg, const char *name, cfg_bool_t val
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setnbool(cfg_t *cfg, const char *name, cfg_bool_t value, unsigned int index);
+DLLIMPORT int __export cfg_setnbool(cfg_t *cfg, const char *name, cfg_bool_t value, unsigned int index);
 
 /** Set a value of a string option.
  *
@@ -1001,8 +1028,10 @@ DLLIMPORT void __export cfg_setnbool(cfg_t *cfg, const char *name, cfg_bool_t va
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int index);
+DLLIMPORT int __export cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int index);
 
 /** Set the value of a string option given its name.
  *
@@ -1011,8 +1040,10 @@ DLLIMPORT void __export cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsig
  * @param value The value to set. Memory for the string is allocated and the
  * value is copied. Any previous string value is freed. If the option is a list
  * (the CFGF_LIST flag is set), only the first value (with index 0) is set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setstr(cfg_t *cfg, const char *name, const char *value);
+DLLIMPORT int __export cfg_setstr(cfg_t *cfg, const char *name, const char *value);
 
 /** Set a value of a boolean option given its name and index.
  *
@@ -1023,8 +1054,10 @@ DLLIMPORT void __export cfg_setstr(cfg_t *cfg, const char *name, const char *val
  * @param index The index in the option value array that should be
  * modified. It is an error to set values with indices larger than 0
  * for options without the CFGF_LIST flag set.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setnstr(cfg_t *cfg, const char *name, const char *value, unsigned int index);
+DLLIMPORT int __export cfg_setnstr(cfg_t *cfg, const char *name, const char *value, unsigned int index);
 
 /** Set values for a list option. All existing values are replaced
  * with the new ones.
@@ -1035,8 +1068,10 @@ DLLIMPORT void __export cfg_setnstr(cfg_t *cfg, const char *name, const char *va
  * @param ... The values to set, the type must match the type of the
  * option and the number of values must be equal to the nvalues
  * parameter.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_setlist(cfg_t *cfg, const char *name, unsigned int nvalues, ...);
+DLLIMPORT int __export cfg_setlist(cfg_t *cfg, const char *name, unsigned int nvalues, ...);
 
 DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 
@@ -1049,8 +1084,10 @@ DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
  * @param ... The values to add, the type must match the type of the
  * option and the number of values must be equal to the nvalues
  * parameter.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name, unsigned int nvalues, ...);
+DLLIMPORT int __export cfg_addlist(cfg_t *cfg, const char *name, unsigned int nvalues, ...);
 
 /** Set an option (create an instance of an option).
  *
@@ -1059,8 +1096,7 @@ DLLIMPORT void __export cfg_addlist(cfg_t *cfg, const char *name, unsigned int n
  * @param nvalues The number of values to set for the option.
  * @param values The value(s) for the option.
  *
- * @return Returns 0 if the option values where set correctly,
- * or -1 if an error occurred.
+ * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues, char **values);
 
@@ -1071,8 +1107,7 @@ DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues,
  * @param nvalues The number of values to set for the option.
  * @param values The value(s) for the option.
  *
- * @return Returns 0 if the option values where set correctly,
- * or -1 if an error occurred.
+ * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, char **values);
 
@@ -1080,23 +1115,29 @@ DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, c
  * @param opt The option structure (eg, as returned from cfg_getopt())
  * @param index Index of the section to remove. Zero based.
  * @see cfg_rmnsec
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT int __export cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index);
 
 /** Indexed version of cfg_rmsec(), used for CFGF_MULTI sections.
  * @param cfg The configuration file context.
  * @param name The name of the section.
  * @param index Index of the section to remove. Zero based.
  * @see cfg_rmsec
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_rmnsec(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT int __export cfg_rmnsec(cfg_t *cfg, const char *name, unsigned int index);
 
 /** Removes and frees a config section. This is the same as
  * calling cfg_rmnsec with index 0.
  * @param cfg The configuration file context.
  * @param name The name of the section.
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_rmsec(cfg_t *cfg, const char *name);
+DLLIMPORT int __export cfg_rmsec(cfg_t *cfg, const char *name);
 
 /** Removes and frees a config section, given a cfg_opt_t pointer
  * and the title.
@@ -1104,8 +1145,10 @@ DLLIMPORT void __export cfg_rmsec(cfg_t *cfg, const char *name);
  * @param title The title of this section. The CFGF_TITLE flag must
  * have been set for this option.
  * @see cfg_rmtsec
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_rmtsec(cfg_opt_t *opt, const char *title);
+DLLIMPORT int __export cfg_opt_rmtsec(cfg_opt_t *opt, const char *title);
 
 /** Removes and frees a section given the title, used for section with the
  * CFGF_TITLE flag set.
@@ -1115,8 +1158,10 @@ DLLIMPORT void __export cfg_opt_rmtsec(cfg_opt_t *opt, const char *title);
  * @param title The title of this section. The CFGF_TITLE flag must
  * have been set for this option.
  * @see cfg_rmsec
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_rmtsec(cfg_t *cfg, const char *name, const char *title);
+DLLIMPORT int __export cfg_rmtsec(cfg_t *cfg, const char *name, const char *title);
 
 /** Default value print function.
  *
@@ -1129,14 +1174,18 @@ DLLIMPORT void __export cfg_rmtsec(cfg_t *cfg, const char *name, const char *tit
  * @param fp File stream to print to.
  *
  * @see cfg_print, cfg_opt_print
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp);
+DLLIMPORT int __export cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp);
 
 /** Print an option and its value to a file.
  * Same as cfg_opt_print, but with the indentation level specified.
  * @see cfg_opt_print
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
+DLLIMPORT int __export cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent);
 
 /** Print an option and its value to a file.
  *
@@ -1147,14 +1196,18 @@ DLLIMPORT void __export cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int inden
  * @param fp File stream to print to.
  *
  * @see cfg_print_func_t
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_opt_print(cfg_opt_t *opt, FILE *fp);
+DLLIMPORT int __export cfg_opt_print(cfg_opt_t *opt, FILE *fp);
 
 /** Print the options and values to a file.
  * Same as cfg_print, but with the indentation level specified.
  * @see cfg_print
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
+DLLIMPORT int __export cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
 
 /** Print the options and values to a file.
  *
@@ -1168,8 +1221,10 @@ DLLIMPORT void __export cfg_print_indent(cfg_t *cfg, FILE *fp, int indent);
  * @param fp File stream to print to, use stdout to print to the screen.
  *
  * @see cfg_print_func_t, cfg_set_print_func
+ *
+ * @return POSIX OK(0), or non-zero on failure.
  */
-DLLIMPORT void __export cfg_print(cfg_t *cfg, FILE *fp);
+DLLIMPORT int __export cfg_print(cfg_t *cfg, FILE *fp);
 
 /** Set a print callback function for an option.
  *

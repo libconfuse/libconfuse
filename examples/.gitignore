@@ -6,4 +6,5 @@ simple
 simple.conf.out
 test.conf.out
 ftpconf
+cli
 *.o

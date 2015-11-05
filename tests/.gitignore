@@ -1,8 +1,11 @@
 .deps
 .libs
 check_confuse
-malloc.log
+env
+ignore_parm
 list_plus_syntax
+malloc.log
+section_remove
 section_title_dupes
 suite_dup
 suite_func
@@ -14,3 +17,5 @@ quote_before_print
 single_title_sections
 searchpath
 *.o
+*.log
+*.trs
