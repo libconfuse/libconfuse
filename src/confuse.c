@@ -535,6 +535,25 @@ static void cfg_init_defaults(cfg_t *cfg)
 	int i;
 
 	for (i = 0; cfg->opts[i].name; i++) {
+		int j;
+		for (j = 0; j < i; ++j) {
+			if (is_set(CFGF_NOCASE, cfg->opts[i].flags | cfg->opts[j].flags)) {
+				if (strcasecmp(cfg->opts[i].name, cfg->opts[j].name))
+					continue;
+			} else {
+				if (strcmp(cfg->opts[i].name, cfg->opts[j].name))
+					continue;
+			}
+			/*
+			 * There are two definitions of the same option name.
+			 * What to do? It's a programming error and not an end
+			 * user input error. Lets print a message and abort...
+			 */
+			cfg_error(cfg, _("duplicate option '%s' not allowed"),
+				cfg->opts[i].name);
+			break;
+		}
+
 		/* libConfuse doesn't handle default values for "simple" options */
 		if (cfg->opts[i].simple_value.ptr || is_set(CFGF_NODEFAULT, cfg->opts[i].flags))
 			continue;
