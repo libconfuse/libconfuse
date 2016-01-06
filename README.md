@@ -124,9 +124,6 @@ News
   uninitialized user-defined error function. Support for callbacks are
   added, however they are not yet properly documented
 
-----
-
-Copyright &copy; Martin Hedenfalk <[martin.nospam@bzero.se](mailto:martin@bzero.se)>
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
 [2]:                https://github.com/martinh/libconfuse/issues
