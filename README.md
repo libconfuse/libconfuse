@@ -32,7 +32,8 @@ libConfuse was called libcfg before, but was changed to not confuse with
 other similar libraries.
 
 Please report bugs to the GitHub [issue tracker][2].  If you want to
-contribute fixes or new features, see the file [CONTRIBUTING.md][3]
+contribute fixes or new features, see the file
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 Examples
@@ -40,12 +41,12 @@ Examples
 
 Example configuration files:
 
-* [test.conf](blob/master/examples/test.conf) and the
-  [source code](blob/master/examples/cfgtest.c) shows most of the
+* [test.conf](examples/test.conf) and the
+  [source code](examples/cfgtest.c) shows most of the
   features of confuse, including lists and functions.
-* [simple.conf](blob/master/examples/simple.conf) shows how to use the
+* [simple.conf](examples/simple.conf) shows how to use the
   "simple" versions of options. See the corresponding
-  [source](blob/master/examples/simple.c).
+  [source](examples/simple.c).
 
 
 Download
@@ -129,7 +130,6 @@ Copyright &copy; Martin Hedenfalk <[martin.nospam@bzero.se](mailto:martin@bzero.
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
 [2]:                https://github.com/martinh/libconfuse/issues
-[3]:                https://github.com/martinh/libconfuse/blob/master/CONTRIBUTING.md
 [Travis]:           https://travis-ci.org/troglobit/libconfuse
 [Travis Status]:    https://travis-ci.org/troglobit/libconfuse.png?branch=master
 [Coverity Scan]:    https://scan.coverity.com/projects/6674
