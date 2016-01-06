@@ -110,9 +110,7 @@ News
 * 2003-07-03: libConfuse webpage moved to
   [Savannah](http://www.nongnu.org/confuse/)
 * 2003-04-05: libConfuse version 2.0 released
-* 2003-03-02: There is now a mailing list
-  [confuse-devel@nongnu.org](mailto:confuse-devel@nongnu.org) and a
-  project page at
+* 2003-03-02: There is now a mailing list and a project page at
   [savannah.nongnu.org](http://savannah.nongnu.org/projects/confuse/)
 * 2002-12-18: version 1.2.3 released that fixes a segfault due to an
   uninitialized user-defined error function. Support for callbacks are
