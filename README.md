@@ -110,16 +110,10 @@ News
 * 2003-07-03: libConfuse webpage moved to
   [Savannah](http://www.nongnu.org/confuse/)
 * 2003-04-05: libConfuse version 2.0 released
-* 2003-03-28: Pascal Bleser wrote to say that he has created RPM
-  packages for SuSE Linux 8.1 and 8.0. They are available
-  [here](http://guru.unixtech.be/rpm/packages/Development/libconfuse/)
 * 2003-03-02: There is now a mailing list
   [confuse-devel@nongnu.org](mailto:confuse-devel@nongnu.org) and a
   project page at
   [savannah.nongnu.org](http://savannah.nongnu.org/projects/confuse/)
-* 2003-03-02: [Thomas Jarosch](mailto:thomas!jarosch@intra2net!com) sent
-  in some RPM packages (source RPM and a binary for Redhat 8.0). Get
-  them [here](http://savannah.nongnu.org/files/?group=confuse)
 * 2002-12-18: version 1.2.3 released that fixes a segfault due to an
   uninitialized user-defined error function. Support for callbacks are
   added, however they are not yet properly documented
