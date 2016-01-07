@@ -1401,13 +1401,11 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 	cfg->line = 0;
 	cfg->errfunc = 0;
 
-	cfg_init_defaults(cfg);
-
 #if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
-	setlocale(LC_MESSAGES, "");
-	setlocale(LC_CTYPE, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 #endif
+
+	cfg_init_defaults(cfg);
 
 	return cfg;
 }

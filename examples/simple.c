@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <string.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "confuse.h"
 
 int main(void)
@@ -30,6 +31,10 @@ int main(void)
 		CFG_END()
 	};
 	cfg_t *cfg;
+
+	/* Localize messages & types according to environment, since v2.9 */
+	setlocale(LC_MESSAGES, "");
+	setlocale(LC_CTYPE, "");
 
 	/* set default value for the server option */
 	server = strdup("gazonk");
