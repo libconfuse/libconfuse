@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <locale.h>
 #include <confuse.h>
 
 /* valid values for the auto-create-bookmark option */
@@ -103,11 +104,16 @@ cfg_t *parse_conf(const char *filename)
 	return cfg;
 }
 
+/* Parse the file ftp.conf and print the parsed configuration options */
 int main(int argc, char **argv)
 {
-	cfg_t *cfg = parse_conf(argc > 1 ? argv[1] : "ftp.conf");
+	cfg_t *cfg;
 
-	/* print the parsed configuration options */
+	/* Localize messages & types according to environment, since v2.9 */
+	setlocale(LC_MESSAGES, "");
+	setlocale(LC_CTYPE, "");
+
+	cfg = parse_conf(argc > 1 ? argv[1] : "ftp.conf");
 	if (cfg) {
 		unsigned int i;
 

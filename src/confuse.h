@@ -549,6 +549,12 @@ extern const char __export confuse_author[];
  * whenever an unknown option is parsed. Be sure to define an "__unknown"
  * option in each scope that unknown parameters are allowed.
  *
+ * Call setlocale() before calling this function to localize handling of
+ * types, LC_CTYPE, and messages, LC_MESSAGES, since version 2.9:
+ * <pre>
+ *     setlocale(LC_MESSAGES, "");
+ *     setlocale(LC_CTYPE, "");
+ * </pre>
  * @param opts An arrary of options
  * @param flags One or more flags (bitwise or'ed together). Currently only
  * CFGF_NOCASE and CFGF_IGNORE_UNKNOWN are available. Use 0 if no flags are

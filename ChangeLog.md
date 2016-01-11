@@ -11,6 +11,9 @@ Special thanks in this release goes out to Frank Hunleth, Peter Rosin
 and David Grayson for their tireless efforts in helping improve this
 library!
 
+**Note:** libConfuse no longer calls `setlocale()` for `LC_MESSAGES` and
+  `LC_CTYPE`.  See the documentation for `cfg_init()` for details.
+
 ### Changes
 
 * Support for handling unknown options.  The idea is to provide future
@@ -26,7 +29,10 @@ library!
 * Support for Travis-CI and Coverity Scan, by Joachim Nilsson.
 * Use `autoreconf` in `autogen.sh` instead of calling tools separtely.
 * Powershell script for AppVeyor CI to build libConfuse with MSYS2
-  by David Grayson,
+  by David Grayson.
+* Removed calls to `setlocale()` intended to localize messages, with
+  `LC_MESSAGES`, and region specific types, with `LC_CTYPE`.  This is
+  now the responsibility of the user of the library.
 
 ### Fixes
 

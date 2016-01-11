@@ -1,7 +1,8 @@
-#include "confuse.h"
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <locale.h>
+#include "confuse.h"
 
 cfg_t *cfg = 0;
 const char *config_filename = "./reread.conf";
@@ -45,6 +46,10 @@ void usr1handler(int sig)
 int main(void)
 {
 	unsigned int i;
+
+	/* Localize messages & types according to environment, since v2.9 */
+	setlocale(LC_MESSAGES, "");
+	setlocale(LC_CTYPE, "");
 
 	read_config();
 	signal(SIGHUP, sighandler);
