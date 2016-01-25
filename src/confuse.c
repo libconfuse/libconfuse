@@ -1539,12 +1539,13 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 
 DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
 {
+	(void)opt;		/* Unused in this predefined include FUNC */
+
 	if (!cfg || !argv) {
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
 
-	opt = NULL;
 	if (argc != 1) {
 		cfg_error(cfg, _("wrong number of arguments to cfg_include()"));
 		return 1;
@@ -1779,7 +1780,7 @@ DLLIMPORT int cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index)
 	unsigned int n;
 	cfg_value_t *val;
 
-	if (!opt || !opt->type == CFGT_SEC) {
+	if (!opt || opt->type != CFGT_SEC) {
 		errno = EINVAL;
 		return CFG_FAIL;
 	}

@@ -182,6 +182,7 @@ static const char *subset(int argc, char *argv[])
 
 static const char *create(int argc, char *argv[])
 {
+	int ret;
 	char *buf;
 
 	if (argc != 2)
@@ -195,7 +196,10 @@ static const char *create(int argc, char *argv[])
 		return NULL;
 
 	sprintf(buf, "sub %s {}\n", argv[1]);
-	if (cfg_parse_buf(cfg, buf) != CFG_SUCCESS)
+	ret = cfg_parse_buf(cfg, buf) != CFG_SUCCESS;
+	free(buf);
+
+	if (ret)
 		return "Failure\n";
 
 	return "OK\n";
@@ -226,7 +230,7 @@ static const char *quit(int argc, char *argv[])
 
 struct cmd_handler {
 	const char *cmd;
-	const char *(*handler) (int argc, char *argv[]);
+	const char *(*handler)(int argc, char *argv[]);
 };
 
 static const struct cmd_handler cmds[] = {
@@ -300,3 +304,11 @@ int main(void)
 	cfg_free(cfg);
 	return 0;
 }
+
+/**
+ * Local Variables:
+ *  version-control: t
+ *  indent-tabs-mode: t
+ *  c-file-style: "linux"
+ * End:
+ */
