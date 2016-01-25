@@ -1779,7 +1779,7 @@ DLLIMPORT int cfg_opt_rmnsec(cfg_opt_t *opt, unsigned int index)
 	unsigned int n;
 	cfg_value_t *val;
 
-	if (!opt || !opt->type == CFGT_SEC) {
+	if (!opt || opt->type != CFGT_SEC) {
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
