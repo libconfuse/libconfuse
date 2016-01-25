@@ -1,3 +1,4 @@
+#include <err.h>
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
@@ -26,7 +27,9 @@ void read_config(void)
 	cfg_free(cfg);
 
 	cfg = cfg_init(opts, 0);
-	cfg_parse_buf(cfg, buf);
+	if (cfg_parse_buf(cfg, buf) != CFG_SUCCESS)
+		errx(1, "Failed parsing configuration!\n");
+
 	cfg_parse(cfg, config_filename);
 }
 
