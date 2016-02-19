@@ -991,6 +991,16 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 	return ret;
 }
 
+static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
+{
+	if (opt->flags & CFGF_DROP) {
+		cfg_error(cfg, _("dropping deprecated configuration option '%s'"), opt->name);
+		cfg_free_value(opt);
+	} else {
+		cfg_error(cfg, _("found deprecated option '%s', please update configuration file."), opt->name);
+	}
+}
+
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
@@ -1019,11 +1029,18 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("premature end of file"));
 				return STATE_ERROR;
 			}
+
+			if (opt && opt->flags & CFGF_DEPRECATED)
+				cfg_handle_deprecated(cfg, opt);
+
 			return STATE_EOF;
 		}
 
 		switch (state) {
 		case 0:	/* expecting an option name */
+			if (opt && opt->flags & CFGF_DEPRECATED)
+				cfg_handle_deprecated(cfg, opt);
+
 			if (tok == '}') {
 				if (level == 0) {
 					cfg_error(cfg, _("unexpected closing brace"));

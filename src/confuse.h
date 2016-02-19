@@ -91,6 +91,8 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_RESET 64
 #define CFGF_DEFINIT 128
 #define CFGF_IGNORE_UNKNOWN 256 /**< ignore unknown options in configuration files */
+#define CFGF_DEPRECATED     512  /**< option is deprecated and should be ignored. */
+#define CFGF_DROP           1024 /**< option should be dropped after parsing */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0
