@@ -720,6 +720,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &i) != 0)
 				return NULL;
 		} else {
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
 			i = strtol(value, &endptr, 0);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
@@ -738,6 +742,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &f) != 0)
 				return NULL;
 		} else {
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
 			f = strtod(value, &endptr);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid floating point value for option '%s'"), opt->name);
@@ -753,11 +761,16 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 	case CFGT_STR:
 		if (opt->parsecb) {
-			s = 0;
+			s = NULL;
 			if ((*opt->parsecb) (cfg, opt, value, &s) != 0)
 				return NULL;
 		} else {
 			s = value;
+		}
+
+		if (!s) {
+			errno = EINVAL;
+			return NULL;
 		}
 
 		free(val->string);
@@ -840,7 +853,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		break;
 
 	default:
-		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value);
+		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value ?: "NULL");
 		return NULL;
 	}
 
