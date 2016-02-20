@@ -1160,8 +1160,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			val = cfg_setopt(cfg, opt, opttitle);
-			free(opttitle);
-			opttitle = 0;
+			if (opttitle)
+				free(opttitle);
+			opttitle = NULL;
 			if (!val)
 				return STATE_ERROR;
 
@@ -1545,9 +1546,12 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 	cfg_free_opt_array(cfg->opts);
 	cfg_free_searchpath(cfg->path);
 
-	free(cfg->name);
-	free(cfg->title);
-	free(cfg->filename);
+	if (cfg->name)
+		free(cfg->name);
+	if (cfg->title)
+		free(cfg->title);
+	if (cfg->filename)
+		free(cfg->filename);
 
 	free(cfg);
 
