@@ -1004,9 +1004,9 @@ static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
-	char *opttitle = 0;
-	cfg_opt_t *opt = 0;
-	cfg_value_t *val = 0;
+	char *opttitle = NULL;
+	cfg_opt_t *opt = NULL;
+	cfg_value_t *val = NULL;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
