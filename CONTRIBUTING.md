@@ -6,6 +6,16 @@ for new features -- *preferably as [GitHub][github] pull requests* --
 submitting a pull request practically guarantees inclusion ...
 
 
+Test Your Feature
+-----------------
+
+For all new features we want to encourage developers to not only submit
+the feature (and documentation), but also at least a simple test that
+can be run from `make check`.
+
+The tests serve both as exmples and help prevent regressions.
+
+
 Coding Style
 ------------
 
