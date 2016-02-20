@@ -1074,7 +1074,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (!opt) {
 				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
 					opt = cfg_getopt(cfg, "__unknown");
-				if (opt == 0)
+				if (!opt)
 					goto error;
 			}
 			if (opt->type == CFGT_SEC) {
@@ -1089,6 +1089,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 1:	/* expecting an equal sign or plus-equal sign */
+			if (!opt)
+				goto error;
 			if (tok == '+') {
 				if (!is_set(CFGF_LIST, opt->flags)) {
 					cfg_error(cfg, _("attempt to append to non-list option '%s'"), opt->name);
@@ -1115,7 +1117,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 2:	/* expecting an option value */
-			if (tok == '}' && is_set(CFGF_LIST, opt->flags)) {
+			if (tok == '}' && opt && is_set(CFGF_LIST, opt->flags)) {
 				state = 0;
 				if (num_values == 0 && is_set(CFGF_RESET, opt->flags))
 					/* Reset flags was set, and the empty list was
@@ -1131,9 +1133,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
 				goto error;
-			if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
-			if (is_set(CFGF_LIST, opt->flags)) {
+			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
 				state = 4;
 			} else
