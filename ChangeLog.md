@@ -4,8 +4,8 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-v2.9 - [UNRELEASED]
--------------------
+[v2.9][UNRELEASED] - 2016-02-XX
+-------------------------------
 
 Special thanks in this release goes out to Frank Hunleth, Peter Rosin
 and David Grayson for their tireless efforts in helping improve this
@@ -13,6 +13,9 @@ library!
 
 **Note:** libConfuse no longer calls `setlocale()` for `LC_MESSAGES` and
   `LC_CTYPE`.  See the documentation for `cfg_init()` for details.
+
+Another notable change is that libConfuse no longer calls `assert()`,
+instead it returns `NULL` on out of memory conditions and similar.
 
 ### Changes
 
@@ -27,12 +30,25 @@ library!
 * Add CLI example of how to manage configuration changes at runtime,
   also by Peter Rosin.
 * Support for Travis-CI and Coverity Scan, by Joachim Nilsson.
-* Use `autoreconf` in `autogen.sh` instead of calling tools separtely.
+* Use `autoreconf` in `autogen.sh` instead of calling tools separately.
 * Powershell script for AppVeyor CI to build libConfuse with MSYS2
   by David Grayson.
 * Removed calls to `setlocale()` intended to localize messages, with
   `LC_MESSAGES`, and region specific types, with `LC_CTYPE`.  This is
   now the responsibility of the user of the library.
+* Reindent to Linux coding style for a clear and well defined look,
+  this to ease future maintenance.  Issue #33
+* Completely changed paradigm for handling internal errors and invalid
+  input arguments.  I.e., no more calls to `assert()` on out-of-memory
+  conditions, or when the user inputs the wrong or missing value.  This
+  change includes fixes for a lot of unchecked return values from,
+  e.g. `strdup()`.  Missing or invalid arguments to API functions now
+  return an error, and usually sets `errno=EINVAL`.  Issue #37
+* Add support for `CFGF_DEPRECATED` and `CFGF_DROP` option flags.  The
+  former causes libConfuse to print a deprecated warning message and the
+  latter drops the read value on input.  Idea and implementation by
+  Sebastian Geiger.  Issue #24
+* Add `HACKING.md` document to detail maintenance and release checklists
 
 ### Fixes
 
@@ -41,6 +57,10 @@ library!
   by Peter Rosin.
 * Fixes to update support for older versions of Microsoft Visual Studio
   as well as MSYS2/mingw-w64 by Peter Rosin and David Grayson.
+* Issue #45: `cfg_init()` does not report error on multiple options with
+  the same name.  Fixed by Peter Rosin.
+* Fixes for memory leaks, invalid expressions, unused variables and
+  missing error handling, all thanks to Coverity Scan
 
 
 [v2.8][] - 2015-10-14
@@ -277,6 +297,7 @@ v1.2.2 - 2002-11-27
 
 
 [UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.8...HEAD
+[v2.9]: https://github.com/martinh/libconfuse/compare/v2.8...v2.9
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
 [v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
 [v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
