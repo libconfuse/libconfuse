@@ -1149,7 +1149,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 				if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
 					goto error;
-				if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
 				++num_values;
 				state = 0;
@@ -1162,7 +1162,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				state = 2;
 			else if (tok == '}') {
 				state = 0;
-				if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
 			} else {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
@@ -1190,14 +1190,14 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			cfg->line = val->section->line;
 			if (rc != STATE_EOF)
 				goto error;
-			if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
 			state = 0;
 			break;
 
 		case 6:	/* expecting a title for a section */
 			if (tok != CFGT_STR) {
-				cfg_error(cfg, _("missing title for section '%s'"), opt->name);
+				cfg_error(cfg, _("missing title for section '%s'"), opt ? opt->name : "");
 				goto error;
 			} else {
 				opttitle = strdup(cfg_yylval);
@@ -1209,7 +1209,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 7:	/* expecting an opening parenthesis for a function */
 			if (tok != '(') {
-				cfg_error(cfg, _("missing parenthesis for function '%s'"), opt->name);
+				cfg_error(cfg, _("missing parenthesis for function '%s'"), opt ? opt->name : "");
 				goto error;
 			}
 			state = 8;
@@ -1233,7 +1233,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 				state = 9;
 			} else {
-				cfg_error(cfg, _("syntax error in call of function '%s'"), opt->name);
+				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
 				goto error;
 			}
 			break;
@@ -1248,7 +1248,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			} else if (tok == ',') {
 				state = 8;
 			} else {
-				cfg_error(cfg, _("syntax error in call of function '%s'"), opt->name);
+				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
 				goto error;
 			}
 			break;
