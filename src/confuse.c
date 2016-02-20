@@ -1159,13 +1159,6 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				return STATE_ERROR;
 			}
 
-			/* If section had no title, set empty string */
-			if (!opttitle) {
-				opttitle = strdup("");
-				if (!opttitle)
-					return STATE_ERROR;
-			}
-
 			val = cfg_setopt(cfg, opt, opttitle);
 			free(opttitle);
 			opttitle = 0;
