@@ -1172,7 +1172,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 5:	/* expecting an opening brace for a section */
 			if (tok != '{') {
-				cfg_error(cfg, _("missing opening brace for section '%s'"), opt->name);
+				cfg_error(cfg, _("missing opening brace for section '%s'"), opt ? opt->name : "");
 				goto error;
 			}
 
