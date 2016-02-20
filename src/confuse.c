@@ -720,6 +720,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &i) != 0)
 				return NULL;
 		} else {
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
 			i = strtol(value, &endptr, 0);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
@@ -738,6 +742,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &f) != 0)
 				return NULL;
 		} else {
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
 			f = strtod(value, &endptr);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid floating point value for option '%s'"), opt->name);
@@ -753,11 +761,16 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 	case CFGT_STR:
 		if (opt->parsecb) {
-			s = 0;
+			s = NULL;
 			if ((*opt->parsecb) (cfg, opt, value, &s) != 0)
 				return NULL;
 		} else {
 			s = value;
+		}
+
+		if (!s) {
+			errno = EINVAL;
+			return NULL;
 		}
 
 		free(val->string);
@@ -840,7 +853,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		break;
 
 	default:
-		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value);
+		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value ?: "NULL");
 		return NULL;
 	}
 
@@ -974,6 +987,11 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 	const char **argv;
 	unsigned int i;
 
+	if (!cfg || !opt ||!funcopt) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+		
 	/*
 	 * create am argv string vector and call the registered function
 	 */
@@ -1004,9 +1022,9 @@ static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
-	char *opttitle = 0;
-	cfg_opt_t *opt = 0;
-	cfg_value_t *val = 0;
+	char *opttitle = NULL;
+	cfg_opt_t *opt = NULL;
+	cfg_value_t *val = NULL;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
@@ -1021,13 +1039,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		if (tok == 0) {
 			/* lexer.l should have called cfg_error */
-			return STATE_ERROR;
+			goto error;
 		}
 
 		if (tok == EOF) {
 			if (state != 0) {
 				cfg_error(cfg, _("premature end of file"));
-				return STATE_ERROR;
+				goto error;
 			}
 
 			if (opt && opt->flags & CFGF_DEPRECATED)
@@ -1044,20 +1062,20 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (tok == '}') {
 				if (level == 0) {
 					cfg_error(cfg, _("unexpected closing brace"));
-					return STATE_ERROR;
+					goto error;
 				}
 				return STATE_EOF;
 			}
 			if (tok != CFGT_STR) {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
-				return STATE_ERROR;
+				goto error;
 			}
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
 				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
 					opt = cfg_getopt(cfg, "__unknown");
-				if (opt == 0)
-					return STATE_ERROR;
+				if (!opt)
+					goto error;
 			}
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
@@ -1071,10 +1089,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 1:	/* expecting an equal sign or plus-equal sign */
+			if (!opt)
+				goto error;
 			if (tok == '+') {
 				if (!is_set(CFGF_LIST, opt->flags)) {
 					cfg_error(cfg, _("attempt to append to non-list option '%s'"), opt->name);
-					return STATE_ERROR;
+					goto error;
 				}
 				/* Even if the reset flag was set by
 				 * cfg_init_defaults, appending to the defaults
@@ -1087,7 +1107,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				opt->flags |= CFGF_RESET;
 			} else {
 				cfg_error(cfg, _("missing equal sign after option '%s'"), opt->name);
-				return STATE_ERROR;
+				goto error;
 			}
 			if (is_set(CFGF_LIST, opt->flags)) {
 				state = 3;
@@ -1097,7 +1117,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 2:	/* expecting an option value */
-			if (tok == '}' && is_set(CFGF_LIST, opt->flags)) {
+			if (tok == '}' && opt && is_set(CFGF_LIST, opt->flags)) {
 				state = 0;
 				if (num_values == 0 && is_set(CFGF_RESET, opt->flags))
 					/* Reset flags was set, and the empty list was
@@ -1108,14 +1128,14 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (tok != CFGT_STR) {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
-				return STATE_ERROR;
+				goto error;
 			}
 
 			if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
-				return STATE_ERROR;
-			if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
-				return STATE_ERROR;
-			if (is_set(CFGF_LIST, opt->flags)) {
+				goto error;
+			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+				goto error;
+			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
 				state = 4;
 			} else
@@ -1126,44 +1146,44 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (tok != '{') {
 				if (tok != CFGT_STR) {
 					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
-					return STATE_ERROR;
+					goto error;
 				}
 
 				if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
-					return STATE_ERROR;
-				if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
-					return STATE_ERROR;
+					goto error;
+				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+					goto error;
 				++num_values;
 				state = 0;
 			} else
 				state = 2;
 			break;
 
-		case 4:	/* expecting a separator for a list option, or
-				 * closing (list) brace */
+		case 4:	/* expecting a separator for a list option, or closing (list) brace */
 			if (tok == ',')
 				state = 2;
 			else if (tok == '}') {
 				state = 0;
-				if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
-					return STATE_ERROR;
+				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+					goto error;
 			} else {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
-				return STATE_ERROR;
+				goto error;
 			}
 			break;
 
 		case 5:	/* expecting an opening brace for a section */
 			if (tok != '{') {
-				cfg_error(cfg, _("missing opening brace for section '%s'"), opt->name);
-				return STATE_ERROR;
+				cfg_error(cfg, _("missing opening brace for section '%s'"), opt ? opt->name : "");
+				goto error;
 			}
 
 			val = cfg_setopt(cfg, opt, opttitle);
-			free(opttitle);
-			opttitle = 0;
+			if (opttitle)
+				free(opttitle);
+			opttitle = NULL;
 			if (!val)
-				return STATE_ERROR;
+				goto error;
 
 			val->section->path = cfg->path;
 			val->section->line = cfg->line;
@@ -1171,28 +1191,28 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			rc = cfg_parse_internal(val->section, level + 1, -1, 0);
 			cfg->line = val->section->line;
 			if (rc != STATE_EOF)
-				return STATE_ERROR;
-			if (opt->validcb && (*opt->validcb) (cfg, opt) != 0)
-				return STATE_ERROR;
+				goto error;
+			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
+				goto error;
 			state = 0;
 			break;
 
 		case 6:	/* expecting a title for a section */
 			if (tok != CFGT_STR) {
-				cfg_error(cfg, _("missing title for section '%s'"), opt->name);
-				return STATE_ERROR;
+				cfg_error(cfg, _("missing title for section '%s'"), opt ? opt->name : "");
+				goto error;
 			} else {
 				opttitle = strdup(cfg_yylval);
 				if (!opttitle)
-					return STATE_ERROR;
+					goto error;
 			}
 			state = 5;
 			break;
 
 		case 7:	/* expecting an opening parenthesis for a function */
 			if (tok != '(') {
-				cfg_error(cfg, _("missing parenthesis for function '%s'"), opt->name);
-				return STATE_ERROR;
+				cfg_error(cfg, _("missing parenthesis for function '%s'"), opt ? opt->name : "");
+				goto error;
 			}
 			state = 8;
 			break;
@@ -1202,21 +1222,21 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				int ret = call_function(cfg, opt, &funcopt);
 
 				if (ret != 0)
-					return STATE_ERROR;
+					goto error;
 				state = 0;
 			} else if (tok == CFGT_STR) {
 				val = cfg_addval(&funcopt);
 				if (!val)
-					return STATE_ERROR;
+					goto error;
 
 				val->string = strdup(cfg_yylval);
 				if (!val->string)
-					return STATE_ERROR;
+					goto error;
 
 				state = 9;
 			} else {
-				cfg_error(cfg, _("syntax error in call of function '%s'"), opt->name);
-				return STATE_ERROR;
+				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
+				goto error;
 			}
 			break;
 
@@ -1225,23 +1245,29 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				int ret = call_function(cfg, opt, &funcopt);
 
 				if (ret != 0)
-					return STATE_ERROR;
+					goto error;
 				state = 0;
 			} else if (tok == ',') {
 				state = 8;
 			} else {
-				cfg_error(cfg, _("syntax error in call of function '%s'"), opt->name);
-				return STATE_ERROR;
+				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
+				goto error;
 			}
 			break;
 
 		default:
 			cfg_error(cfg, _("Internal error in cfg_parse_internal(), unknown state %d"), state);
-			return STATE_ERROR;
+			goto error;
 		}
 	}
 
 	return STATE_EOF;
+
+error:
+	if (opttitle)
+		free(opttitle);
+
+	return STATE_ERROR;
 }
 
 DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
@@ -1545,9 +1571,12 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 	cfg_free_opt_array(cfg->opts);
 	cfg_free_searchpath(cfg->path);
 
-	free(cfg->name);
-	free(cfg->title);
-	free(cfg->filename);
+	if (cfg->name)
+		free(cfg->name);
+	if (cfg->title)
+		free(cfg->title);
+	if (cfg->filename)
+		free(cfg->filename);
 
 	free(cfg);
 

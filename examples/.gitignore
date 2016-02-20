@@ -1,3 +1,4 @@
+*.o
 .deps
 .libs
 cfgtest
@@ -7,4 +8,5 @@ simple.conf.out
 test.conf.out
 ftpconf
 cli
-*.o
+nested
+deprecated

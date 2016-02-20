@@ -272,7 +272,7 @@ static void list_section_test(void)
 	sec = cfg_getsec(cfg, "section");
 	fail_unless(sec != 0);
 	fail_unless(strcmp(sec->name, "section") == 0);
-	fail_unless(cfg_title(sec) == 0);
+	fail_unless(cfg_title(sec) == NULL);
 
 	opt = cfg_getopt(sec, "subsection");
 	fail_unless(opt != 0);

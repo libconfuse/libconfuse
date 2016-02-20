@@ -27,7 +27,7 @@ addons:
     notification_email: troglobit@gmail.com
     build_command_prepend: "./autogen.sh && ./configure"
     build_command:   "make check"
-    branch_pattern: master
+    branch_pattern: dev
 
 # We don't store generated files (configure and Makefile) in GIT,
 # so we must customize the default build script to run ./autogen.sh
