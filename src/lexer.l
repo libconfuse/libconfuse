@@ -15,20 +15,25 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <assert.h>
+#include <errno.h>
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#include <assert.h>
-
-#define YY_NO_UNISTD_H
+#ifndef HAVE_UNISTD_H
+# define YY_NO_UNISTD_H
+#else
+# include <unistd.h>			/* isatty() */
+#endif
 
 #ifdef HAVE_STRING_H
 # include <string.h>
 #endif
-#include "confuse.h"
 
-#include <errno.h>
+/* Defines isatty() for non UNIX systems */
+#include "confuse.h"
 
 #if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
 # include <libintl.h>
