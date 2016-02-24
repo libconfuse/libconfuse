@@ -24,8 +24,11 @@ AC_ARG_ENABLE([examples],
 	[], [enable_examples=yes])
 AM_CONDITIONAL([ENABLE_EXAMPLES], [test "$enable_examples" = yes])
 
+# 0.18.2.1 updates AM_GNU_GETTEXT() to use AC_PROG_MKDIR_P instead of
+# AM_PROG_MKDIR_P, but 0.18.1.1 is included in Ubuntu 12.04 LTS.
+# Fortunately Ubuntu 14.04 LTS ships 0.18.3.1 and Debian Jessie 0.19.3
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.16.1])
+AM_GNU_GETTEXT_VERSION([0.18.3])
 
 # Checks for header files.
 AC_HEADER_STDC
