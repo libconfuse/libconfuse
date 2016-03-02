@@ -4,8 +4,15 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-[v2.9][UNRELEASED] - 2016-02-XX
--------------------------------
+[v3.0][] - 2016-03-03
+---------------------
+
+This release signifies a major change in libConfuse.  On out-of-memory
+conditions at run time, invalid API input, and some other odd use-cases,
+libConfuse will no longer `assert()`.  Instead, `NULL` or `CFG_FAIL` is
+returned with an error code for you to handle.  For some users this will
+completely change how your application works, so heads up!  The library
+ABI version has also been stepped due to this.
 
 Special thanks in this release goes out to Frank Hunleth, Peter Rosin
 and David Grayson for their tireless efforts in helping improve this
@@ -14,15 +21,13 @@ library!
 **Note:** libConfuse no longer calls `setlocale()` for `LC_MESSAGES` and
   `LC_CTYPE`.  See the documentation for `cfg_init()` for details.
 
-Another notable change is that libConfuse no longer calls `assert()`,
-instead it returns `NULL` on out of memory conditions and similar.
-
 ### Changes
 
 * Support for handling unknown options.  The idea is to provide future
   proofing of configuration files, i.e. if a new parameter is added, the
   new config file will not fail if loaded in an older version of your
-  program.  Idea and implementation by Frank Hunleth.
+  program.  See the `CFGF_IGNORE_UNKNOWN` flag in the documenation for
+  more information.  Idea and implementation by Frank Hunleth.
 * Add public API for removing sections at runtime, by Peter Rosin.
 * Allow `cfg_opt_getval()` on options that are `CFGF_MULTI` sections,
   by Peter Rosin.
@@ -38,12 +43,6 @@ instead it returns `NULL` on out of memory conditions and similar.
   now the responsibility of the user of the library.
 * Reindent to Linux coding style for a clear and well defined look,
   this to ease future maintenance.  Issue #33
-* Completely changed paradigm for handling internal errors and invalid
-  input arguments.  I.e., no more calls to `assert()` on out-of-memory
-  conditions, or when the user inputs the wrong or missing value.  This
-  change includes fixes for a lot of unchecked return values from,
-  e.g. `strdup()`.  Missing or invalid arguments to API functions now
-  return an error, and usually sets `errno=EINVAL`.  Issue #37
 * Add support for `CFGF_DEPRECATED` and `CFGF_DROP` option flags.  The
   former causes libConfuse to print a deprecated warning message and the
   latter drops the read value on input.  Idea and implementation by
@@ -52,6 +51,10 @@ instead it returns `NULL` on out of memory conditions and similar.
 
 ### Fixes
 
+* Do not assert on API input validation, memory allocation, or similar.
+  Instead, return error code to user for further handling.  This change
+  also includes fixes for a lot of unchecked API return values, e.g.,
+  `strdup()`.  Issue #37
 * Protect callers arguments to `cfg_setopt()`, by Peter Rosin
 * If new value to `cfg_setopt()` fails parsing, do not lose old value,
   by Peter Rosin.
@@ -296,8 +299,8 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v2.8...HEAD
-[v2.9]: https://github.com/martinh/libconfuse/compare/v2.8...v2.9
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.0...HEAD
+[v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
 [v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
 [v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
