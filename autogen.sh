@@ -3,6 +3,3 @@
 
 autoreconf -W portability -vism --force >/dev/null
 
-# Cleanup
-rm -f ABOUT-NLS
-
