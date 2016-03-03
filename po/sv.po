@@ -8,112 +8,132 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libconfuse 2.6\n"
 "Report-Msgid-Bugs-To: https://github.com/martinh/libconfuse/issues\n"
-"POT-Creation-Date: 2015-10-12 21:48+0200\n"
+"POT-Creation-Date: 2016-03-03 01:12+0100\n"
 "PO-Revision-Date: 2003-01-26 14:10+0100\n"
 "Last-Translator: Martin Hedenfalk <martin@bzero.se>\n"
 "Language-Team: None <martin@bzero.se>\n"
-"Language: \n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/confuse.c:180 src/confuse.c:202
+#: src/confuse.c:197 src/confuse.c:218
 #, c-format
 msgid "no such option '%s'"
 msgstr "ingen flagga '%s' finns"
 
-#: src/confuse.c:617
+#: src/confuse.c:552
+#, c-format
+msgid "duplicate option '%s' not allowed"
+msgstr ""
+
+#: src/confuse.c:703
 #, c-format
 msgid "found duplicate title '%s'"
 msgstr "titeln '%s' har dubletter"
 
-#: src/confuse.c:642
+#: src/confuse.c:729
 #, c-format
 msgid "invalid integer value for option '%s'"
 msgstr "felaktigt heltalsvärde för flaggan '%s'"
 
-#: src/confuse.c:649
+#: src/confuse.c:733
 #, c-format
 msgid "integer value for option '%s' is out of range"
 msgstr "heltalsvärdet för flaggan '%s' är för stort"
 
-#: src/confuse.c:669
+#: src/confuse.c:751
 #, c-format
 msgid "invalid floating point value for option '%s'"
 msgstr "felaktigt flyttalsvärde för flaggan '%s'"
 
-#: src/confuse.c:676
+#: src/confuse.c:755
 #, c-format
 msgid "floating point value for option '%s' is out of range"
 msgstr "flyttalsvärdet för flaggan '%s' är utanför tillåten gräns"
 
-#: src/confuse.c:725
+#: src/confuse.c:837
 #, c-format
 msgid "invalid boolean value for option '%s'"
 msgstr "felaktigt boolskt värde för flaggan '%s'"
 
-#: src/confuse.c:861
+#: src/confuse.c:1015
+#, c-format
+msgid "dropping deprecated configuration option '%s'"
+msgstr ""
+
+#: src/confuse.c:1018
+#, c-format
+msgid "found deprecated option '%s', please update configuration file."
+msgstr ""
+
+#: src/confuse.c:1047
 msgid "premature end of file"
 msgstr "för tidigt filslut"
 
-#: src/confuse.c:874
+#: src/confuse.c:1064
 msgid "unexpected closing brace"
 msgstr "oväntad avslutande måsvinge"
 
-#: src/confuse.c:881 src/confuse.c:951 src/confuse.c:973 src/confuse.c:1000
+#: src/confuse.c:1070 src/confuse.c:1130 src/confuse.c:1148 src/confuse.c:1170
 #, c-format
 msgid "unexpected token '%s'"
 msgstr "oväntat värde '%s'"
 
-#: src/confuse.c:908
+#: src/confuse.c:1096
 #, c-format
 msgid "attempt to append to non-list option '%s'"
 msgstr "försök att lägga till värden till en icke-lista ('%s')"
 
-#: src/confuse.c:926
+#: src/confuse.c:1109
 #, c-format
 msgid "missing equal sign after option '%s'"
 msgstr "saknar likamed-tecken efter '%s'"
 
-#: src/confuse.c:1008
+#: src/confuse.c:1177
 #, c-format
 msgid "missing opening brace for section '%s'"
 msgstr "öppningsparentes saknas för sektion '%s'"
 
-#: src/confuse.c:1033
+#: src/confuse.c:1202
 #, c-format
 msgid "missing title for section '%s'"
 msgstr "titel till sektion '%s' saknas"
 
-#: src/confuse.c:1045
+#: src/confuse.c:1214
 #, c-format
 msgid "missing parenthesis for function '%s'"
 msgstr "parentes saknas i anropet till funktionen '%s'"
 
-#: src/confuse.c:1068 src/confuse.c:1086
+#: src/confuse.c:1238 src/confuse.c:1253
 #, c-format
 msgid "syntax error in call of function '%s'"
 msgstr "syntaktiskt fel i anrop till funktionen '%s'"
 
-#: src/confuse.c:1371
+#: src/confuse.c:1259
+#, c-format
+msgid "Internal error in cfg_parse_internal(), unknown state %d"
+msgstr ""
+
+#: src/confuse.c:1596
 msgid "wrong number of arguments to cfg_include()"
 msgstr "fel antal argument till cfg_include()"
 
-#: src/lexer.l:144
+#: src/lexer.l:151
 #, c-format
 msgid "invalid octal number '%s'"
 msgstr "otillåtet oktalt nummer '%s'"
 
-#: src/lexer.l:150
+#: src/lexer.l:157
 #, c-format
 msgid "bad escape sequence '%s'"
 msgstr "felaktig sekvens '%s'"
 
-#: src/lexer.l:222
+#: src/lexer.l:229
 msgid "unterminated string constant"
 msgstr "oavslutad teckensträng"
 
-#: src/lexer.l:290
+#: src/lexer.l:297
 msgid "includes nested too deeply"
 msgstr "inkluderingsfiler för djupt nästlade"
