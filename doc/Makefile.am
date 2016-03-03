@@ -35,7 +35,9 @@ tutorial-pdf: tutorial.pdf
 html/index.html: Doxyfile
 	@doxygen
 
+# Remove "Directory Reference", not needed
 doxygen-manual: html/index.html ../src/confuse.h
+	@find man -name '_home_*' -exec rm {} \;
 
 documentation: tutorial doxygen-manual
 
