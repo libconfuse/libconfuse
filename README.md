@@ -56,9 +56,9 @@ The source code is distributed in three files: Two tarballs in .tar.gz
 and .tar.xz formats with source code and Makefiles for UNIX systems, and
 a .zip file with Windows build files.
 
-* confuse-2.8:
-  [UNIX tar.gz](https://github.com/martinh/libconfuse/releases/download/v2.8/confuse-2.8.tar.gz),
-  [Windows ZIP](https://github.com/martinh/libconfuse/releases/download/v2.8/confuse-2.8.zip)
+* confuse-3.0:
+  [UNIX tar.gz](https://github.com/martinh/libconfuse/releases/download/v3.0/confuse-3.0.tar.gz),
+  [Windows ZIP](https://github.com/martinh/libconfuse/releases/download/v3.0/confuse-3.0.zip)
 * [New releases](https://github.com/martinh/libconfuse/releases)
 * [Old releases](http://savannah.nongnu.org/download/confuse/)
 
@@ -89,6 +89,8 @@ with the source:
 News
 ----
 
+* 2016-03-03: libConfuse version 3.0 released
+* 2015-10-14: libConfuse version 2.8 released
 * 2015-10-12: New patch monkey at the helm of GitHub.
   [Joachim](https://github.com/troglobit) will help out auditing pull
   requests and do occasional releases.
