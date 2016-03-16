@@ -853,10 +853,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		break;
 
 	default:
-		if (value)
-			cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value);
-		else
-			cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, "NULL");
+		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, (value) ? (value) : "NULL");
 		return NULL;
 	}
 
