@@ -853,7 +853,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		break;
 
 	default:
-		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, value ?: "NULL");
+		cfg_error(cfg, "internal error in cfg_setopt(%s, %s)", opt->name, (value) ? (value) : "NULL");
 		return NULL;
 	}
 
@@ -1328,8 +1328,10 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
 DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p, const char *file)
 {
 	char *fullpath;
+#ifdef HAVE_SYS_STAT_H
 	struct stat st;
 	int err;
+#endif
 
 	if (!p || !file) {
 		errno = EINVAL;
