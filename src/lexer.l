@@ -231,22 +231,22 @@ static YY_BUFFER_STATE string_scan_state = 0;
 }
 
 <<EOF>> {
-             if (cfg_include_stack_ptr <= 0)
-             {
-                 return EOF;
-             }
-             else
-             {
-                 yy_delete_buffer( YY_CURRENT_BUFFER );
-                 fclose(cfg_yyin);
-                 cfg_yyin = 0;
-                 --cfg_include_stack_ptr;
-                 yy_switch_to_buffer(
-                      cfg_include_stack[cfg_include_stack_ptr].state );
-                 free(cfg->filename);
-                 cfg->filename = cfg_include_stack[cfg_include_stack_ptr].filename;
-                 cfg->line = cfg_include_stack[cfg_include_stack_ptr].line;
-             }
+    if (cfg_yyin && (cfg_include_stack_ptr > 0))
+    {
+        yy_delete_buffer( YY_CURRENT_BUFFER );
+        fclose(cfg_yyin);
+        cfg_yyin = 0;
+        --cfg_include_stack_ptr;
+        yy_switch_to_buffer(
+            cfg_include_stack[cfg_include_stack_ptr].state );
+        free(cfg->filename);
+        cfg->filename = cfg_include_stack[cfg_include_stack_ptr].filename;
+        cfg->line = cfg_include_stack[cfg_include_stack_ptr].line;
+    }
+    else
+    {
+        return EOF;
+    }
 }
 
 $\{[^}]*\} {

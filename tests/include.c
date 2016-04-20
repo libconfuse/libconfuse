@@ -8,6 +8,7 @@
 cfg_opt_t sec_opts[] = {
 	CFG_INT("a", 1, CFGF_NONE),
 	CFG_INT("b", 2, CFGF_NONE),
+	CFG_STR_LIST("list", "{}", CFGF_NONE),
 	CFG_END()
 };
 
