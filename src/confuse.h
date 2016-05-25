@@ -1119,6 +1119,18 @@ DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues,
  */
 DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, char **values);
 
+/** Create a new titled config section.
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param title The title of this section.
+ *
+ * @return A pointer to the created section or if the section
+ * already exists a pointer to that section is returned.
+ * If the section could not be created or found, 0 is returned.
+ */
+DLLIMPORT cfg_t *cfg_addtsec(cfg_t *cfg, const char *name, const char *title);
+
 /** Removes and frees a config section, given a cfg_opt_t pointer.
  * @param opt The option structure (eg, as returned from cfg_getopt())
  * @param index Index of the section to remove. Zero based.
