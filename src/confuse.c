@@ -1825,13 +1825,11 @@ DLLIMPORT int cfg_addlist(cfg_t *cfg, const char *name, unsigned int nvalues, ..
 
 DLLIMPORT cfg_t *cfg_addtsec(cfg_t *cfg, const char *name, const char *title)
 {
-	cfg_t *sec;
 	cfg_opt_t *opt;
 	cfg_value_t *val;
 
-	sec = cfg_gettsec(cfg, name, title);
-	if (sec)
-		return sec;
+	if (cfg_gettsec(cfg, name, title))
+		return NULL;
 
 	opt = cfg_getopt(cfg, name);
 	if (!opt) {
