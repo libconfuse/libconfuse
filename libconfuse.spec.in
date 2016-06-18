@@ -29,7 +29,7 @@ Source:			http://savannah.nongnu.org/download/confuse//%{_srcname}-%{_version}.t
 URL:				http://www.nongnu.org/confuse/
 Group:			%{_group}
 Packager:		Pascal Bleser <guru@unixtech.be>
-Copyright:		ISC
+License:		ISC
 BuildRoot:		%{_tmppath}/build-%{_name}-%{_version}
 BuildRequires:     xmlto doxygen
 Prefix:			%{_prefix}
