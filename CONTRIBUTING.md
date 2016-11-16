@@ -13,7 +13,7 @@ For all new features we want to encourage developers to not only submit
 the feature (and documentation), but also at least a simple test that
 can be run from `make check`.
 
-The tests serve both as exmples and help prevent regressions.
+The tests serve both as examples and help prevent regressions.
 
 
 Coding Style

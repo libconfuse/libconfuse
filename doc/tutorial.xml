@@ -256,7 +256,7 @@ greeting Bye
             in the configuration file. First it will find the "Hello" section.
             It prints the title of the section, "Hello", retrieved with
             <function>cfg_title()</function>. Then the targets are printed just
-            as in the previous exemples, but this time the values are retrieved
+            as in the previous examples, but this time the values are retrieved
             from the cfg_greet section. Next, the section titled "Bye" is
             found, and the values are retrieved from that section.
         </para>
