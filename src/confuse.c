@@ -502,15 +502,7 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 
 	return dupopts;
 err:
-	if (dupopts[i].subopts)
-		cfg_free_opt_array(dupopts[i].subopts);
-	if (dupopts[i].def.parsed)
-		free(dupopts[i].def.parsed);
-	if (dupopts[i].def.string)
-		free((void *)dupopts[i].def.string);
-
 	cfg_free_opt_array(dupopts);
-
 	return NULL;
 }
 
@@ -784,9 +776,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 	case CFGT_SEC:
 		if (is_set(CFGF_MULTI, opt->flags) || val->section == 0) {
-			if (val->section)
+			if (val->section) {
 				val->section->path = NULL; /* Global search path */
-			cfg_free(val->section);
+				cfg_free(val->section);
+			}
 			val->section = calloc(1, sizeof(cfg_t));
 			if (!val->section)
 				return NULL;
@@ -1192,20 +1185,21 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			val = cfg_setopt(cfg, opt, opttitle);
+			if (!val)
+				goto error;
+
 			if (opttitle)
 				free(opttitle);
 			opttitle = NULL;
-
-			if (!val)
-				goto error;
 
 			val->section->path = cfg->path; /* Remember global search path */
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
 			rc = cfg_parse_internal(val->section, level + 1, -1, 0);
-			cfg->line = val->section->line;
 			if (rc != STATE_EOF)
 				goto error;
+
+			cfg->line = val->section->line;
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
 			state = 0;
@@ -1546,11 +1540,11 @@ static void cfg_free_opt_array(cfg_opt_t *opts)
 
 	for (i = 0; opts[i].name; ++i) {
 		free((void *)opts[i].name);
-		if (opts[i].type == CFGT_FUNC || is_set(CFGF_LIST, opts[i].flags))
+		if (opts[i].def.parsed)
 			free(opts[i].def.parsed);
-		else if (opts[i].type == CFGT_STR)
+		if (opts[i].def.string)
 			free((void *)opts[i].def.string);
-		else if (opts[i].type == CFGT_SEC)
+		if (opts[i].subopts)
 			cfg_free_opt_array(opts[i].subopts);
 	}
 	free(opts);
