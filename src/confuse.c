@@ -52,7 +52,6 @@
 #endif
 #define N_(str) str
 
-extern FILE *cfg_yyin;
 extern int cfg_yylex(cfg_t *cfg);
 extern int cfg_lexer_include(cfg_t *cfg, const char *fname);
 extern void cfg_scan_string_begin(const char *buf);
@@ -536,6 +535,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 	for (i = 0; cfg->opts[i].name; i++) {
 		int j;
+
 		for (j = 0; j < i; ++j) {
 			if (is_set(CFGF_NOCASE, cfg->opts[i].flags | cfg->opts[j].flags)) {
 				if (strcasecmp(cfg->opts[i].name, cfg->opts[j].name))
@@ -563,11 +563,13 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
 				int xstate, ret;
+				char *buf;
 
 				/* If it's a list, but no default value was given,
 				 * keep the option uninitialized.
 				 */
-				if (cfg->opts[i].def.parsed == 0 || cfg->opts[i].def.parsed[0] == 0)
+				buf = cfg->opts[i].def.parsed;
+				if (!buf || !buf[0])
 					continue;
 
 				/* setup scanning from the string specified for the
@@ -710,8 +712,9 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				if (!val)
 					return NULL;
 			}
-		} else
+		} else {
 			val = opt->values[0];
+		}
 	}
 
 	switch (opt->type) {
@@ -782,7 +785,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 	case CFGT_SEC:
 		if (is_set(CFGF_MULTI, opt->flags) || val->section == 0) {
 			if (val->section)
-				val->section->path = 0;
+				val->section->path = NULL; /* Global search path */
 			cfg_free(val->section);
 			val->section = calloc(1, sizeof(cfg_t));
 			if (!val->section)
@@ -938,9 +941,8 @@ DLLIMPORT int cfg_add_searchpath(cfg_t *cfg, const char *dir)
 		return CFG_FAIL;
 	}
 
-	p->next = cfg->path;
-	p->dir = d;
-
+	p->next   = cfg->path;
+	p->dir    = d;
 	cfg->path = p;
 
 	return CFG_SUCCESS;
@@ -1066,10 +1068,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				}
 				return STATE_EOF;
 			}
+
 			if (tok != CFGT_STR) {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 				goto error;
 			}
+
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
 				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
@@ -1077,6 +1081,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				if (!opt)
 					goto error;
 			}
+
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
 					state = 6;
@@ -1084,13 +1089,15 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					state = 5;
 			} else if (opt->type == CFGT_FUNC) {
 				state = 7;
-			} else
+			} else {
 				state = 1;
+			}
 			break;
 
 		case 1:	/* expecting an equal sign or plus-equal sign */
 			if (!opt)
 				goto error;
+
 			if (tok == '+') {
 				if (!is_set(CFGF_LIST, opt->flags)) {
 					cfg_error(cfg, _("attempt to append to non-list option '%s'"), opt->name);
@@ -1109,11 +1116,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("missing equal sign after option '%s'"), opt->name);
 				goto error;
 			}
+
 			if (is_set(CFGF_LIST, opt->flags)) {
 				state = 3;
 				num_values = 0;
-			} else
+			} else {
 				state = 2;
+			}
 			break;
 
 		case 2:	/* expecting an option value */
@@ -1133,13 +1142,16 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
 				goto error;
+
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
+
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
 				state = 4;
-			} else
+			} else {
 				state = 0;
+			}
 			break;
 
 		case 3:	/* expecting an opening brace for a list option */
@@ -1155,14 +1167,15 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					goto error;
 				++num_values;
 				state = 0;
-			} else
+			} else {
 				state = 2;
+			}
 			break;
 
 		case 4:	/* expecting a separator for a list option, or closing (list) brace */
-			if (tok == ',')
+			if (tok == ',') {
 				state = 2;
-			else if (tok == '}') {
+			} else if (tok == '}') {
 				state = 0;
 				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
@@ -1182,10 +1195,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (opttitle)
 				free(opttitle);
 			opttitle = NULL;
+
 			if (!val)
 				goto error;
 
-			val->section->path = cfg->path;
+			val->section->path = cfg->path; /* Remember global search path */
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
 			rc = cfg_parse_internal(val->section, level + 1, -1, 0);
@@ -1285,10 +1299,8 @@ DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
 		return CFG_PARSE_ERROR;
 
 	cfg->line = 1;
-
-	cfg_yyin = fp;
-	cfg_scan_fp_begin(cfg_yyin);
-	ret = cfg_parse_internal(cfg, 0, -1, 0);
+	cfg_scan_fp_begin(fp);
+	ret = cfg_parse_internal(cfg, 0, -1, NULL);
 	cfg_scan_fp_end();
 	if (ret == STATE_ERROR)
 		return CFG_PARSE_ERROR;
@@ -1359,6 +1371,7 @@ DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p, const char *file)
 DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 {
 	int ret;
+	char *fn;
 	FILE *fp;
 
 	if (!cfg || !filename) {
@@ -1366,21 +1379,14 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 		return CFG_FILE_ERROR;
 	}
 
-	if (cfg->path) {
-		char *f;
-
-		if ((f = cfg_searchpath(cfg->path, filename)) == NULL)
-			return CFG_FILE_ERROR;
-
-		free(cfg->filename);
-		cfg->filename = f;
-
-	} else {
-		free(cfg->filename);
-		cfg->filename = cfg_tilde_expand(filename);
-		if (!cfg->filename)
-			return CFG_FILE_ERROR;
-	}
+	if (cfg->path)
+		fn = cfg_searchpath(cfg->path, filename);
+	else
+		fn = cfg_tilde_expand(filename);
+	if (!fn)
+		return CFG_FILE_ERROR;
+	free(cfg->filename);
+	cfg->filename = fn;
 
 	fp = fopen(cfg->filename, "r");
 	if (!fp)
@@ -1395,6 +1401,7 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
 	int ret;
+	char *fn;
 
 	if (!cfg) {
 		errno = EINVAL;
@@ -1404,16 +1411,17 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 	if (!buf)
 		return CFG_SUCCESS;
 
-	free(cfg->filename);
-	cfg->filename = strdup("[buf]");
-	if (!cfg->filename)
+	fn = strdup("[buf]");
+	if (!fn)
 		return CFG_PARSE_ERROR;
+
+	free(cfg->filename);
+	cfg->filename = fn;
 
 	cfg->line = 1;
 	cfg_scan_string_begin(buf);
 	ret = cfg_parse_internal(cfg, 0, -1, 0);
 	cfg_scan_string_end();
-
 	if (ret == STATE_ERROR)
 		return CFG_PARSE_ERROR;
 
@@ -1513,19 +1521,20 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		unsigned int i;
 
 		for (i = 0; i < opt->nvalues; i++) {
-			if (opt->type == CFGT_STR)
+			if (opt->type == CFGT_STR) {
 				free((void *)opt->values[i]->string);
-			else if (opt->type == CFGT_SEC) {
-				opt->values[i]->section->path = 0;
+			} else if (opt->type == CFGT_SEC) {
+				opt->values[i]->section->path = NULL; /* Global search path */
 				cfg_free(opt->values[i]->section);
-			} else if (opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr)
+			} else if (opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr) {
 				(opt->freecb) (opt->values[i]->ptr);
+			}
 			free(opt->values[i]);
 		}
 		free(opt->values);
 	}
 
-	opt->values = 0;
+	opt->values  = NULL;
 	opt->nvalues = 0;
 
 	return CFG_SUCCESS;
@@ -1840,7 +1849,7 @@ DLLIMPORT cfg_t *cfg_addtsec(cfg_t *cfg, const char *name, const char *title)
 	if (!val)
 		return NULL;
 
-	val->section->path = cfg->path;
+	val->section->path = cfg->path; /* Remember global search path. */
 	val->section->line = 1;
 	val->section->errfunc = cfg->errfunc;
 

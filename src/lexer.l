@@ -335,7 +335,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
  */
 static void qputc(char ch)
 {
-    if(qstring_index >= qstring_len) {
+    if (qstring_index >= qstring_len) {
         qstring_len += CFG_QSTRING_BUFSIZ;
         cfg_qstring = (char *)realloc(cfg_qstring, qstring_len);
         assert(cfg_qstring);
