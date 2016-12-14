@@ -577,7 +577,12 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 				fp = fmemopen(buf, strlen(buf), "r");
 				if (!fp) {
-					ret = STATE_ERROR;
+					/*
+					 * fmemopen() on older GLIBC versions do not accept zero
+					 * length buffers for some reason.  This is a workaround.
+					 */
+					if (strlen(buf) > 0)
+						ret = STATE_ERROR;
 				} else {
 					cfg_scan_fp_begin(fp);
 
@@ -1422,8 +1427,16 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 	cfg->filename = fn;
 
 	fp = fmemopen((void *)buf, strlen(buf), "r");
-	if (!fp)
-		return CFG_FILE_ERROR;
+	if (!fp) {
+		/*
+		 * fmemopen() on older GLIBC versions do not accept zero
+		 * length buffers for some reason.  This is a workaround.
+		 */
+		if (strlen(buf) > 0)
+			return CFG_FILE_ERROR;
+
+		return CFG_SUCCESS;
+	}
 
 	ret = cfg_parse_fp(cfg, fp);
 	fclose(fp);
