@@ -41,7 +41,7 @@ AC_CHECK_HEADERS([sys/stat.h])
 AC_C_CONST
 
 # Checks for library functions.
-AC_CHECK_FUNCS([strcasecmp strdup strndup setenv unsetenv _putenv])
+AC_CHECK_FUNCS([fmemopen strcasecmp strdup strndup setenv unsetenv _putenv])
 
 AC_CONFIG_FILES([Makefile \
 		 src/Makefile \

@@ -70,8 +70,6 @@ struct {
 } cfg_include_stack[MAX_INCLUDE_DEPTH];
 int cfg_include_stack_ptr = 0;
 
-static YY_BUFFER_STATE pre_string_scan_state = 0;
-static YY_BUFFER_STATE string_scan_state = 0;
 
 %}
 
@@ -351,28 +349,6 @@ static void qputc(char ch)
         memset(cfg_qstring + qstring_index, 0, CFG_QSTRING_BUFSIZ);
     }
     cfg_qstring[qstring_index++] = ch;
-}
-
-void cfg_scan_string_begin(const char *buf)
-{
-    pre_string_scan_state = YY_CURRENT_BUFFER;
-
-    /* yy_scan_string does a yy_switch_to_buffer call for us
-     */
-    string_scan_state = yy_scan_string(buf);
-}
-
-void cfg_scan_string_end(void)
-{
-    /* restore to previous state
-     */
-    yy_delete_buffer(string_scan_state);
-    if (pre_string_scan_state)
-        yy_switch_to_buffer(pre_string_scan_state);
-    free(cfg_qstring);
-    cfg_qstring = 0;
-    qstring_index = qstring_len = 0;
-    string_scan_state = 0;
 }
 
 static YY_BUFFER_STATE pre_fp_scan_state;

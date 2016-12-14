@@ -54,8 +54,6 @@
 
 extern int cfg_yylex(cfg_t *cfg);
 extern int cfg_lexer_include(cfg_t *cfg, const char *fname);
-extern void cfg_scan_string_begin(const char *buf);
-extern void cfg_scan_string_end(void);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
 extern char *cfg_qstring;
@@ -556,6 +554,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
 				int xstate, ret;
 				char *buf;
+				FILE *fp;
 
 				/* If it's a list, but no default value was given,
 				 * keep the option uninitialized.
@@ -576,12 +575,20 @@ static void cfg_init_defaults(cfg_t *cfg)
 				else
 					xstate = 2;
 
-				cfg_scan_string_begin(cfg->opts[i].def.parsed);
-				do {
-					ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
-					xstate = -1;
-				} while (ret == STATE_CONTINUE);
-				cfg_scan_string_end();
+				fp = fmemopen(buf, strlen(buf), "r");
+				if (!fp) {
+					ret = STATE_ERROR;
+				} else {
+					cfg_scan_fp_begin(fp);
+
+					do {
+						ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
+						xstate = -1;
+					} while (ret == STATE_CONTINUE);
+
+					cfg_scan_fp_end();
+					fclose(fp);
+				}
 
 				if (ret == STATE_ERROR) {
 					/*
@@ -1379,6 +1386,7 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 		fn = cfg_tilde_expand(filename);
 	if (!fn)
 		return CFG_FILE_ERROR;
+
 	free(cfg->filename);
 	cfg->filename = fn;
 
@@ -1396,6 +1404,7 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
 	int ret;
 	char *fn;
+	FILE *fp;
 
 	if (!cfg) {
 		errno = EINVAL;
@@ -1412,14 +1421,14 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 	free(cfg->filename);
 	cfg->filename = fn;
 
-	cfg->line = 1;
-	cfg_scan_string_begin(buf);
-	ret = cfg_parse_internal(cfg, 0, -1, 0);
-	cfg_scan_string_end();
-	if (ret == STATE_ERROR)
-		return CFG_PARSE_ERROR;
+	fp = fmemopen((void *)buf, strlen(buf), "r");
+	if (!fp)
+		return CFG_FILE_ERROR;
 
-	return CFG_SUCCESS;
+	ret = cfg_parse_fp(cfg, fp);
+	fclose(fp);
+
+	return ret;
 }
 
 DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
