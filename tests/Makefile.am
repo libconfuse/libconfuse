@@ -20,6 +20,7 @@ TESTS            += ignore_parm
 check_PROGRAMS    = $(TESTS)
 
 DEFS              = -DSRC_DIR='"$(srcdir)"'
+LDFLAGS           = -static
 LDADD             = -L../src ../src/libconfuse.la $(LTLIBINTL)
 CLEANFILES        = *~
 
