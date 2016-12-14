@@ -52,17 +52,17 @@
 #endif
 #define N_(str) str
 
-extern int cfg_yylex(cfg_t *cfg);
-extern int cfg_lexer_include(cfg_t *cfg, const char *fname);
-extern void cfg_scan_fp_begin(FILE *fp);
-extern void cfg_scan_fp_end(void);
-extern char *cfg_qstring;
-
-char *cfg_yylval = 0;
-
 const char confuse_version[] = PACKAGE_VERSION;
 const char confuse_copyright[] = PACKAGE_STRING " by Martin Hedenfalk <martin@bzero.se>";
 const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
+
+char *cfg_yylval = 0;
+
+extern int  cfg_yylex(cfg_t *cfg);
+extern void cfg_yylex_destroy(void);
+extern int  cfg_lexer_include(cfg_t *cfg, const char *fname);
+extern void cfg_scan_fp_begin(FILE *fp);
+extern void cfg_scan_fp_end(void);
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
