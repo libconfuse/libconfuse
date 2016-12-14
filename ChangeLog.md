@@ -4,6 +4,20 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
+[v3.1][UNRELEASED] - 2016-12-XX
+-------------------------------
+
+### Changes
+* New API for creating titled sections at runtime, by Jonas Johansson
+
+### Fixes
+* Fix typos in documentation, by Luca Ceresoli
+* Fix gettext version requirement, CentOS/RHEL7 only has v0.18.12
+* Fix syntax in rpm spec file, for CentOS/RHEL7
+* SIGSEGV when parsed default values are used with include, by Dmitri Zhabinski
+* Fixed MSVC build errors, by George Koskeridis @Gikoskos
+
+
 [v3.0][] - 2016-03-03
 ---------------------
 
@@ -300,6 +314,7 @@ v1.2.2 - 2002-11-27
 
 
 [UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.0...HEAD
+[v3.1]: https://github.com/martinh/libconfuse/compare/v3.0...v3.1
 [v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
 [v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
