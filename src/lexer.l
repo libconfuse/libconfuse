@@ -351,24 +351,16 @@ static void qputc(char ch)
     cfg_qstring[qstring_index++] = ch;
 }
 
-static YY_BUFFER_STATE pre_fp_scan_state;
-static YY_BUFFER_STATE fp_scan_state;
-
 void cfg_scan_fp_begin(FILE *fp)
 {
-    pre_fp_scan_state = YY_CURRENT_BUFFER;
-    fp_scan_state = yy_create_buffer(fp, YY_BUF_SIZE);
-    yy_switch_to_buffer(fp_scan_state);
+    cfg_yypush_buffer_state(cfg_yy_create_buffer(fp, YY_BUF_SIZE));
 }
 
 void cfg_scan_fp_end(void)
 {
-    /* restore to previous state
-     */
-    yy_delete_buffer(fp_scan_state);
-    if(pre_fp_scan_state)
-        yy_switch_to_buffer(pre_fp_scan_state);
-    free(cfg_qstring);
+    if (cfg_qstring)
+	    free(cfg_qstring);
     cfg_qstring = 0;
     qstring_index = qstring_len = 0;
+    cfg_yypop_buffer_state();
 }
