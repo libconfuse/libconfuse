@@ -305,13 +305,22 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
 
     if (cfg->path)
     {
-	if ((xfilename = cfg_searchpath(cfg->path, filename)) == NULL)
-	{
-	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
-	    return CFG_PARSE_ERROR;
-	}
+        xfilename = cfg_searchpath(cfg->path, filename);
+        if (!xfilename)
+        {
+            cfg_error(cfg, _("%s: Not found in search path"), filename);
+            return CFG_PARSE_ERROR;
+        }
     }
-    else xfilename = cfg_tilde_expand(filename);
+    else
+    {
+        xfilename = cfg_tilde_expand(filename);
+        if (!xfilename)
+        {
+            cfg_error(cfg, _("%s: Failed tilde expand"), filename);
+            return CFG_PARSE_ERROR;
+        }
+    }
 
     cfg_yyin = fopen(xfilename, "r");
 
