@@ -1573,6 +1573,7 @@ static int cfg_free_searchpath(cfg_searchpath_t *p)
 DLLIMPORT int cfg_free(cfg_t *cfg)
 {
 	int i;
+	int isroot = 0;
 
 	if (!cfg) {
 		errno = EINVAL;
@@ -1585,14 +1586,18 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 	cfg_free_opt_array(cfg->opts);
 	cfg_free_searchpath(cfg->path);
 
-	if (cfg->name)
+	if (cfg->name) {
+		isroot = !strcmp(cfg->name, "root");
 		free(cfg->name);
+	}
 	if (cfg->title)
 		free(cfg->title);
 	if (cfg->filename)
 		free(cfg->filename);
 
 	free(cfg);
+	if (isroot)
+		cfg_yylex_destroy();
 
 	return CFG_SUCCESS;
 }
