@@ -10,8 +10,6 @@ datadir                = @datadir@
 localedir              = $(datadir)/locale
 DEFS                   = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 LIBS                   = @LIBS@
-AM_LFLAGS              = @DEFS@ -Pcfg_yy -olex.yy.c
+AM_LFLAGS              = @DEFS@ -Pcfg_yy -olexer.c
 CLEANFILES             = *~ \#*\#
-
-lexer.c: lexer.l
 

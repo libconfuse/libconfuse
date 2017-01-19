@@ -52,20 +52,17 @@
 #endif
 #define N_(str) str
 
-extern FILE *cfg_yyin;
-extern int cfg_yylex(cfg_t *cfg);
-extern int cfg_lexer_include(cfg_t *cfg, const char *fname);
-extern void cfg_scan_string_begin(const char *buf);
-extern void cfg_scan_string_end(void);
-extern void cfg_scan_fp_begin(FILE *fp);
-extern void cfg_scan_fp_end(void);
-extern char *cfg_qstring;
-
-char *cfg_yylval = 0;
-
 const char confuse_version[] = PACKAGE_VERSION;
 const char confuse_copyright[] = PACKAGE_STRING " by Martin Hedenfalk <martin@bzero.se>";
 const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
+
+char *cfg_yylval = 0;
+
+extern int  cfg_yylex(cfg_t *cfg);
+extern void cfg_yylex_destroy(void);
+extern int  cfg_lexer_include(cfg_t *cfg, const char *fname);
+extern void cfg_scan_fp_begin(FILE *fp);
+extern void cfg_scan_fp_end(void);
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
@@ -503,15 +500,7 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 
 	return dupopts;
 err:
-	if (dupopts[i].subopts)
-		cfg_free_opt_array(dupopts[i].subopts);
-	if (dupopts[i].def.parsed)
-		free(dupopts[i].def.parsed);
-	if (dupopts[i].def.string)
-		free((void *)dupopts[i].def.string);
-
 	cfg_free_opt_array(dupopts);
-
 	return NULL;
 }
 
@@ -536,6 +525,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 	for (i = 0; cfg->opts[i].name; i++) {
 		int j;
+
 		for (j = 0; j < i; ++j) {
 			if (is_set(CFGF_NOCASE, cfg->opts[i].flags | cfg->opts[j].flags)) {
 				if (strcasecmp(cfg->opts[i].name, cfg->opts[j].name))
@@ -563,11 +553,14 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
 				int xstate, ret;
+				char *buf;
+				FILE *fp;
 
 				/* If it's a list, but no default value was given,
 				 * keep the option uninitialized.
 				 */
-				if (cfg->opts[i].def.parsed == 0 || cfg->opts[i].def.parsed[0] == 0)
+				buf = cfg->opts[i].def.parsed;
+				if (!buf || !buf[0])
 					continue;
 
 				/* setup scanning from the string specified for the
@@ -582,12 +575,25 @@ static void cfg_init_defaults(cfg_t *cfg)
 				else
 					xstate = 2;
 
-				cfg_scan_string_begin(cfg->opts[i].def.parsed);
-				do {
-					ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
-					xstate = -1;
-				} while (ret == STATE_CONTINUE);
-				cfg_scan_string_end();
+				fp = fmemopen(buf, strlen(buf), "r");
+				if (!fp) {
+					/*
+					 * fmemopen() on older GLIBC versions do not accept zero
+					 * length buffers for some reason.  This is a workaround.
+					 */
+					if (strlen(buf) > 0)
+						ret = STATE_ERROR;
+				} else {
+					cfg_scan_fp_begin(fp);
+
+					do {
+						ret = cfg_parse_internal(cfg, 1, xstate, &cfg->opts[i]);
+						xstate = -1;
+					} while (ret == STATE_CONTINUE);
+
+					cfg_scan_fp_end();
+					fclose(fp);
+				}
 
 				if (ret == STATE_ERROR) {
 					/*
@@ -710,8 +716,9 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				if (!val)
 					return NULL;
 			}
-		} else
+		} else {
 			val = opt->values[0];
+		}
 	}
 
 	switch (opt->type) {
@@ -781,9 +788,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 	case CFGT_SEC:
 		if (is_set(CFGF_MULTI, opt->flags) || val->section == 0) {
-			if (val->section)
-				val->section->path = 0;
-			cfg_free(val->section);
+			if (val->section) {
+				val->section->path = NULL; /* Global search path */
+				cfg_free(val->section);
+			}
 			val->section = calloc(1, sizeof(cfg_t));
 			if (!val->section)
 				return NULL;
@@ -938,9 +946,8 @@ DLLIMPORT int cfg_add_searchpath(cfg_t *cfg, const char *dir)
 		return CFG_FAIL;
 	}
 
-	p->next = cfg->path;
-	p->dir = d;
-
+	p->next   = cfg->path;
+	p->dir    = d;
 	cfg->path = p;
 
 	return CFG_SUCCESS;
@@ -1066,10 +1073,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				}
 				return STATE_EOF;
 			}
+
 			if (tok != CFGT_STR) {
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 				goto error;
 			}
+
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
 				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
@@ -1077,6 +1086,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				if (!opt)
 					goto error;
 			}
+
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
 					state = 6;
@@ -1084,13 +1094,15 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					state = 5;
 			} else if (opt->type == CFGT_FUNC) {
 				state = 7;
-			} else
+			} else {
 				state = 1;
+			}
 			break;
 
 		case 1:	/* expecting an equal sign or plus-equal sign */
 			if (!opt)
 				goto error;
+
 			if (tok == '+') {
 				if (!is_set(CFGF_LIST, opt->flags)) {
 					cfg_error(cfg, _("attempt to append to non-list option '%s'"), opt->name);
@@ -1109,11 +1121,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("missing equal sign after option '%s'"), opt->name);
 				goto error;
 			}
+
 			if (is_set(CFGF_LIST, opt->flags)) {
 				state = 3;
 				num_values = 0;
-			} else
+			} else {
 				state = 2;
+			}
 			break;
 
 		case 2:	/* expecting an option value */
@@ -1133,13 +1147,16 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
 				goto error;
+
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
+
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
 				state = 4;
-			} else
+			} else {
 				state = 0;
+			}
 			break;
 
 		case 3:	/* expecting an opening brace for a list option */
@@ -1155,14 +1172,15 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					goto error;
 				++num_values;
 				state = 0;
-			} else
+			} else {
 				state = 2;
+			}
 			break;
 
 		case 4:	/* expecting a separator for a list option, or closing (list) brace */
-			if (tok == ',')
+			if (tok == ',') {
 				state = 2;
-			else if (tok == '}') {
+			} else if (tok == '}') {
 				state = 0;
 				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
@@ -1179,19 +1197,21 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			val = cfg_setopt(cfg, opt, opttitle);
-			if (opttitle)
-				free(opttitle);
-			opttitle = NULL;
 			if (!val)
 				goto error;
 
-			val->section->path = cfg->path;
+			if (opttitle)
+				free(opttitle);
+			opttitle = NULL;
+
+			val->section->path = cfg->path; /* Remember global search path */
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
 			rc = cfg_parse_internal(val->section, level + 1, -1, 0);
-			cfg->line = val->section->line;
 			if (rc != STATE_EOF)
 				goto error;
+
+			cfg->line = val->section->line;
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
 			state = 0;
@@ -1285,10 +1305,8 @@ DLLIMPORT int cfg_parse_fp(cfg_t *cfg, FILE *fp)
 		return CFG_PARSE_ERROR;
 
 	cfg->line = 1;
-
-	cfg_yyin = fp;
-	cfg_scan_fp_begin(cfg_yyin);
-	ret = cfg_parse_internal(cfg, 0, -1, 0);
+	cfg_scan_fp_begin(fp);
+	ret = cfg_parse_internal(cfg, 0, -1, NULL);
 	cfg_scan_fp_end();
 	if (ret == STATE_ERROR)
 		return CFG_PARSE_ERROR;
@@ -1359,6 +1377,7 @@ DLLIMPORT char *cfg_searchpath(cfg_searchpath_t *p, const char *file)
 DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 {
 	int ret;
+	char *fn;
 	FILE *fp;
 
 	if (!cfg || !filename) {
@@ -1366,21 +1385,15 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 		return CFG_FILE_ERROR;
 	}
 
-	if (cfg->path) {
-		char *f;
+	if (cfg->path)
+		fn = cfg_searchpath(cfg->path, filename);
+	else
+		fn = cfg_tilde_expand(filename);
+	if (!fn)
+		return CFG_FILE_ERROR;
 
-		if ((f = cfg_searchpath(cfg->path, filename)) == NULL)
-			return CFG_FILE_ERROR;
-
-		free(cfg->filename);
-		cfg->filename = f;
-
-	} else {
-		free(cfg->filename);
-		cfg->filename = cfg_tilde_expand(filename);
-		if (!cfg->filename)
-			return CFG_FILE_ERROR;
-	}
+	free(cfg->filename);
+	cfg->filename = fn;
 
 	fp = fopen(cfg->filename, "r");
 	if (!fp)
@@ -1395,6 +1408,8 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
 	int ret;
+	char *fn;
+	FILE *fp;
 
 	if (!cfg) {
 		errno = EINVAL;
@@ -1404,20 +1419,29 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 	if (!buf)
 		return CFG_SUCCESS;
 
+	fn = strdup("[buf]");
+	if (!fn)
+		return CFG_PARSE_ERROR;
+
 	free(cfg->filename);
-	cfg->filename = strdup("[buf]");
-	if (!cfg->filename)
-		return CFG_PARSE_ERROR;
+	cfg->filename = fn;
 
-	cfg->line = 1;
-	cfg_scan_string_begin(buf);
-	ret = cfg_parse_internal(cfg, 0, -1, 0);
-	cfg_scan_string_end();
+	fp = fmemopen((void *)buf, strlen(buf), "r");
+	if (!fp) {
+		/*
+		 * fmemopen() on older GLIBC versions do not accept zero
+		 * length buffers for some reason.  This is a workaround.
+		 */
+		if (strlen(buf) > 0)
+			return CFG_FILE_ERROR;
 
-	if (ret == STATE_ERROR)
-		return CFG_PARSE_ERROR;
+		return CFG_SUCCESS;
+	}
 
-	return CFG_SUCCESS;
+	ret = cfg_parse_fp(cfg, fp);
+	fclose(fp);
+
+	return ret;
 }
 
 DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
@@ -1513,19 +1537,20 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		unsigned int i;
 
 		for (i = 0; i < opt->nvalues; i++) {
-			if (opt->type == CFGT_STR)
+			if (opt->type == CFGT_STR) {
 				free((void *)opt->values[i]->string);
-			else if (opt->type == CFGT_SEC) {
-				opt->values[i]->section->path = 0;
+			} else if (opt->type == CFGT_SEC) {
+				opt->values[i]->section->path = NULL; /* Global search path */
 				cfg_free(opt->values[i]->section);
-			} else if (opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr)
+			} else if (opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr) {
 				(opt->freecb) (opt->values[i]->ptr);
+			}
 			free(opt->values[i]);
 		}
 		free(opt->values);
 	}
 
-	opt->values = 0;
+	opt->values  = NULL;
 	opt->nvalues = 0;
 
 	return CFG_SUCCESS;
@@ -1537,11 +1562,11 @@ static void cfg_free_opt_array(cfg_opt_t *opts)
 
 	for (i = 0; opts[i].name; ++i) {
 		free((void *)opts[i].name);
-		if (opts[i].type == CFGT_FUNC || is_set(CFGF_LIST, opts[i].flags))
+		if (opts[i].def.parsed)
 			free(opts[i].def.parsed);
-		else if (opts[i].type == CFGT_STR)
+		if (opts[i].def.string)
 			free((void *)opts[i].def.string);
-		else if (opts[i].type == CFGT_SEC)
+		if (opts[i].subopts)
 			cfg_free_opt_array(opts[i].subopts);
 	}
 	free(opts);
@@ -1561,6 +1586,7 @@ static int cfg_free_searchpath(cfg_searchpath_t *p)
 DLLIMPORT int cfg_free(cfg_t *cfg)
 {
 	int i;
+	int isroot = 0;
 
 	if (!cfg) {
 		errno = EINVAL;
@@ -1573,14 +1599,18 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 	cfg_free_opt_array(cfg->opts);
 	cfg_free_searchpath(cfg->path);
 
-	if (cfg->name)
+	if (cfg->name) {
+		isroot = !strcmp(cfg->name, "root");
 		free(cfg->name);
+	}
 	if (cfg->title)
 		free(cfg->title);
 	if (cfg->filename)
 		free(cfg->filename);
 
 	free(cfg);
+	if (isroot)
+		cfg_yylex_destroy();
 
 	return CFG_SUCCESS;
 }
@@ -1840,7 +1870,7 @@ DLLIMPORT cfg_t *cfg_addtsec(cfg_t *cfg, const char *name, const char *title)
 	if (!val)
 		return NULL;
 
-	val->section->path = cfg->path;
+	val->section->path = cfg->path; /* Remember global search path. */
 	val->section->line = 1;
 	val->section->errfunc = cfg->errfunc;
 

@@ -64,14 +64,14 @@ static void qputc(char ch);
 
 #define MAX_INCLUDE_DEPTH 10
 struct {
-    YY_BUFFER_STATE state;
+    FILE *fp;
     char *filename;
     unsigned int line;
 } cfg_include_stack[MAX_INCLUDE_DEPTH];
 int cfg_include_stack_ptr = 0;
 
-static YY_BUFFER_STATE pre_string_scan_state = 0;
-static YY_BUFFER_STATE string_scan_state = 0;
+void cfg_scan_fp_begin(FILE *fp);
+void cfg_scan_fp_end(void);
 
 %}
 
@@ -231,17 +231,19 @@ static YY_BUFFER_STATE string_scan_state = 0;
 }
 
 <<EOF>> {
-    if (cfg_yyin && (cfg_include_stack_ptr > 0))
+    if (cfg_include_stack_ptr > 0)
     {
-        yy_delete_buffer( YY_CURRENT_BUFFER );
-        fclose(cfg_yyin);
-        cfg_yyin = 0;
         --cfg_include_stack_ptr;
-        yy_switch_to_buffer(
-            cfg_include_stack[cfg_include_stack_ptr].state );
+        /* fp opened by cfg_lexer_include()? */
+        if (cfg_include_stack[cfg_include_stack_ptr].fp != cfg_yyin) {
+            ++cfg_include_stack_ptr;
+            return EOF;
+        }
         free(cfg->filename);
         cfg->filename = cfg_include_stack[cfg_include_stack_ptr].filename;
         cfg->line = cfg_include_stack[cfg_include_stack_ptr].line;
+        fclose(cfg_yyin);
+        cfg_scan_fp_end();
     }
     else
     {
@@ -290,6 +292,7 @@ void cfg_dummy_function(void)
 
 int cfg_lexer_include(cfg_t *cfg, const char *filename)
 {
+    FILE *fp;
     char *xfilename;
 
     if (cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) 
@@ -298,34 +301,41 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
         return CFG_PARSE_ERROR;
     }
 
-    cfg_include_stack[cfg_include_stack_ptr].state = YY_CURRENT_BUFFER;
     cfg_include_stack[cfg_include_stack_ptr].filename = cfg->filename;
     cfg_include_stack[cfg_include_stack_ptr].line = cfg->line;
-    cfg_include_stack_ptr++;
 
     if (cfg->path)
     {
-	if ((xfilename = cfg_searchpath(cfg->path, filename)) == NULL)
-	{
-	    cfg_error(cfg, "%s: Not found on searchpath", xfilename);
-	    return CFG_PARSE_ERROR;
-	}
+        xfilename = cfg_searchpath(cfg->path, filename);
+        if (!xfilename)
+        {
+            cfg_error(cfg, _("%s: Not found in search path"), filename);
+            return CFG_PARSE_ERROR;
+        }
     }
-    else xfilename = cfg_tilde_expand(filename);
+    else
+    {
+        xfilename = cfg_tilde_expand(filename);
+        if (!xfilename)
+        {
+            cfg_error(cfg, _("%s: Failed tilde expand"), filename);
+            return CFG_PARSE_ERROR;
+        }
+    }
 
-    cfg_yyin = fopen(xfilename, "r");
-
-    if (!cfg_yyin) 
-      {
+    fp = fopen(xfilename, "r");
+    if (!fp)
+    {
         cfg_error(cfg, "%s: %s", xfilename, strerror(errno));
         free(xfilename);
         return CFG_PARSE_ERROR;
-      }
+    }
 
+    cfg_include_stack[cfg_include_stack_ptr].fp = fp;
+    cfg_include_stack_ptr++;
     cfg->filename = xfilename;
     cfg->line = 1;
-
-    yy_switch_to_buffer(yy_create_buffer(cfg_yyin, YY_BUF_SIZE));
+    cfg_scan_fp_begin(fp);
 
     return CFG_SUCCESS;
 }
@@ -335,7 +345,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
  */
 static void qputc(char ch)
 {
-    if(qstring_index >= qstring_len) {
+    if (qstring_index >= qstring_len) {
         qstring_len += CFG_QSTRING_BUFSIZ;
         cfg_qstring = (char *)realloc(cfg_qstring, qstring_len);
         assert(cfg_qstring);
@@ -344,46 +354,16 @@ static void qputc(char ch)
     cfg_qstring[qstring_index++] = ch;
 }
 
-void cfg_scan_string_begin(const char *buf)
-{
-    pre_string_scan_state = YY_CURRENT_BUFFER;
-
-    /* yy_scan_string does a yy_switch_to_buffer call for us
-     */
-    string_scan_state = yy_scan_string(buf);
-}
-
-void cfg_scan_string_end(void)
-{
-    /* restore to previous state
-     */
-    yy_delete_buffer(string_scan_state);
-    if (pre_string_scan_state)
-        yy_switch_to_buffer(pre_string_scan_state);
-    free(cfg_qstring);
-    cfg_qstring = 0;
-    qstring_index = qstring_len = 0;
-    string_scan_state = 0;
-}
-
-static YY_BUFFER_STATE pre_fp_scan_state;
-static YY_BUFFER_STATE fp_scan_state;
-
 void cfg_scan_fp_begin(FILE *fp)
 {
-    pre_fp_scan_state = YY_CURRENT_BUFFER;
-    fp_scan_state = yy_create_buffer(fp, YY_BUF_SIZE);
-    yy_switch_to_buffer(fp_scan_state);
+    cfg_yypush_buffer_state(cfg_yy_create_buffer(fp, YY_BUF_SIZE));
 }
 
 void cfg_scan_fp_end(void)
 {
-    /* restore to previous state
-     */
-    yy_delete_buffer(fp_scan_state);
-    if(pre_fp_scan_state)
-        yy_switch_to_buffer(pre_fp_scan_state);
-    free(cfg_qstring);
+    if (cfg_qstring)
+	    free(cfg_qstring);
     cfg_qstring = 0;
     qstring_index = qstring_len = 0;
+    cfg_yypop_buffer_state();
 }

@@ -22,7 +22,7 @@ int main(void)
 	const char *config_data =
 		"section title_one { prop = 'value_one' }\n"
 		"section title_two { prop = 'value_two' }\n"
-		"section title_one { prop = 'value_one' }\n";
+		"section title_one { prop = 'value_one' }\n"; /* Duplicate! */
 
 	int rc;
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);

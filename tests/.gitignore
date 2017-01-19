@@ -5,6 +5,7 @@ env
 ignore_parm
 list_plus_syntax
 malloc.log
+section_add
 section_remove
 section_title_dupes
 suite_dup
