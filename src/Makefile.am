@@ -13,3 +13,6 @@ LIBS                   = @LIBS@
 AM_LFLAGS              = @DEFS@ -Pcfg_yy -olexer.c
 CLEANFILES             = *~ \#*\#
 
+if MISSING_FMEMOPEN
+libconfuse_la_SOURCES += fmemopen.c
+endif
