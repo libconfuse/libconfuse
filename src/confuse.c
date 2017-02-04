@@ -71,6 +71,10 @@ static void cfg_free_opt_array(cfg_opt_t *opts);
 #define STATE_EOF -1
 #define STATE_ERROR 1
 
+#ifndef HAVE_FMEMOPEN
+extern FILE *fmemopen(void *buf, size_t size, const char *type);
+#endif
+
 #ifndef HAVE_STRDUP
 # ifdef HAVE__STRDUP
 #  define strdup _strdup
