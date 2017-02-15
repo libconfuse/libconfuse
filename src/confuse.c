@@ -1780,7 +1780,12 @@ DLLIMPORT int cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int in
 
 DLLIMPORT int cfg_setnstr(cfg_t *cfg, const char *name, const char *value, unsigned int index)
 {
-	return cfg_opt_setnstr(cfg_getopt(cfg, name), value, index);
+	cfg_opt_t *opt = cfg_getopt(cfg, name);
+
+	if (opt && opt->validcb2 && (*opt->validcb2) (cfg, opt, (void*)value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnstr(opt, value, index);
 }
 
 DLLIMPORT int cfg_setstr(cfg_t *cfg, const char *name, const char *value)
@@ -2199,6 +2204,21 @@ DLLIMPORT cfg_validate_callback_t cfg_set_validate_func(cfg_t *cfg, const char *
 
 	oldvf = opt->validcb;
 	opt->validcb = vf;
+
+	return oldvf;
+}
+
+DLLIMPORT cfg_validate_callback2_t cfg_set_validate_func2(cfg_t *cfg, const char *name, cfg_validate_callback2_t vf)
+{
+	cfg_opt_t *opt;
+	cfg_validate_callback2_t oldvf;
+
+	opt = cfg_getopt_array(cfg->opts, cfg->flags, name);
+	if (!opt)
+		return NULL;
+
+	oldvf = opt->validcb2;
+	opt->validcb2 = vf;
 
 	return oldvf;
 }
