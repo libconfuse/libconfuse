@@ -194,7 +194,22 @@ typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt, const char *value, voi
  * @see cfg_set_validate_func
  */
 typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
-typedef int (*cfg_validate_callback2_t)(cfg_t *cfg, cfg_opt_t *opt, void* value);
+
+/** Validating callback2 prototype
+ *
+ * This callback function is called before an option is set using the
+ * cfg_set*() APIs.  The function is called only for strings, integers,
+ * and floats.  Compared to the regular callback function this takes a
+ * value pointer argument which must be casted before use, but can also
+ * be used to correct a value before it is set, e.g. when a too large
+ * value is set this can be used to set the MAX.
+ *
+ * @return On success, 0 should be returned. All other values indicates an
+ * error, and the cfg_set*() function will return without setting the value.
+ *
+ * @see cfg_set_validate_func2()
+ */
+typedef int (*cfg_validate_callback2_t)(cfg_t *cfg, cfg_opt_t *opt, void *value);
 
 /** User-defined memory release function for CFG_PTR values
  *
@@ -1276,6 +1291,20 @@ DLLIMPORT cfg_print_func_t __export cfg_set_print_func(cfg_t *cfg, const char *n
  * @see cfg_validate_callback_t
  */
 DLLIMPORT cfg_validate_callback_t __export cfg_set_validate_func(cfg_t *cfg, const char *name, cfg_validate_callback_t vf);
+
+/** Register a validating callback function for an option.
+ *
+ * This callback is called for all cfg_set*() functions, although not
+ * cfg_opt_set*(), and can be used to check and modify a value/string
+ * *before* it is actually set.  The regular callbacks are run after
+ * the fact and are only called when parsing a buffer or file.
+ *
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param vf The validating callback function.
+ *
+ * @see cfg_validate_callback2_t
+ */
 DLLIMPORT cfg_validate_callback2_t __export cfg_set_validate_func2(cfg_t *cfg, const char *name, cfg_validate_callback2_t vf);
 
 #ifdef __cplusplus
