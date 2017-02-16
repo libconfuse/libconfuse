@@ -28,7 +28,7 @@ Release Checklist
         make distclean
         ./autogen.sh
         ./configure
-		make release
+        make release
 
 * Create new release in GitHub releases page
 * Copy and paste ChangeLog entry, check any stale links!
