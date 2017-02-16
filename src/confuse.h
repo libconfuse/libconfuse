@@ -194,6 +194,7 @@ typedef int (*cfg_callback_t)(cfg_t *cfg, cfg_opt_t *opt, const char *value, voi
  * @see cfg_set_validate_func
  */
 typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
+typedef int (*cfg_validate_callback2_t)(cfg_t *cfg, cfg_opt_t *opt, void* value);
 
 /** User-defined memory release function for CFG_PTR values
  *
@@ -286,6 +287,7 @@ struct cfg_opt_t {
 	cfg_validate_callback_t validcb;/**< Value validating callback function */
 	cfg_print_func_t pf;	/**< print callback function */
 	cfg_free_func_t freecb;	/***< user-defined memory release function */
+	cfg_validate_callback2_t validcb2; /**< Value validating callback function */
 };
 
 extern const char __export confuse_copyright[];
@@ -293,7 +295,7 @@ extern const char __export confuse_version[];
 extern const char __export confuse_author[];
 
 #define __CFG_STR(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0}
+  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0,0}
 #define __CFG_STR_LIST(name, def, flags, svalue, cb) \
   {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0}
 
@@ -374,7 +376,7 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_INT(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,{.number=svalue},cb,0,0,0}
+  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,{.number=svalue},cb,0,0,0,0}
 #define __CFG_INT_LIST(name, def, flags, svalue, cb) \
   {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.number=svalue},cb,0,0,0}
 
@@ -443,7 +445,7 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_BOOL(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,{.boolean=svalue},cb,0,0,0}
+  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,{.boolean=svalue},cb,0,0,0,0}
 #define __CFG_BOOL_LIST(name, def, flags, svalue, cb) \
   {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.boolean=svalue},cb,0,0,0}
 
@@ -487,7 +489,7 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SEC(name, opts, flags) \
-  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,{0},0,0,0,0}
+  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
 
 
 
@@ -534,7 +536,7 @@ extern const char __export confuse_author[];
  * the option list.
  */
 #define CFG_END() \
-  {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,{0},0,0,0,0}
+  {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
 
 
 
@@ -1274,6 +1276,7 @@ DLLIMPORT cfg_print_func_t __export cfg_set_print_func(cfg_t *cfg, const char *n
  * @see cfg_validate_callback_t
  */
 DLLIMPORT cfg_validate_callback_t __export cfg_set_validate_func(cfg_t *cfg, const char *name, cfg_validate_callback_t vf);
+DLLIMPORT cfg_validate_callback2_t __export cfg_set_validate_func2(cfg_t *cfg, const char *name, cfg_validate_callback2_t vf);
 
 #ifdef __cplusplus
 }

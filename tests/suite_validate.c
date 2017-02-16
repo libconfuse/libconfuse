@@ -41,6 +41,32 @@ int validate_speed(cfg_t *cfg, cfg_opt_t *opt)
 	return 0;
 }
 
+int validate_speed2(cfg_t *cfg, cfg_opt_t *opt, void *value)
+{
+	int *val = (int *)value;
+
+	if (*val <= 0)
+		return 1;	/* Speed must be positive */
+
+	if (*val >= 42)
+		*val = 42;	/* Allow, but adjust MAX */
+
+	return 0;
+}
+
+int validate_name2(cfg_t *cfg, cfg_opt_t *opt, void *value)
+{
+	char *str = (char *)value;
+
+	if (!str || !str[0])
+		return 1;	/* Must be a valid string */
+
+	if (strlen(str) > 42)
+		return 1;	/* Cannot be longer than ... */
+
+	return 0;
+}
+
 int validate_ip(cfg_t *cfg, cfg_opt_t *opt)
 {
 	unsigned int i, j;
@@ -131,6 +157,10 @@ void validate_setup(void)
 
 	cfg_set_validate_func(cfg, "multi_options|options|xspeed", validate_speed);
 	fail_unless(cfg_set_validate_func(cfg, "multi_options|options|xspeed", validate_speed) == validate_speed);
+
+	/* Validate callbacks for *set*() functions, i.e. not when parsing file content */
+	cfg_set_validate_func2(cfg, "multi_options|speed", validate_speed2);
+	cfg_set_validate_func2(cfg, "multi_options|options|name", validate_name2);
 }
 
 void validate_teardown(void)
