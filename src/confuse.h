@@ -299,10 +299,10 @@ struct cfg_opt_t {
 					 * store simple values (created with the
 					 * CFG_SIMPLE_* initializers) */
 	cfg_callback_t parsecb;	/**< Value parsing callback function */
-	cfg_validate_callback_t validcb;/**< Value validating callback function */
+	cfg_validate_callback_t  validcb;  /**< Value validating parsing callback function */
+	cfg_validate_callback2_t validcb2; /**< Value validating set callback function */
 	cfg_print_func_t pf;	/**< print callback function */
 	cfg_free_func_t freecb;	/***< user-defined memory release function */
-	cfg_validate_callback2_t validcb2; /**< Value validating callback function */
 };
 
 extern const char __export confuse_copyright[];
@@ -312,7 +312,7 @@ extern const char __export confuse_author[];
 #define __CFG_STR(name, def, flags, svalue, cb) \
   {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0,0}
 #define __CFG_STR_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0}
+  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0,0}
 
 /** Initialize a string option
  */
