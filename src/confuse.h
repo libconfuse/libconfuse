@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002,2003,2007 Martin Hedenfalk <martin@bzero.se>
+ * Copyright (c) 2002-2017  Martin Hedenfalk <martin@bzero.se>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -24,7 +24,7 @@
  *
  * \section intro
  *
- * Copyright &copy; 2002-2003 Martin Hedenfalk &lt;martin@bzero.se&gt;
+ * Copyright &copy; 2002-2017 Martin Hedenfalk &lt;martin@bzero.se&gt;
  *
  * The latest versions of this manual and the libConfuse software are
  * available at http://www.nongnu.org/confuse/
