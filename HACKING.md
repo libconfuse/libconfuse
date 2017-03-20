@@ -66,6 +66,23 @@ It must be updated according to the [GNU Libtool recommendations][1]:
 6. If any *interfaces have been removed or changed* since the last
    public release, then set age to 0.
 
+The libtool ABI versioning logic is very confusing but works if you just
+disable your brain and follow the rules, one by one.
+
+**Example #1:** a new function has been added, none of the existing ones
+have changed.  The initial version is 1:0:0, we follow the rules above to
+the letter: increase revision, increase current and set revision to zero,
+and finally increase age.  This, rather confusingly, gives us 2:0:1 which
+libtool then translates to `libconfuse.so.1.1.0`.
+
+**Example #2:** some existing functions are changed, they now return an
+`int` instead of `void`.  The initial version is 0:0:0, and we follow the
+rules again: increment revision, increment current and set revision to
+zero, set age to zero.  This gives us 1:0:0, which is then translated to
+ `libconfuse.so.1.0.0`.
+
+### Note
+
 Usually, non-developers have no interest in running development versions
 (releases are frequent enough), and developers are expected to know how
 to juggle versions.  In such an ideal world, it is good enough to bump
