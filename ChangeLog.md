@@ -4,18 +4,29 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-[v3.1][UNRELEASED] - 2016-12-XX
--------------------------------
+[v3.1][] - 2017-03-20
+---------------------
 
 ### Changes
-* New API for creating titled sections at runtime, by Jonas Johansson
+* Issue #69: New API for creating titled sections at runtime,
+  by Jonas Johansson @jonasj76
 
 ### Fixes
-* Fix typos in documentation, by Luca Ceresoli
-* Fix gettext version requirement, CentOS/RHEL7 only has v0.18.12
-* Fix syntax in rpm spec file, for CentOS/RHEL7
-* SIGSEGV when parsed default values are used with include, by Dmitri Zhabinski
-* Fixed MSVC build errors, by George Koskeridis @Gikoskos
+* Build unit tests statically for easier debugging
+* Issue #21: Major refactor of lexer to fix memory leaks, `cfg_free()`
+  now properly releases all memory.  By Joachim Nilsson @troglobit
+* Issue #64: Fixed MSVC build errors, by George Koskeridis @Gikoskos
+* Issue #65: SIGSEGV when parsed default values are used with include,
+  by Dmitri Zhabinski
+* Issue #71: Fix syntax in rpm spec file, for CentOS/RHEL7
+* Issue #73: Adjust gettext version requirement to build on CentOS/RHEL7.
+  GNU gettext v0.18.2.1 update `AM_GNU_GETTEXT()` to use AC_PROG_MKDIR_P
+  instead of `AM_PROG_MKDIR_P`, but v0.18.1.1 is included in Ubuntu 12.04
+  LTS.  Fortunately Ubuntu 14.04 LTS ships v0.18.3.1 and Debian Jessie
+  ships v0.19.3.  Unfortunately, CentOS7 and RHEL7 ships v0.18.2.1, so
+  for best compat. level at this point in time we require v0.18.2.
+* Issue #74: Fix typos in documentation, by Luca Ceresoli
+* Issue #79: Add `fmemopen()` compat for *BSD, including macOS
 
 
 [v3.0][] - 2016-03-03
