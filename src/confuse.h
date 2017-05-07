@@ -427,9 +427,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_FLOAT(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,{.fpnumber=svalue},cb,0,0,0}
+  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,{.fpnumber=svalue},cb,0,0,0,0}
 #define __CFG_FLOAT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.fpnumber=svalue},cb,0,0,0}
+  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.fpnumber=svalue},cb,0,0,0,0}
 
 /** Initialize a floating point option
  */
@@ -526,7 +526,7 @@ extern const char __export confuse_author[];
 /** Initialize a user-defined option
  *
  * CFG_PTR options can only be used together with a value parsing callback.
- * 
+ *
  * @param name The name of the option
  * @param def Default value
  * @param flags Flags
@@ -562,8 +562,8 @@ extern const char __export confuse_author[];
  * segmentation faults.
  *
  * The options must no longer be defined in the same scope as where the cfg_xxx
- * functions are used (since version 2.3). 
- * 
+ * functions are used (since version 2.3).
+ *
  * CFG_IGNORE_UNKNOWN can be specified to use the "__unknown" option
  * whenever an unknown option is parsed. Be sure to define an "__unknown"
  * option in each scope that unknown parameters are allowed.
@@ -584,20 +584,20 @@ extern const char __export confuse_author[];
  */
 DLLIMPORT cfg_t *__export cfg_init(cfg_opt_t *opts, cfg_flag_t flags);
 
-/** Add a searchpath directory to the configuration context, the 
- * const char* argument will be duplicated and then freed as part 
+/** Add a searchpath directory to the configuration context, the
+ * const char* argument will be duplicated and then freed as part
  * of the usual context takedown.
  *
  * All directories added to the context in this manner will be searched
  * for the file specified in cfg_parse(), and for those included.
  * All directories added with this function will be "tilde expanded".
  * Note that the current directory is not added to the searchpath
- * by default. 
+ * by default.
  *
  * @param cfg The configuration file context as returned from cfg_init().
  * @param dir Directory to be added to the search path.
  *
- * @return On success, CFG_SUCCESS, on failure (which can only be 
+ * @return On success, CFG_SUCCESS, on failure (which can only be
  * caused by a failed malloc()), CFG_PARSE_ERROR.
  */
 DLLIMPORT int __export cfg_add_searchpath(cfg_t *cfg, const char *dir);
@@ -606,12 +606,12 @@ DLLIMPORT int __export cfg_add_searchpath(cfg_t *cfg, const char *dir);
  * file.  If not NULL, the return value is freshly allocated and
  * and should be freed by the caller.
  *
- * @param path The linked list of cfg_searchpath_t structs, each 
+ * @param path The linked list of cfg_searchpath_t structs, each
  * containg a directory to be searched
  * @param file The file for which to search
  *
  * @return If the file is found on the searchpath then the full
- * path to the file is returned. If not found, NULL is returned.  
+ * path to the file is returned. If not found, NULL is returned.
  */
 DLLIMPORT char *__export cfg_searchpath(cfg_searchpath_t *path, const char *file);
 
