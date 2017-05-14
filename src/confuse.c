@@ -1049,7 +1049,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 		int tok = cfg_yylex(cfg);
 
 		if (tok == 0) {
-			/* lexer.l should have called cfg_error */
+			/* lexer.l should have called cfg_error() */
 			goto error;
 		}
 
@@ -1243,9 +1243,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 8:	/* expecting a function parameter or a closing paren */
 			if (tok == ')') {
-				int ret = call_function(cfg, opt, &funcopt);
-
-				if (ret != 0)
+				if (call_function(cfg, opt, &funcopt))
 					goto error;
 				state = 0;
 			} else if (tok == CFGT_STR) {
@@ -1266,9 +1264,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 9:	/* expecting a comma in a function or a closing paren */
 			if (tok == ')') {
-				int ret = call_function(cfg, opt, &funcopt);
-
-				if (ret != 0)
+				if (call_function(cfg, opt, &funcopt))
 					goto error;
 				state = 0;
 			} else if (tok == ',') {
