@@ -1037,6 +1037,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 	cfg_opt_t *opt = NULL;
 	cfg_value_t *val = NULL;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
+	int ignore = 0;		/* ignore until this token, traverse parser w/o error */
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
 
@@ -1085,10 +1086,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
-				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
-					opt = cfg_getopt(cfg, "__unknown");
-				if (!opt)
-					goto error;
+				if (cfg->flags & CFGF_IGNORE_UNKNOWN) {
+					state = 10;
+					break;
+				}
+
+				goto error;
 			}
 
 			if (opt->type == CFGT_SEC) {
@@ -1273,6 +1276,82 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
 				goto error;
 			}
+			break;
+
+		case 10: /* unknown option, mini-discard parser states: 10-15 */
+			if (tok == '+') {
+				ignore = '=';
+				state = 13; /* Append to list, should be followed by '=' */
+			} else if (tok == '=') {
+				ignore = 0;
+				state = 14; /* Assignment, regular handling */
+			} else if (tok == '(') {
+				ignore = ')';
+				state = 13; /* Function, ignore until end of param list */
+			} else if (tok == '{') {
+				state = 12; /* Section, ignore all until closing brace */
+			} else if (tok == CFGT_STR) {
+				state = 11; /* No '=' ... must be a titled section */
+			} else if (tok == '}' && force_state == 10) {
+				return STATE_CONTINUE;
+			}
+			break;
+
+		case 11: /* unknown option, expecting start of title section */
+			if (tok != '{') {
+				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
+				goto error;
+			}
+			state = 12;
+			break;
+
+		case 12: /* unknown option, recursively ignore entire sub-section */
+			rc = cfg_parse_internal(cfg, level + 1, 10, NULL);
+			if (rc != STATE_CONTINUE)
+				goto error;
+			ignore = '}';
+			state = 13;
+			break;
+
+		case 13: /* unknown option, consume tokens silently until end of func/list */
+			if (tok != ignore)
+				break;
+
+			if (ignore == '=') {
+				ignore = 0;
+				state = 14;
+				break;
+			}
+
+			/* Are we done with recursive ignore of sub-section? */
+			if (force_state == 10)
+				return STATE_CONTINUE;
+
+			ignore = 0;
+			state = 0;
+			break;
+
+		case 14: /* unknown option, assuming value or start of list */
+			if (tok == '{') {
+				ignore = '}';
+				state = 13;
+				break;
+			}
+
+			if (tok != CFGT_STR) {
+				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
+				goto error;
+			}
+
+			ignore = 0;
+			if (force_state == 10)
+				state = 15;
+			else
+				state = 0;
+			break;
+
+		case 15: /* unknown option, dummy read of next parameter in sub-section */
+			state = 10;
 			break;
 
 		default:
