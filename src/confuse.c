@@ -2234,7 +2234,6 @@ DLLIMPORT cfg_validate_callback2_t cfg_set_validate_func2(cfg_t *cfg, const char
 
 /**
  * Local Variables:
- *  version-control: t
  *  indent-tabs-mode: t
  *  c-file-style: "linux"
  * End:
