@@ -1,6 +1,6 @@
 # Swedish translations for libConfuse.
 # Svenska översättningar för libConfuse.
-# Copyright (C) 2002-2003 Martin Hedenfalk
+# Copyright (c) 2002-2017  Martin Hedenfalk <martin@bzero.se>
 # This file is distributed under the same license as the libConfuse package.
 # Martin Hedenfalk <martin@bzero.se>, 2002.
 #
