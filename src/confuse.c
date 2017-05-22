@@ -1338,7 +1338,7 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
 	 * if np >= n then the snprintf() was truncated
 	 * (which must be a bug).
 	 */
-	assert(np < len);
+	assert(np < (int)len);
 
 	return path;
 }
