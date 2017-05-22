@@ -552,7 +552,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			cfg->opts[i].flags |= CFGF_DEFINIT;
 
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
-				int xstate, ret;
+				int xstate, ret = 0;
 				char *buf;
 				FILE *fp;
 
