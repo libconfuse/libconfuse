@@ -20,6 +20,9 @@
 
 #include <sys/types.h>
 #include <string.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
@@ -76,9 +79,6 @@ extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
 
 #ifndef HAVE_STRDUP
-# ifdef HAVE__STRDUP
-#  define strdup _strdup
-# else
 /*
  * Copyright (c) 1988, 1993
  *      The Regents of the University of California.  All rights reserved.
@@ -121,7 +121,6 @@ static char *strdup(const char *s)
 
 	return copy;
 }
-# endif
 #endif
 
 #ifndef HAVE_STRNDUP
