@@ -128,9 +128,6 @@ static char *strndup(const char *s, size_t n)
 {
 	char *r;
 
-	if (!s)
-		return NULL;
-
 	r = malloc(n + 1);
 	if (!r)
 		return NULL;
