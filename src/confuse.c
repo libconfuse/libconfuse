@@ -1093,6 +1093,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				break;
 
 			case CFGT_COMMENT:
+				if (!is_set(CFGF_COMMENTS, cfg->flags))
+					continue;
+
 				if (comment)
 					free(comment);
 				comment = strdup(cfg_yylval);
@@ -2162,7 +2165,7 @@ DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 		return CFG_FAIL;
 	}
 
-	if (opt->comment) {
+	if (is_set(CFGF_COMMENTS, opt->flags) && opt->comment) {
 		cfg_indent(fp, indent);
 		fprintf(fp, "/* %s */\n", opt->comment);
 	}
