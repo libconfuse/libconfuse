@@ -4,7 +4,8 @@
 
 int main(void)
 {
-	int i, repeat;
+	int repeat;
+	size_t i;
 	cfg_opt_t opts[] = {
 		CFG_STR_LIST("targets", "{World}", CFGF_DEPRECATED),
 		CFG_INT("repeat", 1, CFGF_DEPRECATED),
@@ -33,7 +34,6 @@ int main(void)
 
 /**
  * Local Variables:
- *  version-control: t
  *  indent-tabs-mode: t
  *  c-file-style: "linux"
  * End:

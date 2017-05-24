@@ -16,6 +16,7 @@ TESTS            += include
 TESTS            += searchpath
 TESTS            += env
 TESTS            += ignore_parm
+TESTS            += annotate
 
 check_PROGRAMS    = $(TESTS)
 

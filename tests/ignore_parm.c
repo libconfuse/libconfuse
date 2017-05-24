@@ -7,21 +7,20 @@
 
 cfg_opt_t section_opts[] = {
 	CFG_STR("section_parameter", NULL, CFGF_NONE),
-	CFG_STR("__unknown", NULL, CFGF_NONE),
 	CFG_END()
 };
 
 cfg_opt_t opts[] = {
 	CFG_STR("parameter", NULL, CFGF_NONE),
-	CFG_STR("__unknown", NULL, CFGF_NONE),
 	CFG_SEC("section", section_opts, CFGF_TITLE | CFGF_MULTI),
 	CFG_END()
 };
 
 static int testconfig(const char *buf)
 {
-	cfg_t *cfg = cfg_init(opts, CFGF_IGNORE_UNKNOWN);
+	cfg_t *cfg;
 
+	cfg = cfg_init(opts, CFGF_IGNORE_UNKNOWN);
 	if (!cfg)
 		return 0;
 
@@ -29,6 +28,7 @@ static int testconfig(const char *buf)
 		return 0;
 
 	cfg_free(cfg);
+
 	return 1;
 }
 
@@ -56,12 +56,21 @@ int main(void)
 	fail_unless(testconfig("section mysection {\n"
 			       "\tunknown_section_parameter=1\n"
 			       "}"));
+
+	/* Ignore unknown section, with unknown parameters */
+	fail_unless(testconfig("parameter=5\n"
+			       "unknown section {\n"
+			       "\tunknown_param=1\n"
+			       "\tunknown_list={1,2,3,4}\n"
+			       "}\n"
+			       "section hej { section_parameter = \"gnejs\" }\n"
+			       "parameter = \"ormbunke\""));
+
 	return 0;
 }
 
 /**
  * Local Variables:
- *  version-control: t
  *  indent-tabs-mode: t
  *  c-file-style: "linux"
  * End:

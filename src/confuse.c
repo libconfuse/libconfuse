@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002,2003,2007 Martin Hedenfalk <martin@bzero.se>
+ * Copyright (c) 2002-2017  Martin Hedenfalk <martin@bzero.se>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,6 +20,9 @@
 
 #include <sys/types.h>
 #include <string.h>
+#ifdef HAVE_STRINGS_H
+# include <strings.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
@@ -76,9 +79,6 @@ extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
 
 #ifndef HAVE_STRDUP
-# ifdef HAVE__STRDUP
-#  define strdup _strdup
-# else
 /*
  * Copyright (c) 1988, 1993
  *      The Regents of the University of California.  All rights reserved.
@@ -121,16 +121,12 @@ static char *strdup(const char *s)
 
 	return copy;
 }
-# endif
 #endif
 
 #ifndef HAVE_STRNDUP
 static char *strndup(const char *s, size_t n)
 {
 	char *r;
-
-	if (!s)
-		return NULL;
 
 	r = malloc(n + 1);
 	if (!r)
@@ -252,6 +248,19 @@ DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
 DLLIMPORT unsigned int cfg_size(cfg_t *cfg, const char *name)
 {
 	return cfg_opt_size(cfg_getopt(cfg, name));
+}
+
+DLLIMPORT char *cfg_opt_getcomment(cfg_opt_t *opt)
+{
+	if (opt)
+		return opt->comment;
+
+	return NULL;
+}
+
+DLLIMPORT char *cfg_getcomment(cfg_t *cfg, const char *name)
+{
+	return cfg_opt_getcomment(cfg_getopt(cfg, name));
 }
 
 DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index)
@@ -556,7 +565,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			cfg->opts[i].flags |= CFGF_DEFINIT;
 
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
-				int xstate, ret;
+				int xstate, ret = 0;
 				char *buf;
 				FILE *fp;
 
@@ -1033,10 +1042,12 @@ static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
+	char *comment = NULL;
 	char *opttitle = NULL;
 	cfg_opt_t *opt = NULL;
 	cfg_value_t *val = NULL;
 	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
+	int ignore = 0;		/* ignore until this token, traverse parser w/o error */
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
 
@@ -1049,7 +1060,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 		int tok = cfg_yylex(cfg);
 
 		if (tok == 0) {
-			/* lexer.l should have called cfg_error */
+			/* lexer.l should have called cfg_error() */
 			goto error;
 		}
 
@@ -1070,26 +1081,41 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (opt && opt->flags & CFGF_DEPRECATED)
 				cfg_handle_deprecated(cfg, opt);
 
-			if (tok == '}') {
+			switch (tok) {
+			case '}':
 				if (level == 0) {
 					cfg_error(cfg, _("unexpected closing brace"));
 					goto error;
 				}
 				return STATE_EOF;
-			}
 
-			if (tok != CFGT_STR) {
+			case CFGT_STR:
+				break;
+
+			case CFGT_COMMENT:
+				if (comment)
+					free(comment);
+				comment = strdup(cfg_yylval);
+				continue;
+
+			default:
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 				goto error;
 			}
 
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
-				if (cfg->flags & CFGF_IGNORE_UNKNOWN)
-					opt = cfg_getopt(cfg, "__unknown");
-				if (!opt)
-					goto error;
+				if (cfg->flags & CFGF_IGNORE_UNKNOWN) {
+					state = 10;
+					break;
+				}
+
+				goto error;
 			}
+
+			/* Inherit last read comment */
+			opt->comment = comment;
+			comment = NULL;
 
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
@@ -1243,9 +1269,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 8:	/* expecting a function parameter or a closing paren */
 			if (tok == ')') {
-				int ret = call_function(cfg, opt, &funcopt);
-
-				if (ret != 0)
+				if (call_function(cfg, opt, &funcopt))
 					goto error;
 				state = 0;
 			} else if (tok == CFGT_STR) {
@@ -1266,9 +1290,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		case 9:	/* expecting a comma in a function or a closing paren */
 			if (tok == ')') {
-				int ret = call_function(cfg, opt, &funcopt);
-
-				if (ret != 0)
+				if (call_function(cfg, opt, &funcopt))
 					goto error;
 				state = 0;
 			} else if (tok == ',') {
@@ -1277,6 +1299,87 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("syntax error in call of function '%s'"), opt ? opt->name : "");
 				goto error;
 			}
+			break;
+
+		case 10: /* unknown option, mini-discard parser states: 10-15 */
+			if (comment) {
+				free(comment);
+				comment = NULL;
+			}
+
+			if (tok == '+') {
+				ignore = '=';
+				state = 13; /* Append to list, should be followed by '=' */
+			} else if (tok == '=') {
+				ignore = 0;
+				state = 14; /* Assignment, regular handling */
+			} else if (tok == '(') {
+				ignore = ')';
+				state = 13; /* Function, ignore until end of param list */
+			} else if (tok == '{') {
+				state = 12; /* Section, ignore all until closing brace */
+			} else if (tok == CFGT_STR) {
+				state = 11; /* No '=' ... must be a titled section */
+			} else if (tok == '}' && force_state == 10) {
+				return STATE_CONTINUE;
+			}
+			break;
+
+		case 11: /* unknown option, expecting start of title section */
+			if (tok != '{') {
+				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
+				goto error;
+			}
+			state = 12;
+			break;
+
+		case 12: /* unknown option, recursively ignore entire sub-section */
+			rc = cfg_parse_internal(cfg, level + 1, 10, NULL);
+			if (rc != STATE_CONTINUE)
+				goto error;
+			ignore = '}';
+			state = 13;
+			break;
+
+		case 13: /* unknown option, consume tokens silently until end of func/list */
+			if (tok != ignore)
+				break;
+
+			if (ignore == '=') {
+				ignore = 0;
+				state = 14;
+				break;
+			}
+
+			/* Are we done with recursive ignore of sub-section? */
+			if (force_state == 10)
+				return STATE_CONTINUE;
+
+			ignore = 0;
+			state = 0;
+			break;
+
+		case 14: /* unknown option, assuming value or start of list */
+			if (tok == '{') {
+				ignore = '}';
+				state = 13;
+				break;
+			}
+
+			if (tok != CFGT_STR) {
+				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
+				goto error;
+			}
+
+			ignore = 0;
+			if (force_state == 10)
+				state = 15;
+			else
+				state = 0;
+			break;
+
+		case 15: /* unknown option, dummy read of next parameter in sub-section */
+			state = 10;
 			break;
 
 		default:
@@ -1290,6 +1393,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 error:
 	if (opttitle)
 		free(opttitle);
+	if (comment)
+		free(comment);
 
 	return STATE_ERROR;
 }
@@ -1342,7 +1447,7 @@ static char *cfg_make_fullpath(const char *dir, const char *file)
 	 * if np >= n then the snprintf() was truncated
 	 * (which must be a bug).
 	 */
-	assert(np < len);
+	assert(np < (int)len);
 
 	return path;
 }
@@ -1660,6 +1765,25 @@ static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 	}
 
 	return val;
+}
+
+DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
+{
+	if (!opt || !comment) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	if (opt->comment)
+		free(opt->comment);
+	opt->comment = strdup(comment);
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setcomment(cfg_t *cfg, const char *name, char *comment)
+{
+	return cfg_opt_setcomment(cfg_getopt(cfg, name), comment);
 }
 
 DLLIMPORT int cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int index)
@@ -2018,6 +2142,7 @@ DLLIMPORT int cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 	case CFGT_SEC:
 	case CFGT_FUNC:
 	case CFGT_PTR:
+	case CFGT_COMMENT:
 		break;
 	}
 
@@ -2035,6 +2160,11 @@ DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 	if (!opt || !fp) {
 		errno = EINVAL;
 		return CFG_FAIL;
+	}
+
+	if (opt->comment) {
+		cfg_indent(fp, indent);
+		fprintf(fp, "/* %s */\n", opt->comment);
 	}
 
 	if (opt->type == CFGT_SEC) {
@@ -2238,7 +2368,6 @@ DLLIMPORT cfg_validate_callback2_t cfg_set_validate_func2(cfg_t *cfg, const char
 
 /**
  * Local Variables:
- *  version-control: t
  *  indent-tabs-mode: t
  *  c-file-style: "linux"
  * End:
