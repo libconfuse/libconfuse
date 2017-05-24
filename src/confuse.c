@@ -1118,6 +1118,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			/* Inherit last read comment */
 			opt->comment = comment;
+			opt->flags  |= CFGF_COMMENTS;
 			comment = NULL;
 
 			if (opt->type == CFGT_SEC) {
@@ -1780,6 +1781,7 @@ DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
 	if (opt->comment)
 		free(opt->comment);
 	opt->comment = strdup(comment);
+	opt->flags  |= CFGF_COMMENTS;
 
 	return CFG_SUCCESS;
 }
