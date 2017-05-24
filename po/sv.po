@@ -142,9 +142,9 @@ msgstr "inkluderingsfiler för djupt nästlade"
 #: src/lexer.l:327
 #, c-format
 msgid "%s: Not found in search path"
-msgstr ""
+msgstr "%s: Saknas i den givna sökvägen"
 
 #: src/lexer.l:336
 #, c-format
 msgid "%s: Failed tilde expand"
-msgstr ""
+msgstr "%s: Kunde inte expandera"
