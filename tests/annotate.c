@@ -21,7 +21,7 @@ int main(void)
 	cfg = cfg_init(opts, CFGF_NONE);
 	fail_unless(cfg != NULL);
 
-	fail_unless(cfg_parse(cfg, "annotate.conf") == CFG_SUCCESS);
+	fail_unless(cfg_parse(cfg, SRC_DIR "/annotate.conf") == CFG_SUCCESS);
 
 	opt = cfg_getopt(cfg, "section|option");
 	fail_unless(strcmp(cfg_opt_getcomment(opt), expect) == 0);
