@@ -190,7 +190,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
 			sec = cfg_getsec(sec, secname);
 			if (!sec) {
-				if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+				if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
 					cfg_error(cfg, _("no such option '%s'"), secname);
 				free(secname);
 				return NULL;
@@ -211,7 +211,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 		}
 	}
 
-	if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+	if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
 		cfg_error(cfg, _("no such option '%s'"), name);
 
 	return NULL;
@@ -1031,7 +1031,7 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 
 static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 {
-	if (opt->flags & CFGF_DROP) {
+	if (is_set(CFGF_DROP, opt->flags)) {
 		cfg_error(cfg, _("dropping deprecated configuration option '%s'"), opt->name);
 		cfg_free_value(opt);
 	} else {
@@ -1070,7 +1070,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			if (opt && opt->flags & CFGF_DEPRECATED)
+			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
 				cfg_handle_deprecated(cfg, opt);
 
 			if (comment)
@@ -1081,7 +1081,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 		switch (state) {
 		case 0:	/* expecting an option name */
-			if (opt && opt->flags & CFGF_DEPRECATED)
+			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
 				cfg_handle_deprecated(cfg, opt);
 
 			switch (tok) {
@@ -1114,7 +1114,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
-				if (cfg->flags & CFGF_IGNORE_UNKNOWN) {
+				if (is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 					state = 10;
 					break;
 				}
