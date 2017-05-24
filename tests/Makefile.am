@@ -1,4 +1,4 @@
-EXTRA_DIST        = a.conf b.conf spdir check_confuse.h
+EXTRA_DIST        = annotate.conf a.conf b.conf spdir check_confuse.h
 
 TESTS             =
 TESTS            += suite_single

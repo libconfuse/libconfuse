@@ -4,18 +4,38 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-[v3.1][UNRELEASED] - 2016-12-XX
--------------------------------
+[v3.1][] - 2017-05-24
+---------------------
 
 ### Changes
-* New API for creating titled sections at runtime, by Jonas Johansson
+* Refactored `CFGF_IGNORE_UNKNOWN` support, libConfuse now properly
+  ignores any type and sub-section without the need for declaring an
+  `__unknown` option.  When the flag is set all unknown options,
+  including unknown sub-sections with, in turn, unknown options, are
+  now fully ignored
+* Issue #69: New API for creating titled sections at runtime,
+  by Jonas Johansson @jonasj76
+* Issue #92: Support for option annotation/comments.  Every option can
+  now have a comment, which is both read and written from/to file.
+  Disabled by default, enable with `CFGF_COMMENTS` flag in `cfg_init()`
+* ABI bump: 1.0.0 --> 1.1.0, due to new functionality
 
 ### Fixes
-* Fix typos in documentation, by Luca Ceresoli
-* Fix gettext version requirement, CentOS/RHEL7 only has v0.18.12
-* Fix syntax in rpm spec file, for CentOS/RHEL7
-* SIGSEGV when parsed default values are used with include, by Dmitri Zhabinski
-* Fixed MSVC build errors, by George Koskeridis @Gikoskos
+* Build unit tests statically for easier debugging
+* Issue #21: Major refactor of lexer to fix memory leaks, `cfg_free()`
+  now properly releases all memory.  By Joachim Nilsson @troglobit
+* Issue #64: Fixed MSVC build errors, by George Koskeridis @Gikoskos
+* Issue #65: SIGSEGV when parsed default values are used with include,
+  by Dmitri Zhabinski
+* Issue #71: Fix syntax in rpm spec file, for CentOS/RHEL7
+* Issue #73: Adjust gettext version requirement to build on CentOS/RHEL7.
+  GNU gettext v0.18.2.1 update `AM_GNU_GETTEXT()` to use AC_PROG_MKDIR_P
+  instead of `AM_PROG_MKDIR_P`, but v0.18.1.1 is included in Ubuntu 12.04
+  LTS.  Fortunately Ubuntu 14.04 LTS ships v0.18.3.1 and Debian Jessie
+  ships v0.19.3.  Unfortunately, CentOS7 and RHEL7 ships v0.18.2.1, so
+  for best compat. level at this point in time we require v0.18.2.
+* Issue #74: Fix typos in documentation, by Luca Ceresoli
+* Issue #79: Add `fmemopen()` compat for *BSD, including macOS
 
 
 [v3.0][] - 2016-03-03
@@ -313,7 +333,7 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.0...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.1...HEAD
 [v3.1]: https://github.com/martinh/libconfuse/compare/v3.0...v3.1
 [v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
