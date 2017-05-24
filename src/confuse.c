@@ -1073,6 +1073,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (opt && opt->flags & CFGF_DEPRECATED)
 				cfg_handle_deprecated(cfg, opt);
 
+			if (comment)
+				free(comment);
+
 			return STATE_EOF;
 		}
 
@@ -1087,6 +1090,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					cfg_error(cfg, _("unexpected closing brace"));
 					goto error;
 				}
+				if (comment)
+					free(comment);
+
 				return STATE_EOF;
 
 			case CFGT_STR:
@@ -1325,6 +1331,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			} else if (tok == CFGT_STR) {
 				state = 11; /* No '=' ... must be a titled section */
 			} else if (tok == '}' && force_state == 10) {
+				if (comment)
+					free(comment);
+
 				return STATE_CONTINUE;
 			}
 			break;
@@ -1356,8 +1365,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			/* Are we done with recursive ignore of sub-section? */
-			if (force_state == 10)
+			if (force_state == 10) {
+				if (comment)
+					free(comment);
+
 				return STATE_CONTINUE;
+			}
 
 			ignore = 0;
 			state = 0;
@@ -1391,6 +1404,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			goto error;
 		}
 	}
+
+	if (comment)
+		free(comment);
 
 	return STATE_EOF;
 
