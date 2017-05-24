@@ -19,7 +19,7 @@ int main(void)
 		CFG_END()
 	};
 
-	cfg = cfg_init(opts, CFGF_COMMENT);
+	cfg = cfg_init(opts, CFGF_COMMENTS);
 	fail_unless(cfg != NULL);
 
 	fail_unless(cfg_parse(cfg, SRC_DIR "/annotate.conf") == CFG_SUCCESS);
