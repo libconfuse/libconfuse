@@ -250,6 +250,19 @@ DLLIMPORT unsigned int cfg_size(cfg_t *cfg, const char *name)
 	return cfg_opt_size(cfg_getopt(cfg, name));
 }
 
+DLLIMPORT char *cfg_opt_getcomment(cfg_opt_t *opt)
+{
+	if (opt)
+		return opt->comment;
+
+	return NULL;
+}
+
+DLLIMPORT char *cfg_getcomment(cfg_t *cfg, const char *name)
+{
+	return cfg_opt_getcomment(cfg_getopt(cfg, name));
+}
+
 DLLIMPORT signed long cfg_opt_getnint(cfg_opt_t *opt, unsigned int index)
 {
 	if (!opt || opt->type != CFGT_INT) {
@@ -1029,6 +1042,7 @@ static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt)
 {
 	int state = 0;
+	char *comment = NULL;
 	char *opttitle = NULL;
 	cfg_opt_t *opt = NULL;
 	cfg_value_t *val = NULL;
@@ -1067,15 +1081,24 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (opt && opt->flags & CFGF_DEPRECATED)
 				cfg_handle_deprecated(cfg, opt);
 
-			if (tok == '}') {
+			switch (tok) {
+			case '}':
 				if (level == 0) {
 					cfg_error(cfg, _("unexpected closing brace"));
 					goto error;
 				}
 				return STATE_EOF;
-			}
 
-			if (tok != CFGT_STR) {
+			case CFGT_STR:
+				break;
+
+			case CFGT_COMMENT:
+				if (comment)
+					free(comment);
+				comment = strdup(cfg_yylval);
+				continue;
+
+			default:
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 				goto error;
 			}
@@ -1089,6 +1112,10 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 				goto error;
 			}
+
+			/* Inherit last read comment */
+			opt->comment = comment;
+			comment = NULL;
 
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
@@ -1275,6 +1302,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 10: /* unknown option, mini-discard parser states: 10-15 */
+			if (comment) {
+				free(comment);
+				comment = NULL;
+			}
+
 			if (tok == '+') {
 				ignore = '=';
 				state = 13; /* Append to list, should be followed by '=' */
@@ -1361,6 +1393,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 error:
 	if (opttitle)
 		free(opttitle);
+	if (comment)
+		free(comment);
 
 	return STATE_ERROR;
 }
@@ -1733,6 +1767,25 @@ static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 	return val;
 }
 
+DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
+{
+	if (!opt || !comment) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	if (opt->comment)
+		free(opt->comment);
+	opt->comment = strdup(comment);
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setcomment(cfg_t *cfg, const char *name, char *comment)
+{
+	return cfg_opt_setcomment(cfg_getopt(cfg, name), comment);
+}
+
 DLLIMPORT int cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int index)
 {
 	cfg_value_t *val;
@@ -2089,6 +2142,7 @@ DLLIMPORT int cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 	case CFGT_SEC:
 	case CFGT_FUNC:
 	case CFGT_PTR:
+	case CFGT_COMMENT:
 		break;
 	}
 
@@ -2106,6 +2160,11 @@ DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 	if (!opt || !fp) {
 		errno = EINVAL;
 		return CFG_FAIL;
+	}
+
+	if (opt->comment) {
+		cfg_indent(fp, indent);
+		fprintf(fp, "/* %s */\n", opt->comment);
 	}
 
 	if (opt->type == CFGT_SEC) {

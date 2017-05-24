@@ -73,7 +73,8 @@ enum cfg_type_t {
 	CFGT_BOOL,   /**< boolean value */
 	CFGT_SEC,    /**< section */
 	CFGT_FUNC,   /**< function */
-	CFGT_PTR     /**< pointer to user-defined value */
+	CFGT_PTR,    /**< pointer to user-defined value */
+	CFGT_COMMENT /**< comment/annotation */
 };
 typedef enum cfg_type_t cfg_type_t;
 
@@ -236,6 +237,7 @@ struct cfg_t {
 	char *name;		/**< The name of this section, the root
 				 * section returned from cfg_init() is
 				 * always named "root" */
+	char *comment;	        /**< Optional annotation/comment */
 	cfg_opt_t *opts;        /**< Array of options */
 	char *title;	        /**< Optional title for this section, only
 				 * set if CFGF_TITLE flag is set */
@@ -288,6 +290,7 @@ struct cfg_defvalue_t {
  */
 struct cfg_opt_t {
 	const char *name;	/**< The name of the option */
+	char *comment;	        /**< Optional comment/annotation */
 	cfg_type_t type;	/**< Type of option */
 	unsigned int nvalues;	/**< Number of values parsed */
 	cfg_value_t **values;	/**< Array of found values */
@@ -310,9 +313,9 @@ extern const char __export confuse_version[];
 extern const char __export confuse_author[];
 
 #define __CFG_STR(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0,0}
+  {name,0,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0,0}
 #define __CFG_STR_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0,0}
+  {name,0,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0,0}
 
 /** Initialize a string option
  */
@@ -391,9 +394,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_INT(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,{.number=svalue},cb,0,0,0,0}
+  {name,0,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,{.number=svalue},cb,0,0,0,0}
 #define __CFG_INT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.number=svalue},cb,0,0,0,0}
+  {name,0,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.number=svalue},cb,0,0,0,0}
 
 /** Initialize an integer option
  */
@@ -427,9 +430,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_FLOAT(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,{.fpnumber=svalue},cb,0,0,0,0}
+  {name,0,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,{.fpnumber=svalue},cb,0,0,0,0}
 #define __CFG_FLOAT_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.fpnumber=svalue},cb,0,0,0,0}
+  {name,0,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.fpnumber=svalue},cb,0,0,0,0}
 
 /** Initialize a floating point option
  */
@@ -460,9 +463,9 @@ extern const char __export confuse_author[];
 
 
 #define __CFG_BOOL(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,{.boolean=svalue},cb,0,0,0,0}
+  {name,0,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,{.boolean=svalue},cb,0,0,0,0}
 #define __CFG_BOOL_LIST(name, def, flags, svalue, cb) \
-  {name,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.boolean=svalue},cb,0,0,0,0}
+  {name,0,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.boolean=svalue},cb,0,0,0,0}
 
 /** Initialize a boolean option
  */
@@ -504,7 +507,7 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SEC(name, opts, flags) \
-  {name,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
+  {name,0,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
 
 
 
@@ -515,13 +518,13 @@ extern const char __export confuse_author[];
  * @see cfg_func_t
  */
 #define CFG_FUNC(name, func) \
-  {name,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,{0},0,0,0,0,0}
+  {name,0,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,{0},0,0,0,0,0}
 
 
 #define __CFG_PTR(name, def, flags, svalue, parsecb, freecb) \
-  {name,CFGT_PTR,0,0,flags,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
+  {name,0,CFGT_PTR,0,0,flags,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
 #define __CFG_PTR_LIST(name, def, flags, svalue, parsecb, freecb) \
-  {name,CFGT_PTR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
+  {name,0,CFGT_PTR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
 
 /** Initialize a user-defined option
  *
@@ -551,7 +554,7 @@ extern const char __export confuse_author[];
  * the option list.
  */
 #define CFG_END() \
-  {0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
+  {0,0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
 
 
 
@@ -681,6 +684,19 @@ DLLIMPORT cfg_errfunc_t __export cfg_set_error_function(cfg_t *cfg, cfg_errfunc_
  * @see cfg_set_error_function
  */
 DLLIMPORT void __export cfg_error(cfg_t *cfg, const char *fmt, ...);
+
+/** Returns the option comment
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @see cfg_getcomment
+ */
+DLLIMPORT char * __export cfg_opt_getcomment(cfg_opt_t *opt);
+
+/** Returns the option comment
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @return The comment for this option, or NULL if unset
+ */
+DLLIMPORT char * __export cfg_getcomment(cfg_t *cfg, const char *name);
 
 /** Returns the value of an integer option, given a cfg_opt_t pointer.
  * @param opt The option structure (eg, as returned from cfg_getopt())
@@ -936,6 +952,23 @@ DLLIMPORT cfg_opt_t *__export cfg_getopt(cfg_t *cfg, const char *name);
  * @return Returns a pointer to the value object.
  */
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value);
+
+/** Annotate an option
+ * @param opt The option structure (eg, as returned from cfg_getopt())
+ * @param comment The annotation
+ *
+ * @return POSIX OK(0), or non-zero on failure.
+ */
+DLLIMPORT int __export cfg_opt_setcomment(cfg_opt_t *opt, char *comment);
+
+/** Annotate an option by its name
+ * @param cfg The configuration file context.
+ * @param name The name of the option.
+ * @param comment The annotation
+ *
+ * @return POSIX OK(0), or non-zero on failure.
+ */
+DLLIMPORT int __export cfg_setcomment(cfg_t *cfg, const char *name, char *comment);
 
 /** Set a value of an integer option.
  *

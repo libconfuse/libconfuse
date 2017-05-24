@@ -16,6 +16,7 @@
  */
 
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 
 #ifdef HAVE_CONFIG_H
@@ -56,11 +57,14 @@ extern YYSTYPE cfg_yylval;
 
 /* temporary buffer for the quoted strings scanner
  */
+#define CFG_QSTRING_BUFSIZ 32
 char *cfg_qstring = NULL;
 static unsigned int qstring_index = 0;
 static unsigned int qstring_len = 0;
 static void qputc(char ch);
-#define CFG_QSTRING_BUFSIZ 32
+static void qput(cfg_t *cfg);
+static void qbeg(int state);
+static int  qend(cfg_t *cfg, int trim, int ret);
 
 #define MAX_INCLUDE_DEPTH 10
 struct {
@@ -79,6 +83,7 @@ void cfg_scan_fp_end(void);
 
  /* start conditions
   */
+%x olcomment
 %x comment
 %x dq_str
 %x sq_str
@@ -89,7 +94,17 @@ void cfg_scan_fp_end(void);
 
 \n   cfg->line++; /* keep track of line number */
 
-("#"|"//")[^\n]*     /* eat up one-line comments */
+ /*
+  * handle one-line comments
+  *
+  * Note: Comments with lots of leading #### or //// are fully
+  *       consumed and are not included in CFGT_COMMENT yylval
+  */
+"#"{1,}                 qbeg(olcomment);
+"/"{2,}                 qbeg(olcomment);
+<olcomment>.*           qput(NULL);
+<olcomment>\n           return qend(cfg, 1, CFGT_COMMENT);
+<olcomment><<EOF>>      return qend(cfg, 1, CFGT_COMMENT);
 
  /* special keywords/symbols
   */
@@ -103,11 +118,11 @@ void cfg_scan_fp_end(void);
 
  /* handle multi-line C-style comments
   */
-"/*"         BEGIN(comment);
-<comment>[^*\n]*        /* eat anything that's not a '*' */
-<comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
-<comment>\n             cfg->line++;
-<comment>"*"+"/"        BEGIN(INITIAL);
+"/*"                    qbeg(comment);
+<comment>[^*\n]*        qput(NULL);  /* anything that's not a '*' */
+<comment>"*"+[^*/\n]*   qput(NULL);  /* '*'s not followed by '/'s */
+<comment>\n             qput(cfg);
+<comment>[ \t]*"*"+"/"  return qend(cfg, 1, CFGT_COMMENT);
 
  /* handle C-style strings
   */
@@ -120,7 +135,7 @@ void cfg_scan_fp_end(void);
     qputc('\0');
     cfg_yylval = cfg_qstring;
     return CFGT_STR;
- }
+}
 <dq_str>$\{[^}]*\} { /* environment variable substitution */
     char *var;
     char *e;
@@ -354,6 +369,59 @@ static void qputc(char ch)
     cfg_qstring[qstring_index++] = ch;
 }
 
+static void qput(cfg_t *cfg)
+{
+    char *cp;
+
+    if (cfg)
+	cfg->line++;
+
+    cp = yytext;
+    while (*cp)
+        qputc(*cp++);
+}
+
+static void qbeg(int state)
+{
+    BEGIN(state);
+    qstring_index = 0;
+    memset(cfg_qstring, 0, qstring_len);
+}
+
+static char *trim_whitespace(char *str, unsigned int len)
+{
+    while (len > 1) {
+	if ((str[len] == 0 || isspace(str[len])) && isspace(str[len - 1]))
+	    len--;
+	else
+	    break;
+    }
+    str[len] = 0;
+
+    while (isspace(*str))
+	str++;
+
+    return str;
+}
+
+static int qend(cfg_t *cfg, int trim, int ret)
+{
+    char *ptr = cfg_qstring;
+
+    BEGIN(INITIAL);
+    if (cfg)
+	cfg->line++;
+
+    if (trim)
+	ptr = trim_whitespace(cfg_qstring, qstring_index);
+    else
+	qputc('\0');
+
+    cfg_yylval = ptr;
+
+    return ret;
+}
+
 void cfg_scan_fp_begin(FILE *fp)
 {
     cfg_yypush_buffer_state(cfg_yy_create_buffer(fp, YY_BUF_SIZE));
@@ -363,7 +431,7 @@ void cfg_scan_fp_end(void)
 {
     if (cfg_qstring)
 	    free(cfg_qstring);
-    cfg_qstring = 0;
+    cfg_qstring = NULL;
     qstring_index = qstring_len = 0;
     cfg_yypop_buffer_state();
 }

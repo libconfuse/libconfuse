@@ -3,7 +3,9 @@
 
 int main(void)
 {
+	char *expect = "A comment we think will go with this option";
 	cfg_t *cfg;
+	cfg_opt_t *opt;
 	cfg_opt_t section_opts[] = {
 		CFG_INT("key", 0, CFGF_NONE),
 		CFG_BOOL("bool", 0, CFGF_NONE),
@@ -20,6 +22,12 @@ int main(void)
 	fail_unless(cfg != NULL);
 
 	fail_unless(cfg_parse(cfg, "annotate.conf") == CFG_SUCCESS);
+
+	opt = cfg_getopt(cfg, "section|option");
+	fail_unless(strcmp(cfg_opt_getcomment(opt), expect) == 0);
+
+	fail_unless(cfg_opt_setcomment(opt, "But what's the worst poetry in the universe?") == CFG_SUCCESS);
+
 	cfg_print(cfg, stdout);
 	fail_unless(cfg_free(cfg) == CFG_SUCCESS);
 
