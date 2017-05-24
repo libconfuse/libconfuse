@@ -693,8 +693,13 @@ DLLIMPORT void __export cfg_error(cfg_t *cfg, const char *fmt, ...);
 DLLIMPORT char * __export cfg_opt_getcomment(cfg_opt_t *opt);
 
 /** Returns the option comment
+ *
+ * This function can be used to extract option annotations from a config
+ * file.  Only comments preceding the option are read by cfg_parse().
+ *
  * @param cfg The configuration file context.
  * @param name The name of the option.
+ * @see cfg_setcomment
  * @return The comment for this option, or NULL if unset
  */
 DLLIMPORT char * __export cfg_getcomment(cfg_t *cfg, const char *name);
@@ -957,17 +962,29 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 /** Annotate an option
  * @param opt The option structure (eg, as returned from cfg_getopt())
  * @param comment The annotation
- *
+ * @see cfg_setcomment
  * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int __export cfg_opt_setcomment(cfg_opt_t *opt, char *comment);
 
-/** Annotate an option by its name
+/** Annotate an option given its name
+ *
+ * All options can be annotated as long as the CFGF_COMMENTS flag is
+ * given to cfg_init().  Comments are reset when an option is given
+ * a new value, so the annotation must be set after the value.
+ *
+ * When calling cfg_print(), annotations are saved as a C style one-liner
+ * comment before each option.
+ *
+ * When calling cfg_parse(), only one-liner comments preceding an option
+ * are read and used to annotate the option.
+ *
  * @param cfg The configuration file context.
  * @param name The name of the option.
  * @param comment The annotation
  *
- * @return POSIX OK(0), or non-zero on failure.
+ * @return POSIX OK(0), or non-zero on failure.  This function will fail
+ * if memory for the new comment cannot be allocated.
  */
 DLLIMPORT int __export cfg_setcomment(cfg_t *cfg, const char *name, char *comment);
 

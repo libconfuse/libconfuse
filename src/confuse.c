@@ -1122,11 +1122,6 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			/* Inherit last read comment */
-			opt->comment = comment;
-			opt->flags  |= CFGF_COMMENTS;
-			comment = NULL;
-
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
 					state = 6;
@@ -1190,6 +1185,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
+
+			/* Inherit last read comment */
+			opt->comment = comment;
+			opt->flags  |= CFGF_COMMENTS;
+			comment = NULL;
 
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
@@ -1799,14 +1799,21 @@ static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 
 DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
 {
+	char *oldcomment, *newcomment;
+
 	if (!opt || !comment) {
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
 
-	if (opt->comment)
-		free(opt->comment);
-	opt->comment = strdup(comment);
+	oldcomment = opt->comment;
+	newcomment = strdup(comment);
+	if (!newcomment)
+		return CFG_FAIL;
+
+	if (oldcomment)
+		free(oldcomment);
+	opt->comment = newcomment;
 	opt->flags  |= CFGF_COMMENTS;
 
 	return CFG_SUCCESS;
