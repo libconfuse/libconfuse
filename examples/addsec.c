@@ -27,13 +27,15 @@ void read_config(void)
 
 void print_message()
 {
-	int i;
+	size_t i;
 
 	printf("Message: %s", cfg_getstr(cfg, "message"));
 	for (i = 0; i < cfg_size(cfg, "argument"); i++) {
-	   cfg_t *arg = cfg_getnsec(cfg, "argument", i);
+		cfg_t *arg;
 
-	   printf(", %s", cfg_getstr(arg, "value"));
+		arg = cfg_getnsec(cfg, "argument", i);
+		if (arg)
+			printf(", %s", cfg_getstr(arg, "value"));
 	}
 	printf("\n");
 }
@@ -58,4 +60,5 @@ int main(void)
 	cfg = 0;
 
 	return 0;
+
 }

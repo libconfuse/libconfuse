@@ -339,10 +339,13 @@ static void parse_buf_test(void)
 	buf = "/*/*/ bool = {true}//  */";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
-	buf = "/////// this is a comment\nbool = {true} // another /* comment */";
+	buf = "/////// this too is a comment\nbool = {true} // another one here /* comment */";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
-	buf = "# this is a comment\nbool = {true} # another //* comment *//";
+	buf = "# this is a shell comment\nbool = {true} # another shell comment here //* comment *//";
+	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+
+	buf = "######## this is also a shell comment\nbool = {true} ## Use the force, Luke";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
 	buf = "string={/usr/local/}";
