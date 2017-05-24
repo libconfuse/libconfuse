@@ -1662,6 +1662,11 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		return CFG_FAIL;
 	}
 
+	if (opt->comment) {
+		free(opt->comment);
+		opt->comment = NULL;
+	}
+
 	if (opt->values) {
 		unsigned int i;
 
@@ -1691,6 +1696,8 @@ static void cfg_free_opt_array(cfg_opt_t *opts)
 
 	for (i = 0; opts[i].name; ++i) {
 		free((void *)opts[i].name);
+		if (opts[i].comment)
+			free(opts[i].comment);
 		if (opts[i].def.parsed)
 			free(opts[i].def.parsed);
 		if (opts[i].def.string)
@@ -1721,6 +1728,9 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
+
+	if (cfg->comment)
+		free(cfg->comment);
 
 	for (i = 0; cfg->opts[i].name; ++i)
 		cfg_free_value(&cfg->opts[i]);
