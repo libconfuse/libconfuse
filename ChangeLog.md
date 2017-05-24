@@ -15,8 +15,9 @@ All notable changes in libConfuse are documented in this file.
   now fully ignored
 * Issue #69: New API for creating titled sections at runtime,
   by Jonas Johansson @jonasj76
-* Issue #92: Support for option annotation/comments.  Every option
-  can now have a comment, which is both read and written from/to file
+* Issue #92: Support for option annotation/comments.  Every option can
+  now have a comment, which is both read and written from/to file.
+  Disabled by default, enable with `CFGF_COMMENTS` flag in `cfg_init()`
 * ABI bump: 1.0.0 --> 1.1.0, due to new functionality
 
 ### Fixes
