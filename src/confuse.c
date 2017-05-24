@@ -1187,8 +1187,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 
 			/* Inherit last read comment */
-			opt->comment = comment;
-			opt->flags  |= CFGF_COMMENTS;
+			cfg_opt_setcomment(opt, comment);
 			comment = NULL;
 
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
