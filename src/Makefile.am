@@ -11,6 +11,7 @@ localedir              = $(datadir)/locale
 DEFS                   = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 LIBS                   = @LIBS@
 AM_LFLAGS              = @DEFS@ -Pcfg_yy -olexer.c
+EXTRA_DIST             = lexer.c
 CLEANFILES             = *~ \#*\#
 
 if MISSING_FMEMOPEN
