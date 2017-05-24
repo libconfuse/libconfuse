@@ -970,8 +970,7 @@ DLLIMPORT int __export cfg_opt_setcomment(cfg_opt_t *opt, char *comment);
 /** Annotate an option given its name
  *
  * All options can be annotated as long as the CFGF_COMMENTS flag is
- * given to cfg_init().  Comments are reset when an option is given
- * a new value, so the annotation must be set after the value.
+ * given to cfg_init().
  *
  * When calling cfg_print(), annotations are saved as a C style one-liner
  * comment before each option.

@@ -1662,7 +1662,7 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		return CFG_FAIL;
 	}
 
-	if (opt->comment) {
+	if (opt->comment && !is_set(CFGF_RESET, opt->flags)) {
 		free(opt->comment);
 		opt->comment = NULL;
 	}
