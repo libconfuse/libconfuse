@@ -190,7 +190,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
 			sec = cfg_getsec(sec, secname);
 			if (!sec) {
-				if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+				if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
 					cfg_error(cfg, _("no such option '%s'"), secname);
 				free(secname);
 				return NULL;
@@ -211,7 +211,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 		}
 	}
 
-	if (!(cfg->flags & CFGF_IGNORE_UNKNOWN))
+	if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
 		cfg_error(cfg, _("no such option '%s'"), name);
 
 	return NULL;
@@ -1031,7 +1031,7 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 
 static void cfg_handle_deprecated(cfg_t *cfg, cfg_opt_t *opt)
 {
-	if (opt->flags & CFGF_DROP) {
+	if (is_set(CFGF_DROP, opt->flags)) {
 		cfg_error(cfg, _("dropping deprecated configuration option '%s'"), opt->name);
 		cfg_free_value(opt);
 	} else {
@@ -1070,15 +1070,18 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			if (opt && opt->flags & CFGF_DEPRECATED)
+			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
 				cfg_handle_deprecated(cfg, opt);
+
+			if (comment)
+				free(comment);
 
 			return STATE_EOF;
 		}
 
 		switch (state) {
 		case 0:	/* expecting an option name */
-			if (opt && opt->flags & CFGF_DEPRECATED)
+			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
 				cfg_handle_deprecated(cfg, opt);
 
 			switch (tok) {
@@ -1087,6 +1090,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					cfg_error(cfg, _("unexpected closing brace"));
 					goto error;
 				}
+				if (comment)
+					free(comment);
+
 				return STATE_EOF;
 
 			case CFGT_STR:
@@ -1108,17 +1114,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			opt = cfg_getopt(cfg, cfg_yylval);
 			if (!opt) {
-				if (cfg->flags & CFGF_IGNORE_UNKNOWN) {
+				if (is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 					state = 10;
 					break;
 				}
 
 				goto error;
 			}
-
-			/* Inherit last read comment */
-			opt->comment = comment;
-			comment = NULL;
 
 			if (opt->type == CFGT_SEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
@@ -1183,6 +1185,10 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 				goto error;
+
+			/* Inherit last read comment */
+			cfg_opt_setcomment(opt, comment);
+			comment = NULL;
 
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
 				++num_values;
@@ -1324,6 +1330,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			} else if (tok == CFGT_STR) {
 				state = 11; /* No '=' ... must be a titled section */
 			} else if (tok == '}' && force_state == 10) {
+				if (comment)
+					free(comment);
+
 				return STATE_CONTINUE;
 			}
 			break;
@@ -1355,8 +1364,12 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			/* Are we done with recursive ignore of sub-section? */
-			if (force_state == 10)
+			if (force_state == 10) {
+				if (comment)
+					free(comment);
+
 				return STATE_CONTINUE;
+			}
 
 			ignore = 0;
 			state = 0;
@@ -1390,6 +1403,9 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			goto error;
 		}
 	}
+
+	if (comment)
+		free(comment);
 
 	return STATE_EOF;
 
@@ -1645,6 +1661,11 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		return CFG_FAIL;
 	}
 
+	if (opt->comment && !is_set(CFGF_RESET, opt->flags)) {
+		free(opt->comment);
+		opt->comment = NULL;
+	}
+
 	if (opt->values) {
 		unsigned int i;
 
@@ -1674,6 +1695,8 @@ static void cfg_free_opt_array(cfg_opt_t *opts)
 
 	for (i = 0; opts[i].name; ++i) {
 		free((void *)opts[i].name);
+		if (opts[i].comment)
+			free(opts[i].comment);
 		if (opts[i].def.parsed)
 			free(opts[i].def.parsed);
 		if (opts[i].def.string)
@@ -1704,6 +1727,9 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
+
+	if (cfg->comment)
+		free(cfg->comment);
 
 	for (i = 0; cfg->opts[i].name; ++i)
 		cfg_free_value(&cfg->opts[i]);
@@ -1772,14 +1798,22 @@ static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 
 DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
 {
+	char *oldcomment, *newcomment;
+
 	if (!opt || !comment) {
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
 
-	if (opt->comment)
-		free(opt->comment);
-	opt->comment = strdup(comment);
+	oldcomment = opt->comment;
+	newcomment = strdup(comment);
+	if (!newcomment)
+		return CFG_FAIL;
+
+	if (oldcomment)
+		free(oldcomment);
+	opt->comment = newcomment;
+	opt->flags  |= CFGF_COMMENTS;
 
 	return CFG_SUCCESS;
 }

@@ -1,5 +1,6 @@
 .deps
 .libs
+annotate
 check_confuse
 env
 ignore_parm
