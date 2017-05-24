@@ -4,12 +4,20 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
-[v3.1][] - 2017-03-20
+[v3.1][] - 2017-05-24
 ---------------------
 
 ### Changes
+* Refactored `CFGF_IGNORE_UNKNOWN` support, libConfuse now properly
+  ignores any type and sub-section without the need for declaring an
+  `__unknown` option.  When the flag is set all unknown options,
+  including unknown sub-sections with, in turn, unknown options, are
+  now fully ignored
 * Issue #69: New API for creating titled sections at runtime,
   by Jonas Johansson @jonasj76
+* Issue #92: Support for option annotation/comments.  Every option
+  can now have a comment, which is both read and written from/to file
+* ABI bump: 1.0.0 --> 1.1.0, due to new functionality
 
 ### Fixes
 * Build unit tests statically for easier debugging
@@ -324,7 +332,7 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.0...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.1...HEAD
 [v3.1]: https://github.com/martinh/libconfuse/compare/v3.0...v3.1
 [v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
 [v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
