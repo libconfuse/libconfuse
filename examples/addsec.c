@@ -1,7 +1,15 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <errno.h>
 #include <string.h>
-#include <unistd.h>
 #include <locale.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #include "confuse.h"
 
 cfg_t *cfg = NULL;
