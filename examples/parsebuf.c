@@ -1,4 +1,5 @@
 /* Very simple example for parse buf example */
+#include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include "confuse.h"
