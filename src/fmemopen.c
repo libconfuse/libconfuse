@@ -14,7 +14,13 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <stdio.h>
+
+#ifdef HAVE_FUNOPEN
 #include <stdlib.h>
 #include <memory.h>
 
@@ -109,6 +115,51 @@ FILE *fmemopen(void *buf, size_t len, const char *type)
 
 	return funopen(ops, readfn, writefn, seekfn, closefn);
 }
+#elif defined(HAVE_WINDOWS_H)
+#include <io.h>
+#include <fcntl.h>
+#include <windows.h>
+
+FILE *fmemopen(void *buf, size_t len, const char *type)
+{
+	int fd;
+	FILE *fp;
+	char tp[MAX_PATH - 13];
+	char fn[MAX_PATH + 1];
+	HANDLE h;
+
+	if (!GetTempPath(sizeof(tp), tp))
+		return NULL;
+
+	if (!GetTempFileName(tp, "confuse", 0, fn))
+		return NULL;
+
+	h = CreateFile(fn, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+		       CREATE_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+	if (INVALID_HANDLE_VALUE == h)
+		return NULL;
+
+	fd = _open_osfhandle((intptr_t)h, _O_APPEND);
+	if (fd < 0) {
+		CloseHandle(h);
+		return NULL;
+	}
+
+	fp = fdopen(fd, "w+");
+	if (!fp) {
+		CloseHandle(h);
+		return NULL;
+	}
+
+	fwrite(buf, len, 1, fp);
+	rewind(fp);
+
+	return fp;
+}
+
+#else
+#error Sorry, this platform currently has no fmemopen() replacement.
+#endif
 
 /**
  * Local Variables:

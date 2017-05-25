@@ -40,7 +40,7 @@ AC_CHECK_HEADERS([unistd.h string.h strings.h sys/stat.h windows.h])
 AC_C_CONST
 
 # Checks for library functions.
-AC_CHECK_FUNCS([fmemopen strcasecmp strdup strndup setenv unsetenv _putenv])
+AC_CHECK_FUNCS([fmemopen funopen strcasecmp strdup strndup setenv unsetenv _putenv])
 
 # Set conditional includes in Makefile.am
 AM_CONDITIONAL(MISSING_FMEMOPEN, [test "x$ac_cv_func_fmemopen" = "xno"])
