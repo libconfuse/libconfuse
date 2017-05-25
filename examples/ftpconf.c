@@ -110,8 +110,10 @@ int main(int argc, char **argv)
 	cfg_t *cfg;
 
 	/* Localize messages & types according to environment, since v2.9 */
+#ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
 
 	cfg = parse_conf(argc > 1 ? argv[1] : "ftp.conf");
 	if (cfg) {

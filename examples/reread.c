@@ -51,8 +51,10 @@ int main(void)
 	unsigned int i;
 
 	/* Localize messages & types according to environment, since v2.9 */
+#ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
 
 	read_config();
 	signal(SIGHUP, sighandler);

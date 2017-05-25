@@ -45,8 +45,10 @@ int main(void)
 	cfg_t* sec;
 
 	/* Localize messages & types according to environment, since v2.9 */
+#ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
 
 	read_config();
 	print_message();
