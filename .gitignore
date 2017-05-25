@@ -1,5 +1,10 @@
 .gdb_history
 ABOUT-NLS
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+ID
 aclocal.m4
 autom4te.cache
 config.h
