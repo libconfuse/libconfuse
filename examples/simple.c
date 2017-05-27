@@ -33,8 +33,10 @@ int main(void)
 	cfg_t *cfg;
 
 	/* Localize messages & types according to environment, since v2.9 */
+#ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
 
 	/* set default value for the server option */
 	server = strdup("gazonk");

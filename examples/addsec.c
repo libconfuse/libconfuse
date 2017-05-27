@@ -1,10 +1,18 @@
-#include <err.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include <errno.h>
 #include <string.h>
-#include <unistd.h>
 #include <locale.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #include "confuse.h"
 
-cfg_t *cfg = 0;
+cfg_t *cfg = NULL;
 const char *config_filename = "./reread.conf";
 
 void read_config(void)
@@ -21,8 +29,10 @@ void read_config(void)
 	};
 
 	cfg = cfg_init(opts, CFGF_NONE);
-	if (cfg_parse(cfg, config_filename) != CFG_SUCCESS)
-		errx(1, "Failed parsing configuration!\n");
+	if (cfg_parse(cfg, config_filename) != CFG_SUCCESS) {
+		fprintf(stderr, "Failed parsing configuration: %s\n", strerror(errno));
+		exit(1);
+	}
 }
 
 void print_message()
@@ -45,8 +55,10 @@ int main(void)
 	cfg_t* sec;
 
 	/* Localize messages & types according to environment, since v2.9 */
+#ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
 	setlocale(LC_CTYPE, "");
+#endif
 
 	read_config();
 	print_message();
@@ -57,7 +69,6 @@ int main(void)
 	print_message();
 
 	cfg_free(cfg);
-	cfg = 0;
 
 	return 0;
 

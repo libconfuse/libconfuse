@@ -34,16 +34,17 @@ AM_GNU_GETTEXT_VERSION([0.18.2])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([unistd.h string.h strings.h sys/stat.h])
+AC_CHECK_HEADERS([unistd.h string.h strings.h sys/stat.h windows.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
 # Checks for library functions.
-AC_CHECK_FUNCS([fmemopen strcasecmp strdup strndup setenv unsetenv _putenv])
+AC_CHECK_FUNCS([fmemopen funopen strcasecmp strdup strndup setenv unsetenv _putenv])
 
 # Set conditional includes in Makefile.am
 AM_CONDITIONAL(MISSING_FMEMOPEN, [test "x$ac_cv_func_fmemopen" = "xno"])
+AM_CONDITIONAL(WINDOWS_BUILD, [test "x$ac_cv_header_windows_h" = "xyes"])
 
 # Files to generate
 AC_CONFIG_FILES([Makefile \
