@@ -348,6 +348,14 @@ static void parse_buf_test(void)
 	buf = "######## this is also a shell comment\nbool = {true} ## Use the force, Luke";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 
+	/* Issue #98: Line of only hashes cause segfault */
+	buf = "##############################################\n# some text #\n##############################################\nbool = {false}";
+	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+	buf = "////////////////////////////////////////////////////////////////////////////////////////////\n// some text //\n////////////////////////////////////////////////////////////////////////////////////////////\nbool = {false}";
+	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+	buf = "/******************************************************************************************/\n// some text //\n/******************************************************************************************/\nbool = {false}";
+	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
+
 	buf = "string={/usr/local/}";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 	fail_unless(strcmp(cfg_getnstr(cfg, "string", 0), "/usr/local/") == 0);

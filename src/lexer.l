@@ -390,6 +390,9 @@ static void qbeg(int state)
 
 static char *trim_whitespace(char *str, unsigned int len)
 {
+    if (!str || !str[0])
+	return str;
+
     while (len > 1) {
 	if ((str[len] == 0 || isspace(str[len])) && isspace(str[len - 1]))
 	    len--;

@@ -4,7 +4,7 @@
 int main(void)
 {
 	char *comment;
-	char *expect = "A comment we think will go with this option";
+	char *expect = "Now, is it this comment that goes with the option?";
 	cfg_t *cfg;
 	cfg_opt_t *opt;
 	cfg_opt_t section_opts[] = {
