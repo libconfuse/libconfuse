@@ -3,8 +3,9 @@ Change Log
 
 All notable changes in libConfuse are documented in this file.
 
-[v3.2][UNRELEASED]
-------------------
+
+[v3.2][] - 2017-06-03
+---------------------
 
 ### Fixes
 * Issue #96: Add Windows/mingw compatible `fmemopen()` replacement
@@ -340,7 +341,7 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.1...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2...HEAD
 [v3.2]: https://github.com/martinh/libconfuse/compare/v3.1...v3.2
 [v3.1]: https://github.com/martinh/libconfuse/compare/v3.0...v3.1
 [v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
