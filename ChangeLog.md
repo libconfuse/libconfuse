@@ -4,6 +4,14 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
+[v3.2.1][] - 2017-08-17
+-----------------------
+
+### Fixes
+* Issue #101: Bump ABI major number due to incompatible change in struct
+  when adding option annotation/comments in [v.3.1][]: `1.1.0 -> 2.0.0`
+
+
 [v3.2][] - 2017-06-03
 ---------------------
 
@@ -341,15 +349,16 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2...HEAD
-[v3.2]: https://github.com/martinh/libconfuse/compare/v3.1...v3.2
-[v3.1]: https://github.com/martinh/libconfuse/compare/v3.0...v3.1
-[v3.0]: https://github.com/martinh/libconfuse/compare/v2.8...v3.0
-[v2.8]: https://github.com/martinh/libconfuse/compare/v2.7...v2.8
-[v2.7]: https://github.com/martinh/libconfuse/compare/v2.6...v2.7
-[v2.6]: https://github.com/martinh/libconfuse/compare/v2.5...v2.6
-[v2.5]: https://github.com/martinh/libconfuse/compare/v2.4...v2.5
-[v2.4]: https://github.com/martinh/libconfuse/compare/v2.3...v2.4
-[v2.3]: https://github.com/martinh/libconfuse/compare/v2.2...v2.3
-[v2.2]: https://github.com/martinh/libconfuse/compare/v2.1...v2.2
-[v2.1]: https://github.com/martinh/libconfuse/compare/v2.0...v2.1
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2.1...HEAD
+[v3.2.1]: https://github.com/martinh/libconfuse/compare/v3.2...v3.2.1
+[v3.2]:   https://github.com/martinh/libconfuse/compare/v3.1...v3.2
+[v3.1]:   https://github.com/martinh/libconfuse/compare/v3.0...v3.1
+[v3.0]:   https://github.com/martinh/libconfuse/compare/v2.8...v3.0
+[v2.8]:   https://github.com/martinh/libconfuse/compare/v2.7...v2.8
+[v2.7]:   https://github.com/martinh/libconfuse/compare/v2.6...v2.7
+[v2.6]:   https://github.com/martinh/libconfuse/compare/v2.5...v2.6
+[v2.5]:   https://github.com/martinh/libconfuse/compare/v2.4...v2.5
+[v2.4]:   https://github.com/martinh/libconfuse/compare/v2.3...v2.4
+[v2.3]:   https://github.com/martinh/libconfuse/compare/v2.2...v2.3
+[v2.2]:   https://github.com/martinh/libconfuse/compare/v2.1...v2.2
+[v2.1]:   https://github.com/martinh/libconfuse/compare/v2.0...v2.1
