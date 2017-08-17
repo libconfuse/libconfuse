@@ -9,7 +9,7 @@ All notable changes in libConfuse are documented in this file.
 
 ### Fixes
 * Issue #101: Bump ABI major number due to incompatible change in struct
-  when adding option annotation/comments in [v.3.1][]: `1.1.0 -> 2.0.0`
+  when adding option annotation/comments in [v3.1][]: `1.1.0 -> 2.0.0`
 
 
 [v3.2][] - 2017-06-03
