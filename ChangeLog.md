@@ -76,7 +76,7 @@ library!
 * Support for handling unknown options.  The idea is to provide future
   proofing of configuration files, i.e. if a new parameter is added, the
   new config file will not fail if loaded in an older version of your
-  program.  See the `CFGF_IGNORE_UNKNOWN` flag in the documenation for
+  program.  See the `CFGF_IGNORE_UNKNOWN` flag in the documentation for
   more information.  Idea and implementation by Frank Hunleth.
 * Add public API for removing sections at runtime, by Peter Rosin.
 * Allow `cfg_opt_getval()` on options that are `CFGF_MULTI` sections,
