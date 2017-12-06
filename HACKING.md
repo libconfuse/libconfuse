@@ -17,7 +17,7 @@ Release Checklist
 * Update ChangeLog, follow http://keepachangelog.com/ loosely
   - Inform users in a plain language of changes and bug fixes
   - Do *not* copy-paste GIT commit logs!
-  - Order entrys according to importance, most relevant first
+  - Order entries according to importance, most relevant first
 * Run unit tests: `make check`
 * Make at least one `-rcN` release and test it in an actual real project
 * Do we need to bump the ABI version? (Probably, see below)
