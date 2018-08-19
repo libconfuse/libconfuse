@@ -1070,11 +1070,6 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			if (level != 0) {
-				cfg_error(cfg, _("missed one or more closing braces"));
-				goto error;
-			}
-
 			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
 				cfg_handle_deprecated(cfg, opt);
 
