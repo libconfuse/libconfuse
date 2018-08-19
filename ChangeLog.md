@@ -4,6 +4,17 @@ Change Log
 All notable changes in libConfuse are documented in this file.
 
 
+[v3.2.2][] - 2018-08-19
+-----------------------
+
+This is a security patch release for CVE-2018-14447.  The vulnerability
+affects all releases since v3.1 when the `CFGF_COMMENTS` functionality
+was first introduced.
+
+### Fixes
+* Issue #109: Out of bounds read in `lexer.l:trim_whitespace()`.
+
+
 [v3.2.1][] - 2017-08-17
 -----------------------
 
@@ -349,7 +360,8 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2.1...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2.2...HEAD
+[v3.2.2]: https://github.com/martinh/libconfuse/compare/v3.2.1...v3.2.2
 [v3.2.1]: https://github.com/martinh/libconfuse/compare/v3.2...v3.2.1
 [v3.2]:   https://github.com/martinh/libconfuse/compare/v3.1...v3.2
 [v3.1]:   https://github.com/martinh/libconfuse/compare/v3.0...v3.1
