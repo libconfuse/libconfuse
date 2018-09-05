@@ -20,7 +20,7 @@ Release Checklist
   - Order entries according to importance, most relevant first
 * Run unit tests: `make check`
 * Make at least one `-rcN` release and test it in an actual real project
-* Do we need to bump the ABI version? (Probably, see below)
+* **REMEMBER:** bump ABI version according to below rules
 * Tag
 * Push last commit(s) *and* tags to GitHub
 * Make release
