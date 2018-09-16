@@ -107,19 +107,19 @@ extern FILE *fmemopen(void *buf, size_t size, const char *type);
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-static char *strdup(const char *s)
+static char *strdup(const char *str)
 {
-	size_t siz;
-	char *copy;
+	size_t len;
+	char *dup;
 
-	siz = strlen(str) + 1;
-	copy = malloc(siz);
-	if (!copy)
+	len = strlen(str) + 1;
+	dup = calloc(len, sizeof(char));
+	if (!dup)
 		return NULL;
 
-	memcpy(copy, str, siz);
+	memcpy(dup, str, len);
 
-	return copy;
+	return dup;
 }
 #endif
 
