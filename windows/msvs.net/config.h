@@ -20,6 +20,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 /*#undef HAVE_INTTYPES_H*/
 
+#define HAVE_WINDOWS_H 1
+
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
