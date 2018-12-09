@@ -362,7 +362,7 @@ static void qputc(char ch)
         qstring_len += CFG_QSTRING_BUFSIZ;
         cfg_qstring = (char *)realloc(cfg_qstring, qstring_len + 1);
         assert(cfg_qstring);
-        memset(cfg_qstring + qstring_index, 0, CFG_QSTRING_BUFSIZ);
+        memset(cfg_qstring + qstring_index, 0, CFG_QSTRING_BUFSIZ + 1);
     }
     cfg_qstring[qstring_index++] = ch;
 }
