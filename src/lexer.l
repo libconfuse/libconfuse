@@ -59,8 +59,8 @@ extern YYSTYPE cfg_yylval;
  */
 #define CFG_QSTRING_BUFSIZ 32
 char *cfg_qstring = NULL;
-static unsigned int qstring_index = 0;
-static unsigned int qstring_len = 0;
+static size_t qstring_index = 0;
+static size_t qstring_len = 0;
 static void qputc(char ch);
 static void qput(cfg_t *cfg, char skip);
 static void qbeg(int state);
@@ -233,9 +233,8 @@ void cfg_scan_fp_end(void);
 }
 <sq_str>[^\\\'\n]+ {
     char *cp = yytext;
-    while(*cp != '\0') {
+    while (*cp != '\0')
         qputc(*cp++);
-    }
 }
 <sq_str><<EOF>> {
     cfg_error(cfg, _("unterminated string constant"));
@@ -266,18 +265,20 @@ void cfg_scan_fp_end(void);
 $\{[^}]*\} {
     char *var;
     char *e;
+
     yytext[strlen(yytext) - 1] = 0;
     e = strchr(yytext+2, ':');
-    if(e && e[1] == '-')
+    if (e && e[1] == '-')
         *e = 0;
     else
         e = 0;
     var = getenv(yytext+2);
-    if(!var && e)
+    if (!var && e)
         var = e+2;
-    if(!var)
+    if (!var)
         var = "";
     cfg_yylval = var;
+
     return CFGT_STR;
 }
 
@@ -307,7 +308,7 @@ int cfg_lexer_include(cfg_t *cfg, const char *filename)
     FILE *fp;
     char *xfilename;
 
-    if (cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH) 
+    if (cfg_include_stack_ptr >= MAX_INCLUDE_DEPTH)
     {
         cfg_error(cfg, _("includes nested too deeply"));
         return CFG_PARSE_ERROR;
