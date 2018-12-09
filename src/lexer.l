@@ -62,9 +62,10 @@ char *cfg_qstring = NULL;
 static unsigned int qstring_index = 0;
 static unsigned int qstring_len = 0;
 static void qputc(char ch);
-static void qput(cfg_t *cfg);
+static void qput(cfg_t *cfg, char skip);
 static void qbeg(int state);
 static int  qend(cfg_t *cfg, int trim, int ret);
+static int  qstr(cfg_t *cfg, char skip, int ret);
 
 #define MAX_INCLUDE_DEPTH 10
 struct {
@@ -83,7 +84,6 @@ void cfg_scan_fp_end(void);
 
  /* start conditions
   */
-%x olcomment
 %x comment
 %x dq_str
 %x sq_str
@@ -100,11 +100,8 @@ void cfg_scan_fp_end(void);
   * Note: Comments with lots of leading #### or //// are fully
   *       consumed and are not included in CFGT_COMMENT yylval
   */
-"#"{1,}                 qbeg(olcomment);
-"/"{2,}                 qbeg(olcomment);
-<olcomment>.*           qput(NULL);
-<olcomment>\n           return qend(cfg, 1, CFGT_COMMENT);
-<olcomment><<EOF>>      return qend(cfg, 1, CFGT_COMMENT);
+"#"{1,}.*   return qstr(cfg, '#', CFGT_COMMENT);
+"/"{2,}.*   return qstr(cfg, '/', CFGT_COMMENT);
 
  /* special keywords/symbols
   */
@@ -119,9 +116,9 @@ void cfg_scan_fp_end(void);
  /* handle multi-line C-style comments
   */
 "/*"                    qbeg(comment);
-<comment>[^*\n]*        qput(NULL);  /* anything that's not a '*' */
-<comment>"*"+[^*/\n]*   qput(NULL);  /* '*'s not followed by '/'s */
-<comment>\n             qput(cfg);
+<comment>[^*\n]*        qput(NULL, 0);  /* anything that's not a '*' */
+<comment>"*"+[^*/\n]*   qput(NULL, 0);  /* '*'s not followed by '/'s */
+<comment>\n             qput(cfg, 0);
 <comment>[ \t]*"*"+"/"  return qend(cfg, 1, CFGT_COMMENT);
 
  /* handle C-style strings
@@ -369,7 +366,7 @@ static void qputc(char ch)
     cfg_qstring[qstring_index++] = ch;
 }
 
-static void qput(cfg_t *cfg)
+static void qput(cfg_t *cfg, char skip)
 {
     char *cp;
 
@@ -377,6 +374,10 @@ static void qput(cfg_t *cfg)
 	cfg->line++;
 
     cp = yytext;
+
+    while (skip && *cp == skip)
+	cp++;
+
     while (*cp)
         qputc(*cp++);
 }
@@ -423,6 +424,15 @@ static int qend(cfg_t *cfg, int trim, int ret)
     cfg_yylval = ptr;
 
     return ret;
+}
+
+static int qstr(cfg_t *cfg, char skip, int ret)
+{
+    printf("QSTR: %s\n", yytext);
+    qbeg(comment);
+    qput(cfg, skip);
+
+    return qend(cfg, 1, ret);
 }
 
 void cfg_scan_fp_begin(FILE *fp)
