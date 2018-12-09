@@ -387,7 +387,8 @@ static void qbeg(int state)
 {
     BEGIN(state);
     qstring_index = 0;
-    memset(cfg_qstring, 0, qstring_len);
+    if (cfg_qstring)
+	memset(cfg_qstring, 0, qstring_len);
 }
 
 static char *trim_whitespace(char *str, unsigned int len)
