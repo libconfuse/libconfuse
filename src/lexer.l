@@ -430,7 +430,6 @@ static int qend(cfg_t *cfg, int trim, int ret)
 
 static int qstr(cfg_t *cfg, char skip, int ret)
 {
-    printf("QSTR: %s\n", yytext);
     qbeg(comment);
     qput(cfg, skip);
 
