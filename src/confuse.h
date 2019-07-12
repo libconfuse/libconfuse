@@ -51,11 +51,15 @@ extern "C" {
 # ifdef HAVE__ISATTY
 #  define isatty _isatty
 # endif
-# ifdef BUILDING_DLL
-#  define DLLIMPORT __declspec (dllexport)
-# else /* ! BUILDING_DLL */
-#  define DLLIMPORT __declspec (dllimport)
-# endif /* BUILDING_DLL */
+# ifdef BUILDING_STATIC
+#  define DLLIMPORT
+# else /* ! BUILDING_STATIC */
+#  ifdef BUILDING_DLL
+#   define DLLIMPORT __declspec (dllexport)
+#  else /* ! BUILDING_DLL */
+#   define DLLIMPORT __declspec (dllimport)
+#  endif /* BUILDING_DLL */
+# endif /* BUILDING_STATIC */
 #else /* ! _WIN32 || __GNUC__ */
 # define DLLIMPORT
 #endif /* _WIN32 */
