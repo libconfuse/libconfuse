@@ -4,7 +4,7 @@
 # remember: "indent" is not a fix for bad programming.
 # 
 # Rules:
-#   - Linux style, https://www.kernel.org/doc/Documentation/CodingStyle
+#   - Linux style, https://www.kernel.org/doc/Documentation/process/coding-style.rst
 #   - Don't touch comment content/formatting, only placement.
 #   - ignore any ~/.indent.pro
 #
