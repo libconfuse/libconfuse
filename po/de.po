@@ -1,14 +1,14 @@
 # Translation of confuse to German
 # Copyright (C) 2002-2003 Martin Hedenfalk
 # This file is distributed under the same license as the confuse package.
-# Chris Leick <c.leick@vollbio.de>, 2009.
+# Chris Leick <c.leick@vollbio.de>, 2009, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: confuse 2.6-2\n"
 "Report-Msgid-Bugs-To: https://github.com/martinh/libconfuse/issues\n"
 "POT-Creation-Date: 2018-08-19 10:04+0200\n"
-"PO-Revision-Date: 2010-02-22 02:06-0500\n"
+"PO-Revision-Date: 2019-11-25 18:16-0500\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
@@ -25,7 +25,7 @@ msgstr "keine solche Option »%s«"
 #: src/confuse.c:555
 #, c-format
 msgid "duplicate option '%s' not allowed"
-msgstr ""
+msgstr "doppelte Option »%s« nicht erlaubt"
 
 #: src/confuse.c:722
 #, c-format
@@ -60,12 +60,15 @@ msgstr "ungültiger Boolean-Wert für Option »%s«"
 #: src/confuse.c:1035
 #, c-format
 msgid "dropping deprecated configuration option '%s'"
-msgstr ""
+msgstr "missbilligte Konfigurationsoption »%s« wird verworfen"
 
 #: src/confuse.c:1038
 #, c-format
+# FIXME s/.//
 msgid "found deprecated option '%s', please update configuration file."
 msgstr ""
+"missbilligte Option »%s« gefunden, bitte aktualisieren Sie die "
+"Konfigurationsdatei"
 
 #: src/confuse.c:1069
 msgid "premature end of file"
@@ -115,7 +118,7 @@ msgstr "Syntaxfehler im Aufruf der Funktion »%s«"
 #: src/confuse.c:1402
 #, c-format
 msgid "Internal error in cfg_parse_internal(), unknown state %d"
-msgstr ""
+msgstr "interner Fehler in cfg_parse_internal(), unbekannter Status %d"
 
 #: src/confuse.c:1766
 msgid "wrong number of arguments to cfg_include()"
@@ -142,9 +145,9 @@ msgstr "Zu tiefe Verschachtelung von includes"
 #: src/lexer.l:327
 #, c-format
 msgid "%s: Not found in search path"
-msgstr ""
+msgstr "%s: nicht im Suchpfad gefunden"
 
 #: src/lexer.l:336
 #, c-format
 msgid "%s: Failed tilde expand"
-msgstr ""
+msgstr "%s: Expandieren von Tilde fehlgeschlagen"
