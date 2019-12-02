@@ -489,6 +489,15 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
 	for (i = 0; i < n; i++) {
+		/* Clear dynamic ptrs, protecting the original on failure */
+		dupopts[i].name = NULL;
+		dupopts[i].subopts = NULL;
+		dupopts[i].def.parsed = NULL;
+		dupopts[i].def.string = NULL;
+		dupopts[i].comment = NULL;
+	}
+
+	for (i = 0; i < n; i++) {
 		dupopts[i].name = strdup(opts[i].name);
 		if (!dupopts[i].name)
 			goto err;
