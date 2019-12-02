@@ -509,6 +509,10 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 			if (opts[i].def.string && !dupopts[i].def.string)
 				goto err;
 		}
+
+		dupopts[i].comment = opts[i].comment ? strdup(opts[i].comment) : NULL;
+		if (opts[i].comment && !dupopts[i].comment)
+			goto err;
 	}
 
 	return dupopts;
