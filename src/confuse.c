@@ -489,24 +489,40 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
 	for (i = 0; i < n; i++) {
+		/* Clear dynamic ptrs, protecting the original on failure */
+		dupopts[i].name = NULL;
+		dupopts[i].subopts = NULL;
+		dupopts[i].def.parsed = NULL;
+		dupopts[i].def.string = NULL;
+		dupopts[i].comment = NULL;
+	}
+
+	for (i = 0; i < n; i++) {
 		dupopts[i].name = strdup(opts[i].name);
 		if (!dupopts[i].name)
 			goto err;
 
-		if (opts[i].type == CFGT_SEC && opts[i].subopts) {
+		if (opts[i].subopts) {
 			dupopts[i].subopts = cfg_dupopt_array(opts[i].subopts);
 			if (!dupopts[i].subopts)
 				goto err;
 		}
 
-		if (is_set(CFGF_LIST, opts[i].flags) || opts[i].type == CFGT_FUNC) {
-			dupopts[i].def.parsed = opts[i].def.parsed ? strdup(opts[i].def.parsed) : NULL;
-			if (opts[i].def.parsed && !dupopts[i].def.parsed)
+		if (opts[i].def.parsed) {
+			dupopts[i].def.parsed = strdup(opts[i].def.parsed);
+			if (!dupopts[i].def.parsed)
 				goto err;
 		}
-		else if (opts[i].type == CFGT_STR) {
-			dupopts[i].def.string = opts[i].def.string ? strdup(opts[i].def.string) : NULL;
-			if (opts[i].def.string && !dupopts[i].def.string)
+
+		if (opts[i].def.string) {
+			dupopts[i].def.string = strdup(opts[i].def.string);
+			if (!dupopts[i].def.string)
+				goto err;
+		}
+
+		if (opts[i].comment) {
+			dupopts[i].comment = strdup(opts[i].comment);
+			if (!dupopts[i].comment)
 				goto err;
 		}
 	}

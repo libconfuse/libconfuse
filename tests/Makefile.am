@@ -6,6 +6,7 @@ TESTS            += suite_dup
 TESTS            += suite_func
 TESTS            += suite_list
 TESTS            += suite_validate
+TESTS            += suite_ptr
 TESTS            += list_plus_syntax
 TESTS            += section_title_dupes
 TESTS            += single_title_sections
