@@ -508,17 +508,23 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 				goto err;
 		}
 
-		dupopts[i].def.parsed = opts[i].def.parsed ? strdup(opts[i].def.parsed) : NULL;
-		if (opts[i].def.parsed && !dupopts[i].def.parsed)
-			goto err;
+		if (opts[i].def.parsed) {
+			dupopts[i].def.parsed = strdup(opts[i].def.parsed);
+			if (!dupopts[i].def.parsed)
+				goto err;
+		}
 
-		dupopts[i].def.string = opts[i].def.string ? strdup(opts[i].def.string) : NULL;
-		if (opts[i].def.string && !dupopts[i].def.string)
-			goto err;
+		if (opts[i].def.string) {
+			dupopts[i].def.string = strdup(opts[i].def.string);
+			if (!dupopts[i].def.string)
+				goto err;
+		}
 
-		dupopts[i].comment = opts[i].comment ? strdup(opts[i].comment) : NULL;
-		if (opts[i].comment && !dupopts[i].comment)
-			goto err;
+		if (opts[i].comment) {
+			dupopts[i].comment = strdup(opts[i].comment);
+			if (!dupopts[i].comment)
+				goto err;
+		}
 	}
 
 	return dupopts;
