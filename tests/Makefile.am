@@ -19,9 +19,6 @@ TESTS            += env
 TESTS            += ignore_parm
 TESTS            += annotate
 
-XFAIL_TESTS       =
-XFAIL_TESTS      += suite_ptr
-
 check_PROGRAMS    = $(TESTS)
 
 DEFS              = -DSRC_DIR='"$(srcdir)"'
