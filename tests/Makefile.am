@@ -20,9 +20,6 @@ TESTS            += ignore_parm
 TESTS            += annotate
 TESTS            += empty_string
 
-XFAIL_TESTS       =
-XFAIL_TESTS      += empty_string
-
 check_PROGRAMS    = $(TESTS)
 
 DEFS              = -DSRC_DIR='"$(srcdir)"'
