@@ -1204,6 +1204,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			/* Inherit last read comment */
 			cfg_opt_setcomment(opt, comment);
+			if (comment)
+				free(comment);
 			comment = NULL;
 
 			if (opt && is_set(CFGF_LIST, opt->flags)) {
