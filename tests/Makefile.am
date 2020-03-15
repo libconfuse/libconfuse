@@ -18,6 +18,7 @@ TESTS            += searchpath
 TESTS            += env
 TESTS            += ignore_parm
 TESTS            += annotate
+TESTS            += empty_string
 
 check_PROGRAMS    = $(TESTS)
 
