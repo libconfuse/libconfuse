@@ -99,6 +99,7 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_DEPRECATED     512  /**< option is deprecated and should be ignored. */
 #define CFGF_DROP           1024 /**< option should be dropped after parsing */
 #define CFGF_COMMENTS       2048 /**< Enable option annotation/comments support */
+#define CFGF_MODIFIED       4096 /**< option has been changed from its default value */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0

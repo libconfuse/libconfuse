@@ -22,6 +22,7 @@ TESTS            += empty_string
 TESTS            += setopt_ptr
 TESTS            += setmulti_reset
 TESTS            += print_filter
+TESTS            += modified_flag
 
 check_PROGRAMS    = $(TESTS)
 

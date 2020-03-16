@@ -466,6 +466,8 @@ static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 	if (!opt->values[opt->nvalues])
 		return NULL;
 
+	opt->flags |= CFGF_MODIFIED;
+
 	return opt->values[opt->nvalues++];
 }
 
@@ -673,6 +675,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			 * will be freed and the flag unset.
 			 */
 			cfg->opts[i].flags |= CFGF_RESET;
+			cfg->opts[i].flags &= ~CFGF_MODIFIED;
 		} else if (!is_set(CFGF_MULTI, cfg->opts[i].flags)) {
 			cfg_setopt(cfg, &cfg->opts[i], 0);
 			cfg->opts[i].flags |= CFGF_DEFINIT;
@@ -898,6 +901,8 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		return NULL;
 	}
 
+	opt->flags |= CFGF_MODIFIED;
+
 	return val;
 }
 
@@ -923,13 +928,14 @@ DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues,
 		cfg_free_value(opt);
 		opt->nvalues = old.nvalues;
 		opt->values = old.values;
-		opt->flags &= ~CFGF_RESET;
-		opt->flags |= old.flags & CFGF_RESET;
+		opt->flags &= ~(CFGF_RESET | CFGF_MODIFIED);
+		opt->flags |= old.flags & (CFGF_RESET | CFGF_MODIFIED);
 
 		return CFG_FAIL;
 	}
 
 	cfg_free_value(&old);
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
@@ -1193,6 +1199,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				cfg_error(cfg, _("missing equal sign after option '%s'"), opt->name);
 				goto error;
 			}
+
+			opt->flags |= CFGF_MODIFIED;
 
 			if (is_set(CFGF_LIST, opt->flags)) {
 				state = 3;
@@ -1852,7 +1860,8 @@ DLLIMPORT int cfg_opt_setcomment(cfg_opt_t *opt, char *comment)
 	if (oldcomment)
 		free(oldcomment);
 	opt->comment = newcomment;
-	opt->flags  |= CFGF_COMMENTS;
+	opt->flags |= CFGF_COMMENTS;
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
@@ -1876,6 +1885,7 @@ DLLIMPORT int cfg_opt_setnint(cfg_opt_t *opt, long int value, unsigned int index
 		return CFG_FAIL;
 
 	val->number = value;
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
@@ -1910,6 +1920,7 @@ DLLIMPORT int cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int index
 		return CFG_FAIL;
 
 	val->fpnumber = value;
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
@@ -1944,6 +1955,7 @@ DLLIMPORT int cfg_opt_setnbool(cfg_opt_t *opt, cfg_bool_t value, unsigned int in
 		return CFG_FAIL;
 
 	val->boolean = value;
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
@@ -1986,6 +1998,7 @@ DLLIMPORT int cfg_opt_setnstr(cfg_opt_t *opt, const char *value, unsigned int in
 
 	if (oldstr)
 		free(oldstr);
+	opt->flags |= CFGF_MODIFIED;
 
 	return CFG_SUCCESS;
 }
