@@ -69,6 +69,8 @@ extern void cfg_scan_fp_end(void);
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
+static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
+				cfg_print_filter_func_t fb_pff, int indent);
 
 #define STATE_CONTINUE 0
 #define STATE_EOF -1
@@ -997,6 +999,21 @@ DLLIMPORT cfg_errfunc_t cfg_set_error_function(cfg_t *cfg, cfg_errfunc_t errfunc
 
 	old = cfg->errfunc;
 	cfg->errfunc = errfunc;
+
+	return old;
+}
+
+DLLIMPORT cfg_print_filter_func_t cfg_set_print_filter_func(cfg_t *cfg, cfg_print_filter_func_t pff)
+{
+	cfg_print_filter_func_t old;
+
+	if (!cfg) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	old = cfg->pff;
+	cfg->pff = pff;
 
 	return old;
 }
@@ -2214,7 +2231,8 @@ static void cfg_indent(FILE *fp, int indent)
 		fprintf(fp, "  ");
 }
 
-DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
+static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
+				    cfg_print_filter_func_t pff, int indent)
 {
 	if (!opt || !fp) {
 		errno = EINVAL;
@@ -2237,7 +2255,7 @@ DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 				fprintf(fp, "%s \"%s\" {\n", opt->name, cfg_title(sec));
 			else
 				fprintf(fp, "%s {\n", opt->name);
-			cfg_print_indent(sec, fp, indent + 1);
+			cfg_print_pff_indent(sec, fp, pff, indent + 1);
 			cfg_indent(fp, indent);
 			fprintf(fp, "}\n");
 		}
@@ -2286,24 +2304,39 @@ DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 	return CFG_SUCCESS;
 }
 
-DLLIMPORT int cfg_opt_print(cfg_opt_t *opt, FILE *fp)
+DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 {
-	return cfg_opt_print_indent(opt, fp, 0);
+	return cfg_opt_print_pff_indent(opt, fp, 0, indent);
 }
 
-DLLIMPORT int cfg_print_indent(cfg_t *cfg, FILE *fp, int indent)
+DLLIMPORT int cfg_opt_print(cfg_opt_t *opt, FILE *fp)
+{
+	return cfg_opt_print_pff_indent(opt, fp, 0, 0);
+}
+
+static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
+				cfg_print_filter_func_t fb_pff, int indent)
 {
 	int i, result = CFG_SUCCESS;
 
-	for (i = 0; cfg->opts[i].name; i++)
-		result += cfg_opt_print_indent(&cfg->opts[i], fp, indent);
+	for (i = 0; cfg->opts[i].name; i++) {
+		cfg_print_filter_func_t pff = cfg->pff ? cfg->pff : fb_pff;
+		if (pff && pff(cfg, &cfg->opts[i]))
+			continue;
+		result += cfg_opt_print_pff_indent(&cfg->opts[i], fp, pff, indent);
+	}
 
 	return result;
 }
 
+DLLIMPORT int cfg_print_indent(cfg_t *cfg, FILE *fp, int indent)
+{
+	return cfg_print_pff_indent(cfg, fp, 0, indent);
+}
+
 DLLIMPORT int cfg_print(cfg_t *cfg, FILE *fp)
 {
-	return cfg_print_indent(cfg, fp, 0);
+	return cfg_print_pff_indent(cfg, fp, 0, 0);
 }
 
 DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt, cfg_print_func_t pf)
