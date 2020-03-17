@@ -20,6 +20,10 @@ TESTS            += ignore_parm
 TESTS            += annotate
 TESTS            += empty_string
 TESTS            += setopt_ptr
+TESTS            += setmulti_reset
+
+XFAIL_TESTS       =
+XFAIL_TESTS      += setmulti_reset
 
 check_PROGRAMS    = $(TESTS)
 
