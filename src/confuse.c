@@ -886,6 +886,8 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 
 		if ((*opt->parsecb) (cfg, opt, value, &p) != 0)
 			return NULL;
+		if (val->ptr && opt->freecb)
+			opt->freecb(val->ptr);
 		val->ptr = p;
 		break;
 

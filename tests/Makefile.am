@@ -19,6 +19,7 @@ TESTS            += env
 TESTS            += ignore_parm
 TESTS            += annotate
 TESTS            += empty_string
+TESTS            += setopt_ptr
 
 check_PROGRAMS    = $(TESTS)
 
