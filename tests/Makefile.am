@@ -21,9 +21,6 @@ TESTS            += annotate
 TESTS            += empty_string
 TESTS            += setopt_ptr
 
-XFAIL_TESTS       =
-XFAIL_TESTS      += setopt_ptr
-
 check_PROGRAMS    = $(TESTS)
 
 DEFS              = -DSRC_DIR='"$(srcdir)"'
