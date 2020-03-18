@@ -921,6 +921,8 @@ DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues,
 		cfg_free_value(opt);
 		opt->nvalues = old.nvalues;
 		opt->values = old.values;
+		opt->flags &= ~CFGF_RESET;
+		opt->flags |= old.flags & CFGF_RESET;
 
 		return CFG_FAIL;
 	}
