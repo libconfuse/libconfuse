@@ -138,7 +138,7 @@ static const char *help(int argc, char *argv[])
 		"subset <section> <option> <value>\n"
 		"create <section>\n"
 		"destroy <section>\n"
-		"dump\n"
+		"dump [mod|modified]\n"
 		"quit\n"
 		"\n"
 		"<option> is one of 'bool', 'int' 'string' and 'float'.\n";
@@ -217,8 +217,55 @@ static const char *destroy(int argc, char *argv[])
 	return "OK\n";
 }
 
+static int print_modified(cfg_t *cfg, cfg_opt_t *opt)
+{
+	cfg_t *sec;
+	int i;
+
+	if (opt->type != CFGT_SEC)
+		return !(opt->flags & CFGF_MODIFIED);
+
+	if (opt->flags & CFGF_MULTI)
+		return 0;
+
+	/*
+	 * This cli example does not have any non-multi section
+	 * options, but for completeness, this is a sane way to
+	 * handle "static" sections. I.e. filter them out unless
+	 * they have at least one sub-option that is not filtered
+	 * out.
+	 *
+	 * A generic solution would have to examine if the section
+	 * has its own print filter function and use that, but that
+	 * feels out of scope and is left as an exercise for the
+	 * reader. If it is needed at some point, a new supporting
+	 * API should probably be added to help get it done without
+	 * digging in the library guts...
+	 */
+	sec = cfg_opt_getnsec(opt, 0);
+	if (!sec)
+		return 1;
+
+	for (i = 0; sec->opts[i].name; i++) {
+		if (!print_modified(sec, &sec->opts[i]))
+			return 0;
+	}
+	return 1;
+}
+
 static const char *dump(int argc, char *argv[])
 {
+	if (argc > 2)
+		return "Too many args\n";
+	if (argc == 2) {
+		if (!strcmp(argv[1], "mod") || !strcmp(argv[1], "modified"))
+			cfg_set_print_filter_func(cfg, print_modified);
+		else
+			return "Invalid arg\n";
+	}
+	else
+		cfg_set_print_filter_func(cfg, NULL);
+
 	cfg_print(cfg, stdout);
 	return "";
 }
