@@ -99,6 +99,7 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_DEPRECATED     512  /**< option is deprecated and should be ignored. */
 #define CFGF_DROP           1024 /**< option should be dropped after parsing */
 #define CFGF_COMMENTS       2048 /**< Enable option annotation/comments support */
+#define CFGF_MODIFIED       4096 /**< option has been changed from its default value */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0
@@ -233,6 +234,17 @@ typedef enum { cfg_false, cfg_true } cfg_bool_t;
 /** Error reporting function. */
 typedef void (*cfg_errfunc_t)(cfg_t *cfg, const char *fmt, va_list ap);
 
+/** Print filter function.
+ *
+ * @param cfg The configuration file context that opt belongs to.
+ * @param opt The configuration option that is about to be printed, or not.
+ * @return Zero if opt should be printed, non-zero if it should be filtered
+ * out.
+ *
+ * @see cfg_set_print_filter_func()
+ */
+typedef int (*cfg_print_filter_func_t)(cfg_t *cfg, cfg_opt_t *opt);
+
 /** Data structure holding information about a "section". Sections can
  * be nested. A section has a list of options (strings, numbers,
  * booleans or other sections) grouped together.
@@ -252,6 +264,7 @@ struct cfg_t {
 				 * cfg_set_error_function) is called for
 				 * any error message. */
 	cfg_searchpath_t *path;	/**< Linked list of directories to search */
+	cfg_print_filter_func_t pff; /**< Printing filter function */
 };
 
 /** Data structure holding the value of a fundamental option value.
@@ -1335,6 +1348,21 @@ DLLIMPORT cfg_print_func_t __export cfg_opt_set_print_func(cfg_opt_t *opt, cfg_p
  * @see cfg_print_func_t
  */
 DLLIMPORT cfg_print_func_t __export cfg_set_print_func(cfg_t *cfg, const char *name, cfg_print_func_t pf);
+
+/** Install a user-defined print filter function. This callback is
+ * called for each option when printing cfg, or something above cfg
+ * if cfg is a section in some parent cfg. When cfg (or something
+ * above cfg) is printed, this filter is also inherited to child
+ * sections unless the child section has its own print filter.
+ *
+ * @param cfg The configuration file context.
+ * @param pff The print filter callback function.
+ *
+ * @return The old print filter function is returned.
+ *
+ * @see cfg_print_filter_func_t
+ */
+DLLIMPORT cfg_print_filter_func_t __export cfg_set_print_filter_func(cfg_t *cfg, cfg_print_filter_func_t pff);
 
 /** Register a validating callback function for an option.
  *
