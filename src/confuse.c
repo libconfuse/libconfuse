@@ -167,10 +167,68 @@ int strcasecmp(const char *s1, const char *s2)
 }
 #endif
 
-DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
+static cfg_opt_t *cfg_getopt_leaf(cfg_t *cfg, const char *name)
 {
 	unsigned int i;
+
+	for (i = 0; cfg->opts[i].name; i++) {
+		if (is_set(CFGF_NOCASE, cfg->flags)) {
+			if (strcasecmp(cfg->opts[i].name, name) == 0)
+				return &cfg->opts[i];
+		} else {
+			if (strcmp(cfg->opts[i].name, name) == 0)
+				return &cfg->opts[i];
+		}
+	}
+
+	return NULL;
+}
+
+static char *parse_title(const char *name, size_t *len)
+{
+	const char *escapes = "'\\";
+	char *title;
+	char *ch;
+
+	if (*name != '\'') {
+		*len = strcspn(name, "|");
+		if (!*len)
+			return NULL;
+		return strndup(name, *len);
+	}
+
+	title = strdup(name + 1);
+	if (!title)
+		return NULL;
+
+	*len = 1;
+	ch = title;
+
+	for (;;) {
+		size_t l = strcspn(ch, escapes);
+		*len += l + 1;
+		ch += l;
+		switch (*ch) {
+		case '\'':
+			*ch = 0;
+			return title;
+		case '\\':
+			if (!ch[1] || strcspn(ch + 1, escapes))
+				return NULL;
+			memmove(ch, ch + 1, strlen(ch));
+			ch++;
+			(*len)++;
+			break;
+		default:
+			return NULL;
+		}
+	}
+}
+
+DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
+{
 	cfg_t *sec = cfg;
+	cfg_opt_t *opt;
 
 	if (!cfg || !cfg->name || !name) {
 		errno = EINVAL;
@@ -179,44 +237,81 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
 	while (name && *name) {
 		char *secname;
-		size_t len = strcspn(name, "|");
+		size_t len = strcspn(name, "|=");
 
 		if (name[len] == 0 /*len == strlen(name) */ )
 			/* no more subsections */
 			break;
 
 		if (len) {
+			char *title = NULL;
 			secname = strndup(name, len);
 			if (!secname)
 				return NULL;
 
-			sec = cfg_getsec(sec, secname);
-			if (!sec) {
-				if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
+			for (;;) {
+				unsigned int i;
+				char *endptr;
+
+				opt = cfg_getopt_leaf(sec, secname);
+				if (!opt || opt->type != CFGT_SEC) {
+					sec = NULL;
+					opt = NULL;
+					break;
+				}
+				if (name[len] != '=') {
+					/* non-multi, and backwards compat */
+					sec = cfg_opt_getnsec(opt, 0);
+					break;
+				}
+				if (!is_set(CFGF_MULTI, opt->flags)) {
+					sec = NULL;
+					break;
+				}
+				name += len + 1;
+				title = parse_title(name, &len);
+				if (!title) {
+					sec = NULL;
+					break;
+				}
+				if (is_set(CFGF_TITLE, opt->flags)) {
+					sec = cfg_opt_gettsec(opt, title);
+					break;
+				}
+
+				i = strtoul(title, &endptr, 0);
+				if (*endptr != '\0') {
+					sec = NULL;
+					break;
+				}
+
+				sec = cfg_opt_getnsec(opt, i);
+				break;
+			}
+			if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
+				if (opt && !is_set(CFGF_MULTI, opt->flags))
 					cfg_error(cfg, _("no such option '%s'"), secname);
-				free(secname);
-				return NULL;
+				else if (title)
+					cfg_error(cfg, _("no sub-section '%s' in '%s'"), title, secname);
+				else
+					cfg_error(cfg, _("no sub-section title/index for '%s'"), secname);
 			}
 			free(secname);
+			if (title)
+				free(title);
+			if (!sec)
+				return NULL;
 		}
 		name += len;
 		name += strspn(name, "|");
 	}
 
-	for (i = 0; sec->opts[i].name; i++) {
-		if (is_set(CFGF_NOCASE, sec->flags)) {
-			if (strcasecmp(sec->opts[i].name, name) == 0)
-				return &sec->opts[i];
-		} else {
-			if (strcmp(sec->opts[i].name, name) == 0)
-				return &sec->opts[i];
-		}
-	}
+	opt = cfg_getopt_leaf(sec, name);
 
-	if (!is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
+	if (!opt && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
 		cfg_error(cfg, _("no such option '%s'"), name);
 
-	return NULL;
+	return opt;
 }
 
 DLLIMPORT const char *cfg_title(cfg_t *cfg)
