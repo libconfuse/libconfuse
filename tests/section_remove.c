@@ -44,6 +44,18 @@ int main(void)
 
 	cfg_free(cfg);
 
+	cfg = cfg_init(opts, CFGF_NONE);
+	fail_unless(cfg);
+
+	rc = cfg_parse_buf(cfg, config_data);
+	fail_unless(rc == CFG_SUCCESS);
+
+	cfg_rmsec(cfg, "section=title_two");
+	fail_unless(cfg_size(cfg, "section") == 1);
+	fail_unless(strcmp(cfg_title(cfg_getnsec(cfg, "section", 0)), "title_one") == 0);
+
+	cfg_free(cfg);
+
 	return 0;
 }
 

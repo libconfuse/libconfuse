@@ -248,12 +248,13 @@ static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
 	return -1;
 }
 
-DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
+static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
+				    long int *index)
 {
 	cfg_t *sec = cfg;
 	cfg_opt_t *opt;
 
-	if (!cfg || !cfg->name || !name) {
+	if (!cfg || !cfg->name || !name || !*name) {
 		errno = EINVAL;
 		return NULL;
 	}
@@ -262,7 +263,7 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 		char *secname;
 		size_t len = strcspn(name, "|=");
 
-		if (name[len] == 0 /*len == strlen(name) */ )
+		if (!index && name[len] == 0 /*len == strlen(name) */ )
 			/* no more subsections */
 			break;
 
@@ -303,6 +304,8 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 					i = -1;
 				break;
 			}
+			if (index)
+				*index = i;
 			sec = i >= 0 ? cfg_opt_getnsec(opt, i) : NULL;
 			if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 				if (opt && !is_set(CFGF_MULTI, opt->flags))
@@ -322,12 +325,19 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 		name += strspn(name, "|");
 	}
 
-	opt = cfg_getopt_leaf(sec, name);
+	if (!index) {
+		opt = cfg_getopt_leaf(sec, name);
 
-	if (!opt && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
-		cfg_error(cfg, _("no such option '%s'"), name);
+		if (!opt && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
+			cfg_error(cfg, _("no such option '%s'"), name);
+	}
 
 	return opt;
+}
+
+DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
+{
+	return cfg_getopt_secidx(cfg, name, NULL);
 }
 
 DLLIMPORT const char *cfg_title(cfg_t *cfg)
@@ -549,7 +559,11 @@ DLLIMPORT cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
 
 DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
 {
-	return cfg_getnsec(cfg, name, 0);
+	cfg_opt_t *opt;
+	long int index;
+
+	opt = cfg_getopt_secidx(cfg, name, &index);
+	return cfg_opt_getnsec(opt, index);
 }
 
 static cfg_value_t *cfg_addval(cfg_opt_t *opt)
@@ -2248,7 +2262,11 @@ DLLIMPORT int cfg_rmnsec(cfg_t *cfg, const char *name, unsigned int index)
 
 DLLIMPORT int cfg_rmsec(cfg_t *cfg, const char *name)
 {
-	return cfg_rmnsec(cfg, name, 0);
+	cfg_opt_t *opt;
+	long int index;
+
+	opt = cfg_getopt_secidx(cfg, name, &index);
+	return cfg_opt_rmnsec(opt, index);
 }
 
 DLLIMPORT int cfg_opt_rmtsec(cfg_opt_t *opt, const char *title)

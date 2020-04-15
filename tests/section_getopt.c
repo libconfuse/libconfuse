@@ -31,6 +31,7 @@ int main(void)
 
 	int rc;
 	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
+	cfg_t *sec;
 
 	fail_unless(cfg);
 
@@ -49,11 +50,37 @@ int main(void)
 	fail_unless(cfg_getint(cfg, "multi-title-no-dupes=name1|int") == 41);
 	fail_unless(cfg_getint(cfg, "multi-title-no-dupes=name2|int") == 42);
 	fail_unless(cfg_getint(cfg, "multi-title-no-dupes=name3|int") == 43);
+	sec = cfg_getsec(cfg, "single");
+	fail_unless(cfg_getint(sec, "int") == 11);
+	sec = cfg_getsec(cfg, "multi=0");
+	fail_unless(cfg_getint(sec, "int") == 21);
+	sec = cfg_getsec(cfg, "multi=1");
+	fail_unless(cfg_getint(sec, "int") == 22);
+	sec = cfg_getsec(cfg, "multi=2");
+	fail_unless(cfg_getint(sec, "int") == 23);
+	sec = cfg_getsec(cfg, "multi-title=name");
+	fail_unless(cfg_getint(sec, "int") == 31);
+	sec = cfg_getsec(cfg, "multi-title=odd");
+	fail_unless(cfg_getint(sec, "int") == 32);
+	sec = cfg_getsec(cfg, "multi-title='\\'a-very\\'silly|option\\\\title'");
+	fail_unless(cfg_getint(sec, "int") == 1);
+	sec = cfg_getsec(cfg, "multi-title-no-dupes=name1");
+	fail_unless(cfg_getint(sec, "int") == 41);
+	sec = cfg_getsec(cfg, "multi-title-no-dupes=name2");
+	fail_unless(cfg_getint(sec, "int") == 42);
+	sec = cfg_getsec(cfg, "multi-title-no-dupes=name3");
+	fail_unless(cfg_getint(sec, "int") == 43);
 
 	/* for backwards compat */
 	fail_unless(cfg_getint(cfg, "multi|int") == 21);
 	fail_unless(cfg_getint(cfg, "multi-title|int") == 31);
 	fail_unless(cfg_getint(cfg, "multi-title-no-dupes|int") == 41);
+	sec = cfg_getsec(cfg, "multi");
+	fail_unless(cfg_getint(sec, "int") == 21);
+	sec = cfg_getsec(cfg, "multi-title");
+	fail_unless(cfg_getint(sec, "int") == 31);
+	sec = cfg_getsec(cfg, "multi-title-no-dupes");
+	fail_unless(cfg_getint(sec, "int") == 41);
 
 	/* expected failures */
 	fail_unless(cfg_getopt(cfg, "single=0|int") == NULL);
@@ -62,6 +89,12 @@ int main(void)
 	fail_unless(cfg_getopt(cfg, "multi-title=bad|int") == NULL);
 	fail_unless(cfg_getopt(cfg, "multi-title-no-dupes=0|int") == NULL);
 	fail_unless(cfg_getopt(cfg, "multi-title-no-dupes=bad|int") == NULL);
+	fail_unless(cfg_getsec(cfg, "single=0") == NULL);
+	fail_unless(cfg_getsec(cfg, "multi=4") == NULL);
+	fail_unless(cfg_getsec(cfg, "multi-title=0") == NULL);
+	fail_unless(cfg_getsec(cfg, "multi-title=bad") == NULL);
+	fail_unless(cfg_getsec(cfg, "multi-title-no-dupes=0") == NULL);
+	fail_unless(cfg_getsec(cfg, "multi-title-no-dupes=bad") == NULL);
 
 	cfg_free(cfg);
 
