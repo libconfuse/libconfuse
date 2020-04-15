@@ -225,6 +225,29 @@ static char *parse_title(const char *name, size_t *len)
 	}
 }
 
+static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
+{
+	unsigned int i, n;
+
+	n = cfg_opt_size(opt);
+	for (i = 0; i < n; i++) {
+		cfg_t *sec = cfg_opt_getnsec(opt, i);
+
+		if (!sec || !sec->title)
+			return -1;
+
+		if (is_set(CFGF_NOCASE, opt->flags)) {
+			if (strcasecmp(title, sec->title) == 0)
+				return i;
+		} else {
+			if (strcmp(title, sec->title) == 0)
+				return i;
+		}
+	}
+
+	return -1;
+}
+
 DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 {
 	cfg_t *sec = cfg;
@@ -245,49 +268,42 @@ DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 
 		if (len) {
 			char *title = NULL;
+			long int i = -1;
+
 			secname = strndup(name, len);
 			if (!secname)
 				return NULL;
 
 			for (;;) {
-				unsigned int i;
 				char *endptr;
 
 				opt = cfg_getopt_leaf(sec, secname);
 				if (!opt || opt->type != CFGT_SEC) {
-					sec = NULL;
 					opt = NULL;
 					break;
 				}
 				if (name[len] != '=') {
 					/* non-multi, and backwards compat */
-					sec = cfg_opt_getnsec(opt, 0);
+					i = 0;
 					break;
 				}
-				if (!is_set(CFGF_MULTI, opt->flags)) {
-					sec = NULL;
+				if (!is_set(CFGF_MULTI, opt->flags))
 					break;
-				}
 				name += len + 1;
 				title = parse_title(name, &len);
-				if (!title) {
-					sec = NULL;
+				if (!title)
 					break;
-				}
 				if (is_set(CFGF_TITLE, opt->flags)) {
-					sec = cfg_opt_gettsec(opt, title);
+					i = cfg_opt_gettsecidx(opt, title);
 					break;
 				}
 
-				i = strtoul(title, &endptr, 0);
-				if (*endptr != '\0') {
-					sec = NULL;
-					break;
-				}
-
-				sec = cfg_opt_getnsec(opt, i);
+				i = strtol(title, &endptr, 0);
+				if (*endptr != '\0')
+					i = -1;
 				break;
 			}
+			sec = i >= 0 ? cfg_opt_getnsec(opt, i) : NULL;
 			if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 				if (opt && !is_set(CFGF_MULTI, opt->flags))
 					cfg_error(cfg, _("no such option '%s'"), secname);
@@ -506,7 +522,7 @@ DLLIMPORT cfg_t *cfg_getnsec(cfg_t *cfg, const char *name, unsigned int index)
 
 DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
 {
-	unsigned int i, n;
+	long int i;
 
 	if (!opt || !title) {
 		errno = EINVAL;
@@ -518,21 +534,9 @@ DLLIMPORT cfg_t *cfg_opt_gettsec(cfg_opt_t *opt, const char *title)
 		return NULL;
 	}
 
-	n = cfg_opt_size(opt);
-	for (i = 0; i < n; i++) {
-		cfg_t *sec = cfg_opt_getnsec(opt, i);
-
-		if (!sec || !sec->title)
-			return NULL;
-
-		if (is_set(CFGF_NOCASE, opt->flags)) {
-			if (strcasecmp(title, sec->title) == 0)
-				return sec;
-		} else {
-			if (strcmp(title, sec->title) == 0)
-				return sec;
-		}
-	}
+	i = cfg_opt_gettsecidx(opt, title);
+	if (i >= 0)
+		return cfg_opt_getnsec(opt, i);
 
 	errno = ENOENT;
 	return NULL;
