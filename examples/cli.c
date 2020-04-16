@@ -182,8 +182,7 @@ static const char *subset(int argc, char *argv[])
 
 static const char *create(int argc, char *argv[])
 {
-	int ret;
-	char *buf;
+	cfg_opt_t *opt;
 
 	if (argc != 2)
 		return "Need one arg\n";
@@ -191,15 +190,8 @@ static const char *create(int argc, char *argv[])
 	if (cfg_gettsec(cfg, "sub", argv[1]))
 		return "Section exists already\n";
 
-	buf = malloc(strlen(argv[1]) + 20);
-	if (!buf)
-		return NULL;
-
-	sprintf(buf, "sub %s {}\n", argv[1]);
-	ret = cfg_parse_buf(cfg, buf) != CFG_SUCCESS;
-	free(buf);
-
-	if (ret)
+	opt = cfg_getopt(cfg, "sub");
+	if (!opt || !cfg_setopt(cfg, opt, argv[1]))
 		return "Failure\n";
 
 	return "OK\n";

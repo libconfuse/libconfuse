@@ -12,6 +12,7 @@ TESTS            += section_title_dupes
 TESTS            += single_title_sections
 TESTS            += section_remove
 TESTS            += section_add
+TESTS            += section_getopt
 TESTS            += quote_before_print
 TESTS            += include
 TESTS            += searchpath
