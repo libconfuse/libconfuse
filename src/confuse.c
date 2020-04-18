@@ -171,7 +171,7 @@ static cfg_opt_t *cfg_getopt_leaf(cfg_t *cfg, const char *name)
 {
 	unsigned int i;
 
-	for (i = 0; cfg->opts[i].name; i++) {
+	for (i = 0; cfg->opts && cfg->opts[i].name; i++) {
 		if (is_set(CFGF_NOCASE, cfg->flags)) {
 			if (strcasecmp(cfg->opts[i].name, name) == 0)
 				return &cfg->opts[i];
@@ -603,7 +603,7 @@ DLLIMPORT int cfg_numopts(cfg_opt_t *opts)
 {
 	int n;
 
-	for (n = 0; opts[n].name; n++)
+	for (n = 0; opts && opts[n].name; n++)
 		/* do nothing */ ;
 	return n;
 }
@@ -692,7 +692,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 {
 	int i;
 
-	for (i = 0; cfg->opts[i].name; i++) {
+	for (i = 0; cfg->opts && cfg->opts[i].name; i++) {
 		int j;
 
 		for (j = 0; j < i; ++j) {
