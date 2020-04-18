@@ -396,6 +396,11 @@ DLLIMPORT const char *cfg_opt_name(cfg_opt_t *opt)
 	return NULL;
 }
 
+DLLIMPORT const char *cfg_opt_value(cfg_opt_t *opt)
+{
+	return cfg_opt_getnstr(opt, 0);
+}
+
 DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
 {
 	if (opt)

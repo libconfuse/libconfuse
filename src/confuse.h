@@ -932,6 +932,15 @@ DLLIMPORT const char *__export cfg_name(cfg_t *cfg);
  */
 DLLIMPORT const char *__export cfg_opt_name(cfg_opt_t *opt);
 
+/** Return the string value of a key=value pair
+ *
+ * @param opt The option structure (eg, as returned from cfg_getnopt())
+ * @see cfg_opt_name
+ * @return The string value for the option, or NULL if it's not a
+ * string.  This string must not be modified!
+ */
+DLLIMPORT const char *cfg_opt_value(cfg_opt_t *opt);
+
 /** Predefined include-function. This function can be used in the
  * options passed to cfg_init() to specify a function for including
  * other configuration files in the parsing. For example:
