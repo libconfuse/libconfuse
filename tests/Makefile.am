@@ -1,6 +1,6 @@
 EXTRA_DIST        = annotate.conf a.conf b.conf spdir check_confuse.h
 
-TESTS             =
+TESTS             = keyval
 TESTS            += suite_single
 TESTS            += suite_dup
 TESTS            += suite_func

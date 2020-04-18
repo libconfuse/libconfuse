@@ -4,6 +4,7 @@ annotate
 check_confuse
 env
 ignore_parm
+keyval
 list_plus_syntax
 malloc.log
 section_add
