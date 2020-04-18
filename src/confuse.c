@@ -181,6 +181,26 @@ static cfg_opt_t *cfg_getopt_leaf(cfg_t *cfg, const char *name)
 		}
 	}
 
+	/* Not found, is it a dynamic key-value section? */
+	if (is_set(CFGF_KEYVAL, cfg->flags)) {
+		cfg_opt_t *opts;
+		int num = cfg_num(cfg);
+
+		opts = reallocarray(cfg->opts, num + 2, sizeof(cfg_opt_t));
+		if (!opts)
+			return NULL;
+
+		/* Write new opt to previous CFG_END() marker */
+		cfg->opts = opts;
+		cfg->opts[num].name = strdup(name);
+		cfg->opts[num].type = CFGT_STR;
+
+		/* Set new CFG_END() */
+		memset(&cfg->opts[num + 1], 0, sizeof(cfg_opt_t));
+
+		return &cfg->opts[num];
+	}
+
 	return NULL;
 }
 
@@ -973,6 +993,9 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			}
 
 			val->section->flags = cfg->flags;
+			if (is_set(CFGF_KEYVAL, opt->flags))
+				val->section->flags |= CFGF_KEYVAL;
+
 			val->section->filename = cfg->filename ? strdup(cfg->filename) : NULL;
 			if (cfg->filename && !val->section->filename) {
 				free(val->section->name);

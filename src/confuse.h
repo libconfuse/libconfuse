@@ -83,23 +83,23 @@ enum cfg_type_t {
 typedef enum cfg_type_t cfg_type_t;
 
 /** Flags. */
-#define CFGF_NONE 0
-#define CFGF_MULTI 1       /**< option may be specified multiple times (only applies to sections) */
-#define CFGF_LIST 2        /**< option is a list */
-#define CFGF_NOCASE 4      /**< configuration file is case insensitive */
-#define CFGF_TITLE 8       /**< option has a title (only applies to sections) */
-#define CFGF_NODEFAULT 16  /**< option has no default value */
-#define CFGF_NO_TITLE_DUPES 32  /**< multiple section titles must be unique
-                                  (duplicates raises an error, only applies to
-                                  sections) */
+#define CFGF_NONE           (0)
+#define CFGF_MULTI          (1 <<  0) /**< option may be specified multiple times (only applies to sections) */
+#define CFGF_LIST           (1 <<  1) /**< option is a list */
+#define CFGF_NOCASE         (1 <<  2) /**< configuration file is case insensitive */
+#define CFGF_TITLE          (1 <<  3) /**< option has a title (only applies to sections) */
+#define CFGF_NODEFAULT      (1 <<  4) /**< option has no default value */
+#define CFGF_NO_TITLE_DUPES (1 <<  5) /**< multiple section titles must be unique
+					  (duplicates raises an error, only applies to sections) */
 
-#define CFGF_RESET 64
-#define CFGF_DEFINIT 128
-#define CFGF_IGNORE_UNKNOWN 256 /**< ignore unknown options in configuration files */
-#define CFGF_DEPRECATED     512  /**< option is deprecated and should be ignored. */
-#define CFGF_DROP           1024 /**< option should be dropped after parsing */
-#define CFGF_COMMENTS       2048 /**< Enable option annotation/comments support */
-#define CFGF_MODIFIED       4096 /**< option has been changed from its default value */
+#define CFGF_RESET          (1 <<  6)
+#define CFGF_DEFINIT        (1 <<  7)
+#define CFGF_IGNORE_UNKNOWN (1 <<  8) /**< ignore unknown options in configuration files */
+#define CFGF_DEPRECATED     (1 <<  9) /**< option is deprecated and should be ignored. */
+#define CFGF_DROP           (1 << 10) /**< option should be dropped after parsing */
+#define CFGF_COMMENTS       (1 << 11) /**< Enable option annotation/comments support */
+#define CFGF_MODIFIED       (1 << 12) /**< option has been changed from its default value */
+#define CFGF_KEYVAL         (1 << 13) /**< section has free-form key=value string options created when parsing file */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0
