@@ -1,5 +1,5 @@
-EXTRA_DIST      = simple.conf reread.conf ftp.conf test.conf nested.conf deprecated.conf
-noinst_PROGRAMS = simple ftpconf cfgtest cli nested deprecated addsec parsebuf
+EXTRA_DIST      = simple.conf reread.conf ftp.conf test.conf nested.conf deprecated.conf env.conf
+noinst_PROGRAMS = simple ftpconf cfgtest cli nested deprecated addsec parsebuf env
 AM_CPPFLAGS     = -I$(top_srcdir)/src
 AM_LDFLAGS      = -L../src/
 LIBS            = $(LTLIBINTL)
