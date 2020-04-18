@@ -1,4 +1,4 @@
-/* Test cfg_include when called from a buffer
+/* Test environment varialbe substitution
  */
 
 #include "config.h"
@@ -6,16 +6,16 @@
 #include <stdlib.h>
 #include "check_confuse.h"
 
-cfg_opt_t opts[] = {
-	CFG_STR("parameter", NULL, CFGF_NONE),
-	CFG_END()
-};
-
 static int testconfig(const char *buf, const char *parameter)
 {
+	cfg_opt_t opts[] = {
+		CFG_STR("parameter", NULL, CFGF_NONE),
+		CFG_END()
+	};
 	char *param;
-	cfg_t *cfg = cfg_init(opts, CFGF_NONE);
+	cfg_t *cfg;
 
+	cfg = cfg_init(opts, CFGF_NONE);
 	if (!cfg)
 		return 0;
 
