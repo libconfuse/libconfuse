@@ -593,6 +593,14 @@ DLLIMPORT int cfg_numopts(cfg_opt_t *opts)
 	return n;
 }
 
+DLLIMPORT unsigned int cfg_num(cfg_t *cfg)
+{
+	if (!cfg)
+		return 0;
+
+	return (unsigned int)cfg_numopts(cfg->opts);
+}
+
 static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 {
 	int i;

@@ -1167,6 +1167,15 @@ DLLIMPORT int __export cfg_setlist(cfg_t *cfg, const char *name, unsigned int nv
 
 DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 
+/** Return number of options in a file or section
+ *
+ * When a file has been parsed this function returns the number of
+ * options/settings the file, or a sub-section, has.
+ *
+ * @cfg The configuration file or section context
+ */
+DLLIMPORT unsigned int __export cfg_num(cfg_t *cfg);
+
 /** Add values for a list option. The new values are appended to any
  * current values in the list.
  *
