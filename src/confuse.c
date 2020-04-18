@@ -335,6 +335,21 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 	return opt;
 }
 
+DLLIMPORT cfg_opt_t *cfg_getnopt(cfg_t *cfg, unsigned int index)
+{
+	unsigned int i;
+
+	if (!cfg)
+		return NULL;
+
+	for (i = 0; cfg->opts && cfg->opts[i].name; i++) {
+		if (i == index)
+			return &cfg->opts[i];
+	}
+
+	return NULL;
+}
+
 DLLIMPORT cfg_opt_t *cfg_getopt(cfg_t *cfg, const char *name)
 {
 	return cfg_getopt_secidx(cfg, name, NULL);

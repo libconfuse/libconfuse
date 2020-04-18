@@ -956,6 +956,14 @@ DLLIMPORT char *__export cfg_tilde_expand(const char *filename);
  */
 DLLIMPORT int __export cfg_parse_boolean(const char *s);
 
+/** Return the nth option in a file or section
+ *
+ * @param cfg The configuration file or section context
+ * @param index Option index
+ * @see cfg_num
+ */
+DLLIMPORT cfg_opt_t *cfg_getnopt(cfg_t *cfg, unsigned int index);
+
 /** Return an option given it's name.
  *
  * @param cfg The configuration file context.
