@@ -3,11 +3,7 @@
 language: c
 
 # Use docker for quicker builds, it now allows https://docs.travis-ci.com/user/apt/
-#sudo: false
-
-# We need at least Ubuntu 14.04 (Trusty), so no more Docker builds for now
-sudo: required
-dist: trusty
+sudo: false
 
 # Test build with both GCC and Clang (LLVM)
 compiler:
