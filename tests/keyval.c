@@ -63,6 +63,9 @@ int main(void)
 	sec = cfg_getsec(cfg, "env");
 	fail_unless(sec != NULL);
 
+	/* Fuzz internals a bit, check for non-existing key */
+	cfg_getstr(sec, "some-key-not-in-the-config-file");
+
 	num = cfg_num(sec);
 	fail_unless(num == 3);	/* { foo, bar, baz } */
 
