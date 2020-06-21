@@ -7,11 +7,18 @@ All notable changes in libConfuse are documented in this file.
 ------------------
 
 ### Changes
+* Issue #126: Support building static library on Windows
+* Issue #128: Support for `fmemopen()` in Windows UWP applications
 
 ### Fixes
 * Fix loop-forever bug found by Christian Reitter <creitter@inhq.net>  
   A .conf file containing only "=", will cause even the simplest parser
   to loop forever in internal fn `cfg_getopt_secidx()`
+* Issue #113: Fail to build `strdup()` replacement
+* Issue #118: Fix build on Windows, missing `fmemopen()` replacement
+* Issue #120: Handle shell and C++ comments with no space separator
+* Issue #125: Drop developer debug msg `QSTR: ...`
+
 
 [v3.2.2][] - 2018-08-19
 -----------------------
