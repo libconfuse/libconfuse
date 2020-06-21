@@ -28,12 +28,12 @@ static void check_keyval(cfg_t *cfg, unsigned int index, const char *key, const 
 	opt = cfg_getnopt(cfg, index);
 	fail_unless(opt != NULL);
 
-	printf("Found key:%s val:%s\n", cfg_opt_name(opt), cfg_opt_value(opt));
+	printf("Found key:%s val:%s\n", cfg_opt_name(opt), cfg_opt_getstr(opt));
 
 	rc =strcmp(cfg_opt_name(opt), key);
 	fail_unless(rc == 0);
 
-	rc =strcmp(cfg_opt_value(opt), val);
+	rc =strcmp(cfg_opt_getstr(opt), val);
 	fail_unless(rc == 0);
 }
 

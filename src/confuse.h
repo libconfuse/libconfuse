@@ -939,7 +939,7 @@ DLLIMPORT const char *__export cfg_opt_name(cfg_opt_t *opt);
  * @return The string value for the option, or NULL if it's not a
  * string.  This string must not be modified!
  */
-DLLIMPORT const char *cfg_opt_value(cfg_opt_t *opt);
+DLLIMPORT const char *cfg_opt_getstr(cfg_opt_t *opt);
 
 /** Predefined include-function. This function can be used in the
  * options passed to cfg_init() to specify a function for including

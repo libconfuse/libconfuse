@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		for (i = 0; i < cfg_num(sec); i++) {
 			cfg_opt_t *opt = cfg_getnopt(sec, i);
 
-			printf("%s = \"%s\"\n", cfg_opt_name(opt), cfg_opt_value(opt));
+			printf("%s = \"%s\"\n", cfg_opt_name(opt), cfg_opt_getstr(opt));
 		}
 	}
 
