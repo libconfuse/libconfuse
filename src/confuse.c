@@ -80,6 +80,10 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
 
+#ifndef HAVE_REALLOCARRAY
+extern void *reallocarray(void *optr, size_t nmemb, size_t size);
+#endif
+
 #ifndef HAVE_STRDUP
 /*
  * Copyright (c) 1988, 1993
@@ -387,6 +391,11 @@ DLLIMPORT const char *cfg_opt_name(cfg_opt_t *opt)
 	return NULL;
 }
 
+DLLIMPORT const char *cfg_opt_getstr(cfg_opt_t *opt)
+{
+	return cfg_opt_getnstr(opt, 0);
+}
+
 DLLIMPORT unsigned int cfg_opt_size(cfg_opt_t *opt)
 {
 	if (opt)
@@ -608,6 +617,31 @@ static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 	opt->flags |= CFGF_MODIFIED;
 
 	return opt->values[opt->nvalues++];
+}
+
+static cfg_opt_t *cfg_addopt(cfg_t *cfg, char *key)
+{
+	int num = cfg_num(cfg);
+	cfg_opt_t *opts;
+
+	opts = reallocarray(cfg->opts, num + 2, sizeof(cfg_opt_t));
+	if (!opts)
+		return NULL;
+
+	/* Write new opt to previous CFG_END() marker */
+	cfg->opts = opts;
+	cfg->opts[num].name = strdup(key);
+	cfg->opts[num].type = CFGT_STR;
+
+	if (!cfg->opts[num].name) {
+		free(opts);
+		return NULL;
+	}
+
+	/* Set new CFG_END() */
+	memset(&cfg->opts[num + 1], 0, sizeof(cfg_opt_t));
+
+	return &cfg->opts[num];
 }
 
 DLLIMPORT int cfg_numopts(cfg_opt_t *opts)
@@ -984,6 +1018,9 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			}
 
 			val->section->flags = cfg->flags;
+			if (is_set(CFGF_KEYSTRVAL, opt->flags))
+				val->section->flags |= CFGF_KEYSTRVAL;
+
 			val->section->filename = cfg->filename ? strdup(cfg->filename) : NULL;
 			if (cfg->filename && !val->section->filename) {
 				free(val->section->name);
@@ -1306,6 +1343,16 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (!opt) {
 				if (is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 					state = 10;
+					break;
+				}
+
+				/* Not found, is it a dynamic key-value section? */
+				if (is_set(CFGF_KEYSTRVAL, cfg->flags)) {
+					opt = cfg_addopt(cfg, cfg_yylval);
+					if (!opt)
+						goto error;
+
+					state = 1;
 					break;
 				}
 

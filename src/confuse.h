@@ -83,23 +83,23 @@ enum cfg_type_t {
 typedef enum cfg_type_t cfg_type_t;
 
 /** Flags. */
-#define CFGF_NONE 0
-#define CFGF_MULTI 1       /**< option may be specified multiple times (only applies to sections) */
-#define CFGF_LIST 2        /**< option is a list */
-#define CFGF_NOCASE 4      /**< configuration file is case insensitive */
-#define CFGF_TITLE 8       /**< option has a title (only applies to sections) */
-#define CFGF_NODEFAULT 16  /**< option has no default value */
-#define CFGF_NO_TITLE_DUPES 32  /**< multiple section titles must be unique
-                                  (duplicates raises an error, only applies to
-                                  sections) */
+#define CFGF_NONE           (0)
+#define CFGF_MULTI          (1 <<  0) /**< option may be specified multiple times (only applies to sections) */
+#define CFGF_LIST           (1 <<  1) /**< option is a list */
+#define CFGF_NOCASE         (1 <<  2) /**< configuration file is case insensitive */
+#define CFGF_TITLE          (1 <<  3) /**< option has a title (only applies to sections) */
+#define CFGF_NODEFAULT      (1 <<  4) /**< option has no default value */
+#define CFGF_NO_TITLE_DUPES (1 <<  5) /**< multiple section titles must be unique
+					  (duplicates raises an error, only applies to sections) */
 
-#define CFGF_RESET 64
-#define CFGF_DEFINIT 128
-#define CFGF_IGNORE_UNKNOWN 256 /**< ignore unknown options in configuration files */
-#define CFGF_DEPRECATED     512  /**< option is deprecated and should be ignored. */
-#define CFGF_DROP           1024 /**< option should be dropped after parsing */
-#define CFGF_COMMENTS       2048 /**< Enable option annotation/comments support */
-#define CFGF_MODIFIED       4096 /**< option has been changed from its default value */
+#define CFGF_RESET          (1 <<  6)
+#define CFGF_DEFINIT        (1 <<  7)
+#define CFGF_IGNORE_UNKNOWN (1 <<  8) /**< ignore unknown options in configuration files */
+#define CFGF_DEPRECATED     (1 <<  9) /**< option is deprecated and should be ignored. */
+#define CFGF_DROP           (1 << 10) /**< option should be dropped after parsing */
+#define CFGF_COMMENTS       (1 << 11) /**< Enable option annotation/comments support */
+#define CFGF_MODIFIED       (1 << 12) /**< option has been changed from its default value */
+#define CFGF_KEYSTRVAL      (1 << 13) /**< section has free-form key=value string options created when parsing file */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0
@@ -585,7 +585,7 @@ extern const char __export confuse_author[];
  * The options must no longer be defined in the same scope as where the cfg_xxx
  * functions are used (since version 2.3).
  *
- * CFG_IGNORE_UNKNOWN can be specified to use the "__unknown" option
+ * CFGF_IGNORE_UNKNOWN can be specified to use the "__unknown" option
  * whenever an unknown option is parsed. Be sure to define an "__unknown"
  * option in each scope that unknown parameters are allowed.
  *
@@ -931,6 +931,15 @@ DLLIMPORT const char *__export cfg_name(cfg_t *cfg);
  * should not be modified.
  */
 DLLIMPORT const char *__export cfg_opt_name(cfg_opt_t *opt);
+
+/** Return the string value of a key=value pair
+ *
+ * @param opt The option structure (eg, as returned from cfg_getnopt())
+ * @see cfg_opt_name
+ * @return The string value for the option, or NULL if it's not a
+ * string.  This string must not be modified!
+ */
+DLLIMPORT const char *cfg_opt_getstr(cfg_opt_t *opt);
 
 /** Predefined include-function. This function can be used in the
  * options passed to cfg_init() to specify a function for including

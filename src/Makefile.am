@@ -17,3 +17,6 @@ CLEANFILES             = *~ \#*\#
 if MISSING_FMEMOPEN
 libconfuse_la_SOURCES += fmemopen.c
 endif
+if MISSING_REALLOCARRAY
+libconfuse_la_SOURCES += reallocarray.c
+endif

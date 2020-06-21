@@ -5,6 +5,7 @@ check_confuse
 empty_string
 env
 ignore_parm
+keyval
 list_plus_syntax
 malloc.log
 modified_flag
