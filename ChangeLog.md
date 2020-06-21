@@ -3,6 +3,15 @@ Change Log
 
 All notable changes in libConfuse are documented in this file.
 
+[v3.3][UNRELEASED]
+------------------
+
+### Changes
+
+### Fixes
+* Fix loop-forever bug found by Christian Reitter <creitter@inhq.net>  
+  A .conf file containing only "=", will cause even the simplest parser
+  to loop forever in internal fn `cfg_getopt_secidx()`
 
 [v3.2.2][] - 2018-08-19
 -----------------------

@@ -328,7 +328,9 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				free(title);
 			if (!sec)
 				return NULL;
-		}
+		} else
+			break;
+
 		name += len;
 		name += strspn(name, "|");
 	}
