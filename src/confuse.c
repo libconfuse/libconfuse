@@ -80,6 +80,10 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
 
+#ifndef HAVE_REALLOCARRAY
+extern void *reallocarray(void *optr, size_t nmemb, size_t size);
+#endif
+
 #ifndef HAVE_STRDUP
 /*
  * Copyright (c) 1988, 1993
