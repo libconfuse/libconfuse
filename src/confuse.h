@@ -99,7 +99,7 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_DROP           (1 << 10) /**< option should be dropped after parsing */
 #define CFGF_COMMENTS       (1 << 11) /**< Enable option annotation/comments support */
 #define CFGF_MODIFIED       (1 << 12) /**< option has been changed from its default value */
-#define CFGF_KEYVAL         (1 << 13) /**< section has free-form key=value string options created when parsing file */
+#define CFGF_KEYSTRVAL      (1 << 13) /**< section has free-form key=value string options created when parsing file */
 
 /** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0

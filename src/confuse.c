@@ -1003,8 +1003,8 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			}
 
 			val->section->flags = cfg->flags;
-			if (is_set(CFGF_KEYVAL, opt->flags))
-				val->section->flags |= CFGF_KEYVAL;
+			if (is_set(CFGF_KEYSTRVAL, opt->flags))
+				val->section->flags |= CFGF_KEYSTRVAL;
 
 			val->section->filename = cfg->filename ? strdup(cfg->filename) : NULL;
 			if (cfg->filename && !val->section->filename) {
@@ -1332,7 +1332,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				}
 
 				/* Not found, is it a dynamic key-value section? */
-				if (is_set(CFGF_KEYVAL, cfg->flags)) {
+				if (is_set(CFGF_KEYSTRVAL, cfg->flags)) {
 					opt = cfg_addopt(cfg, cfg_yylval);
 					if (!opt)
 						goto error;

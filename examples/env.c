@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
 	const char *file = "env.conf";
 	cfg_opt_t opts[] = {
-		CFG_SEC("env", NULL, CFGF_KEYVAL),
+		CFG_SEC("env", NULL, CFGF_KEYSTRVAL),
 		CFG_END()
 	};
 	cfg_t *cfg, *sec;

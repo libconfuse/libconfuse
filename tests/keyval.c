@@ -40,7 +40,7 @@ static void check_keyval(cfg_t *cfg, unsigned int index, const char *key, const 
 int main(void)
 {
 	cfg_opt_t opts[] = {
-		CFG_SEC("env", NULL, CFGF_KEYVAL),
+		CFG_SEC("env", NULL, CFGF_KEYSTRVAL),
 		CFG_END()
 	};
 	unsigned int num;
