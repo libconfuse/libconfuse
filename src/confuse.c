@@ -258,8 +258,8 @@ static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
 static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				    long int *index)
 {
+	cfg_opt_t *opt = NULL;
 	cfg_t *sec = cfg;
-	cfg_opt_t *opt;
 
 	if (!cfg || !cfg->name || !name || !*name) {
 		errno = EINVAL;
@@ -282,7 +282,7 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 			if (!secname)
 				return NULL;
 
-			for (;;) {
+			do {
 				char *endptr;
 
 				opt = cfg_getopt_leaf(sec, secname);
@@ -309,10 +309,11 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				i = strtol(title, &endptr, 0);
 				if (*endptr != '\0')
 					i = -1;
-				break;
-			}
+			} while(0);
+
 			if (index)
 				*index = i;
+
 			sec = i >= 0 ? cfg_opt_getnsec(opt, i) : NULL;
 			if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 				if (opt && !is_set(CFGF_MULTI, opt->flags))
