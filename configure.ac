@@ -1,8 +1,8 @@
-dnl Process this file with -*- autoconf -*- to produce a configure script.
-
+# Process this file with -*- autoconf -*- to produce a configure script.
+# The bundled autogen.sh script does this and also calls autoamake. 
 AC_PREREQ(2.50)
 
-AC_INIT(libConfuse, 3.2.3-rc1, https://github.com/martinh/libconfuse/issues, confuse)
+AC_INIT(libConfuse, 3.3-rc1, https://github.com/martinh/libconfuse/issues, confuse)
 AC_CONFIG_AUX_DIR(support)
 AM_MAINTAINER_MODE
 AM_INIT_AUTOMAKE([foreign dist-xz])
