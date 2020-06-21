@@ -9,15 +9,17 @@ All notable changes in libConfuse are documented in this file.
 ### Changes
 * Support building static library on Windows
 * Support for `fmemopen()` in Windows UWP applications
-# Support for `cfg_getopt(cfg, "sub=name|option");` by Peter Rosin
+* Support for `cfg_getopt(cfg, "sub=name|option")` by Peter Rosin
 * Updated German translation, by Chris Leick
 * Support for `CFGF_MODIFIED` flag, by Peter Rosin
 * Support for filtering out settings when printing, by Peter Rosin
+* Support for dynamic key=value sections with no pre-runtime knowledge
+  of setting names, useful for environment variables and similar
 
 ### Fixes
-* Fix loop-forever bug found by Christian Reitter <creitter@inhq.net>  
-  A .conf file containing only "=", will cause even the simplest parser
-  to loop forever in internal fn `cfg_getopt_secidx()`
+* Fix loop-forever bug found by Christian Reitter; a .conf file
+  containing only "=", will cause even the simplest parser to loop
+  forever in internal function `cfg_getopt_secidx()`
 * Issue #113: Fail to build `strdup()` replacement
 * Issue #118: Fix build on Windows, missing `fmemopen()` replacement
 * Issue #120: Handle shell and C++ comments with no space separator
