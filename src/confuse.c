@@ -188,6 +188,7 @@ static char *parse_title(const char *name, size_t *len)
 {
 	const char *escapes = "'\\";
 	char *title;
+	char *end;
 	char *ch;
 
 	if (*name != '\'') {
@@ -203,8 +204,8 @@ static char *parse_title(const char *name, size_t *len)
 
 	*len = 1;
 	ch = title;
-
-	for (;;) {
+	end = title + strlen(title);
+	while (ch < end) {
 		size_t l = strcspn(ch, escapes);
 		*len += l + 1;
 		ch += l;
@@ -213,16 +214,22 @@ static char *parse_title(const char *name, size_t *len)
 			*ch = 0;
 			return title;
 		case '\\':
-			if (!ch[1] || strcspn(ch + 1, escapes))
+			if (!ch[1] || strcspn(ch + 1, escapes)) {
+				free(title);
 				return NULL;
+			}
 			memmove(ch, ch + 1, strlen(ch));
 			ch++;
 			(*len)++;
 			break;
 		default:
+			free(title);
 			return NULL;
 		}
 	}
+
+	free(title);
+	return NULL;
 }
 
 static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
@@ -251,8 +258,8 @@ static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
 static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				    long int *index)
 {
+	cfg_opt_t *opt = NULL;
 	cfg_t *sec = cfg;
-	cfg_opt_t *opt;
 
 	if (!cfg || !cfg->name || !name || !*name) {
 		errno = EINVAL;
@@ -275,7 +282,7 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 			if (!secname)
 				return NULL;
 
-			for (;;) {
+			do {
 				char *endptr;
 
 				opt = cfg_getopt_leaf(sec, secname);
@@ -302,10 +309,11 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				i = strtol(title, &endptr, 0);
 				if (*endptr != '\0')
 					i = -1;
-				break;
-			}
+			} while(0);
+
 			if (index)
 				*index = i;
+
 			sec = i >= 0 ? cfg_opt_getnsec(opt, i) : NULL;
 			if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 				if (opt && !is_set(CFGF_MULTI, opt->flags))
@@ -320,7 +328,9 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				free(title);
 			if (!sec)
 				return NULL;
-		}
+		} else
+			break;
+
 		name += len;
 		name += strspn(name, "|");
 	}
