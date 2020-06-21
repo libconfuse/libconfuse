@@ -7,8 +7,12 @@ All notable changes in libConfuse are documented in this file.
 ------------------
 
 ### Changes
-* Issue #126: Support building static library on Windows
-* Issue #128: Support for `fmemopen()` in Windows UWP applications
+* Support building static library on Windows
+* Support for `fmemopen()` in Windows UWP applications
+# Support for `cfg_getopt(cfg, "sub=name|option");` by Peter Rosin
+* Updated German translation, by Chris Leick
+* Support for `CFGF_MODIFIED` flag, by Peter Rosin
+* Support for filtering out settings when printing, by Peter Rosin
 
 ### Fixes
 * Fix loop-forever bug found by Christian Reitter <creitter@inhq.net>  
@@ -18,6 +22,10 @@ All notable changes in libConfuse are documented in this file.
 * Issue #118: Fix build on Windows, missing `fmemopen()` replacement
 * Issue #120: Handle shell and C++ comments with no space separator
 * Issue #125: Drop developer debug msg `QSTR: ...`
+* Issue #131: Fix `CFG_PTR_CB()` regression, segfaults when, e.g.,
+  `cfg_free()` is called.  Found and fixed by Peter Rosin
+* Issue #135: Revert `CFGF_RESET` flag if `cfg_setmulti()` family fail
+* Issue #137: Memory leak in `cfg_setopt()` for PTR options
 
 
 [v3.2.2][] - 2018-08-19
