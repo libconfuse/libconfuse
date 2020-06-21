@@ -188,6 +188,7 @@ static char *parse_title(const char *name, size_t *len)
 {
 	const char *escapes = "'\\";
 	char *title;
+	char *end;
 	char *ch;
 
 	if (*name != '\'') {
@@ -203,8 +204,8 @@ static char *parse_title(const char *name, size_t *len)
 
 	*len = 1;
 	ch = title;
-
-	for (;;) {
+	end = title + strlen(title);
+	while (ch < end) {
 		size_t l = strcspn(ch, escapes);
 		*len += l + 1;
 		ch += l;
@@ -213,16 +214,22 @@ static char *parse_title(const char *name, size_t *len)
 			*ch = 0;
 			return title;
 		case '\\':
-			if (!ch[1] || strcspn(ch + 1, escapes))
+			if (!ch[1] || strcspn(ch + 1, escapes)) {
+				free(title);
 				return NULL;
+			}
 			memmove(ch, ch + 1, strlen(ch));
 			ch++;
 			(*len)++;
 			break;
 		default:
+			free(title);
 			return NULL;
 		}
 	}
+
+	free(title);
+	return NULL;
 }
 
 static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
