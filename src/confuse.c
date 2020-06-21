@@ -181,26 +181,6 @@ static cfg_opt_t *cfg_getopt_leaf(cfg_t *cfg, const char *name)
 		}
 	}
 
-	/* Not found, is it a dynamic key-value section? */
-	if (is_set(CFGF_KEYVAL, cfg->flags)) {
-		cfg_opt_t *opts;
-		int num = cfg_num(cfg);
-
-		opts = reallocarray(cfg->opts, num + 2, sizeof(cfg_opt_t));
-		if (!opts)
-			return NULL;
-
-		/* Write new opt to previous CFG_END() marker */
-		cfg->opts = opts;
-		cfg->opts[num].name = strdup(name);
-		cfg->opts[num].type = CFGT_STR;
-
-		/* Set new CFG_END() */
-		memset(&cfg->opts[num + 1], 0, sizeof(cfg_opt_t));
-
-		return &cfg->opts[num];
-	}
-
 	return NULL;
 }
 
@@ -622,6 +602,31 @@ static cfg_value_t *cfg_addval(cfg_opt_t *opt)
 	opt->flags |= CFGF_MODIFIED;
 
 	return opt->values[opt->nvalues++];
+}
+
+static cfg_opt_t *cfg_addopt(cfg_t *cfg, char *key)
+{
+	int num = cfg_num(cfg);
+	cfg_opt_t *opts;
+
+	opts = reallocarray(cfg->opts, num + 2, sizeof(cfg_opt_t));
+	if (!opts)
+		return NULL;
+
+	/* Write new opt to previous CFG_END() marker */
+	cfg->opts = opts;
+	cfg->opts[num].name = strdup(key);
+	cfg->opts[num].type = CFGT_STR;
+
+	if (!cfg->opts[num].name) {
+		free(opts);
+		return NULL;
+	}
+
+	/* Set new CFG_END() */
+	memset(&cfg->opts[num + 1], 0, sizeof(cfg_opt_t));
+
+	return &cfg->opts[num];
 }
 
 DLLIMPORT int cfg_numopts(cfg_opt_t *opts)
@@ -1323,6 +1328,16 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (!opt) {
 				if (is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
 					state = 10;
+					break;
+				}
+
+				/* Not found, is it a dynamic key-value section? */
+				if (is_set(CFGF_KEYVAL, cfg->flags)) {
+					opt = cfg_addopt(cfg, cfg_yylval);
+					if (!opt)
+						goto error;
+
+					state = 1;
 					break;
 				}
 

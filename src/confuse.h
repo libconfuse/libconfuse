@@ -585,7 +585,7 @@ extern const char __export confuse_author[];
  * The options must no longer be defined in the same scope as where the cfg_xxx
  * functions are used (since version 2.3).
  *
- * CFG_IGNORE_UNKNOWN can be specified to use the "__unknown" option
+ * CFGF_IGNORE_UNKNOWN can be specified to use the "__unknown" option
  * whenever an unknown option is parsed. Be sure to define an "__unknown"
  * option in each scope that unknown parameters are allowed.
  *
