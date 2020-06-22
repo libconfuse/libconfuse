@@ -4,7 +4,6 @@ AC_PREREQ(2.50)
 
 AC_INIT(libConfuse, 3.3-rc1, https://github.com/martinh/libconfuse/issues, confuse)
 AC_CONFIG_AUX_DIR(support)
-AM_MAINTAINER_MODE
 AM_INIT_AUTOMAKE([foreign dist-xz])
 AM_SILENT_RULES([no])
 
