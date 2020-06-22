@@ -91,12 +91,11 @@ release-hook:
 	fi
 
 ## Target to run when building a release
-## distcheck <-- does not work atm., wrong search path for source/header files
 release: release-hook distcheck dist-zip md5-dist
 	@echo
 	@echo "Resulting release files:"
 	@echo "================================================================="
 	@for file in $(DIST_ARCHIVES) $(distdir).zip; do				\
-		printf "$$file    \tDistribution tarball\n";				\
-		printf "$$file.md5\t"; cat $$file.md5 | cut -f1 -d' ';			\
+		printf "%-32s Distribution tarball\n" $$file;				\
+		printf "%-32s " $$file.md5; cat $$file.md5 | cut -f1 -d' ';		\
 	done
