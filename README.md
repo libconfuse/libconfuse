@@ -54,9 +54,20 @@ Example configuration files:
 Building
 --------
 
-libConfuse employs the GNU configure and build system.  Simply enter
-<kbd>./configure --help</kbd> to list available options and see the
-INSTALL file for the full installation instructions.
+libConfuse employs the GNU configure and build system.  To list available
+build options, start by unpacking the tarball:
+
+    tar xf confuse-3.2.2.tar.xz
+    cd confuse-3.2.2/
+    ./configure --help
+
+For most users the following commands configures, builds and installs the
+library to `/usr/local/`:
+
+    ./configure && make -j9
+    sudo make install
+
+See the INSTALL file for the full installation instructions.
 
 When checking out the code from GitHub, use <kbd>./autogen.sh</kbd> to
 generate a `configure` script.  This means you also need the following
@@ -65,9 +76,11 @@ tools:
 * autoconf
 * automake
 * libtool
+* gettext
 * autopoint
 * flex
 * doxygen
+* xmlto
 
 
 Documentation
