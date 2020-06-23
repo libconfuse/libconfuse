@@ -59,24 +59,7 @@ the [Pro Git][gitbook] online book:
     Signed-off-by: First Lastname <some.email@example.com>
 
 
-A good *counter* example [is this][rambling] ...
-
-
-Code of Conduct
----------------
-
-It is expected of everyone engaging in the project to, in the words of
-Bill & Ted; be excellent to each other.
-
-
 [github]:   https://github.com/martinh/libconfuse/
 [KNF]:      https://en.wikipedia.org/wiki/Kernel_Normal_Form
 [style]:    https://www.kernel.org/doc/html/latest/process/coding-style.html
 [gitbook]:  https://git-scm.com/book/ch5-2.html
-[rambling]: http://stopwritingramblingcommitmessages.com/
-
-<!--
-  -- Local Variables:
-  -- mode: markdown
-  -- End:
-  -->
