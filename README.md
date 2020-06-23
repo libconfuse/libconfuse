@@ -33,7 +33,7 @@ The library is available pre-built in many Linux and UNIX distributions.
 See the following pages for information on how to download and build it
 yourself:
 
-* https://github.com/martinh/libconfuse/releases/
+<https://github.com/martinh/libconfuse/releases/>
 
 
 Examples
@@ -41,7 +41,6 @@ Examples
 
 * [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
   shows how to use the "simple" versions of options
-
 * [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
   show most of the features of confuse, including lists and functions
 
