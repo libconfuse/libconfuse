@@ -2,6 +2,9 @@ libConfuse
 ==========
 [![Travis Status][]][Travis] [![Coverity Status][]][Coverity Scan]
 
+> **Note:** libConfuse was called libcfg before, but was changed to not
+>           confuse with other similar libraries.
+
 Table of Contents
 -----------------
 
@@ -32,23 +35,15 @@ yourself:
 
 * https://github.com/martinh/libconfuse/releases/
 
-Please report bugs to the [issue tracker][2].  If you want to contribute
-fixes or new features, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-> **Note:** libConfuse was called libcfg before, but was changed to not
->           confuse with other similar libraries.
 
 Examples
 --------
 
-Example configuration files:
+* [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
+  shows how to use the "simple" versions of options
 
-* [test.conf](examples/test.conf) and the
-  [source code](examples/cfgtest.c) shows most of the
-  features of confuse, including lists and functions.
-* [simple.conf](examples/simple.conf) shows how to use the
-  "simple" versions of options. See the corresponding
-  [source](examples/simple.c).
+* [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
+  show most of the features of confuse, including lists and functions
 
 
 Building
