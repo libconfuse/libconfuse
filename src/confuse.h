@@ -1186,10 +1186,12 @@ DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 
 /** Return number of options in a file or section
  *
+ * @param cfg The configuration file or section context
+ *
  * When a file has been parsed this function returns the number of
  * options/settings the file, or a sub-section, has.
  *
- * @cfg The configuration file or section context
+ * @return Number of options in a config file or section.
  */
 DLLIMPORT unsigned int __export cfg_num(cfg_t *cfg);
 
