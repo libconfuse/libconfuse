@@ -73,8 +73,17 @@ tools:
 * gettext
 * autopoint
 * flex
+
+To build the documentation you also need the following tools:
+
 * doxygen
 * xmlto
+
+This is an optional step, so you must build it explicitly from
+its directory:
+
+    cd doc/
+    make documentation
 
 
 Documentation
