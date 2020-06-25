@@ -2,9 +2,6 @@ libConfuse
 ==========
 [![Travis Status][]][Travis] [![Coverity Status][]][Coverity Scan]
 
-Table of Contents
------------------
-
 * [Introduction](#introduction)
 * [Documentation](#documentation)
 * [Examples](#examples)
