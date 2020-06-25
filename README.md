@@ -2,27 +2,24 @@ libConfuse
 ==========
 [![Travis Status][]][Travis] [![Coverity Status][]][Coverity Scan]
 
-> **Note:** libConfuse was called libcfg before, but was changed to not
->           confuse with other similar libraries.
-
 Table of Contents
 -----------------
 
 * [Introduction](#introduction)
-* [Examples](#examples)
-* [Building](#building)
 * [Documentation](#documentation)
+* [Examples](#examples)
+* [Build & Install](#build--install)
+* [Origin & References](#origin--references)
 
 
 Introduction
 ------------
 
-libConfuse is a configuration file parser library, licensed under the
-terms of the [ISC license][1], written in C.  It supports sections and
-(lists of) values, as well as other features such as single/double
-quoted strings, environment variable expansion, functions and nested
-include statements.  Values can be strings, integers, floats, booleans,
-and sections.
+libConfuse is a configuration file parser library written in C.  It
+supports sections and (lists of) values, as well as other features such
+as single/double quoted strings, environment variable expansion,
+functions and nested include statements.  Values can be strings,
+integers, floats, booleans, and sections.
 
 The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
@@ -30,6 +27,13 @@ integrate with your code.
 
 Please ensure you download a <ins>versioned archive</ins> from:
 <https://github.com/martinh/libconfuse/releases/>
+
+
+Documentation
+-------------
+
+* [API reference/manual](http://www.nongnu.org/confuse/manual/)
+* [Tutorial](http://www.nongnu.org/confuse/tutorial-html/)
 
 
 Examples
@@ -41,8 +45,8 @@ Examples
   show most of the features of confuse, including lists and functions
 
 
-Building
---------
+Build & Install
+---------------
 
 libConfuse employs the GNU configure and build system.  To list available
 build options, start by unpacking the tarball:
@@ -56,6 +60,7 @@ library to `/usr/local/`:
 
     ./configure && make -j9
     sudo make install
+    sudo ldconfig
 
 See the INSTALL file for the full installation instructions.
 
@@ -82,16 +87,14 @@ its directory:
     make documentation
 
 
-Documentation
--------------
+Origin & References
+-------------------
 
-For the time being, the following documentation is published at the
-[old homepage](http://www.nongnu.org/confuse/), but also distributed
-with the source:
-
-* [API reference/manual](http://www.nongnu.org/confuse/manual/) (generated with doxygen)
-* [Tutorial](http://www.nongnu.org/confuse/tutorial-html/) (a work in progress)
-* [ChangeLog](ChangeLog.md) (check what's new!)
+libConfuse was created by Martin Hedenfalk and released as open source
+software under the terms of the [ISC license][1].  It was previously
+called libcfg, but the name was changed to not confuse with other
+similar libraries.  It is currently developed and maintained at GitHub.
+Please use the [issue tracker][] to report bugs and feature requests.
 
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
