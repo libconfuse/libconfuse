@@ -91,7 +91,7 @@ libConfuse was created by Martin Hedenfalk and released as open source
 software under the terms of the [ISC license][1].  It was previously
 called libcfg, but the name was changed to not confuse with other
 similar libraries.  It is currently developed and maintained at GitHub.
-Please use the [issue tracker][] to report bugs and feature requests.
+Please use the [issue tracker][2] to report bugs and feature requests.
 
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
