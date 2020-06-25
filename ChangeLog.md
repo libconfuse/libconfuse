@@ -1,20 +1,22 @@
 Change Log
 ==========
 
-All notable changes in libConfuse are documented in this file.
+All relevant changes to the project are documented in this file.
 
-[v3.3][UNRELEASED]
-------------------
+[v3.3][] - 2020-06-25
+---------------------
 
 ### Changes
 * Support building static library on Windows
 * Support for `fmemopen()` in Windows UWP applications
-* Support for `cfg_getopt(cfg, "sub=name|option")` by Peter Rosin
-* Updated German translation, by Chris Leick
-* Support for `CFGF_MODIFIED` flag, by Peter Rosin
+* Support for `cfg_getopt(cfg, "sub=name|option")`, i.e., get an option
+  from a sub-section, by Peter Rosin
+* Support for `CFGF_MODIFIED` flag, to detect changes to settings
+  in memory after parsing, by Peter Rosin
 * Support for filtering out settings when printing, by Peter Rosin
 * Support for dynamic key=value sections with no pre-runtime knowledge
   of setting names, useful for environment variables and similar
+* Updated German translation, by Chris Leick
 
 ### Fixes
 * Fix loop-forever bug found by Christian Reitter; a .conf file
@@ -386,7 +388,8 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.2.2...HEAD
+[UNRELEASED]: https://github.com/martinh/libconfuse/compare/v3.3...HEAD
+[v3.3]:   https://github.com/martinh/libconfuse/compare/v3.2.2...v3.3
 [v3.2.2]: https://github.com/martinh/libconfuse/compare/v3.2.1...v3.2.2
 [v3.2.1]: https://github.com/martinh/libconfuse/compare/v3.2...v3.2.1
 [v3.2]:   https://github.com/martinh/libconfuse/compare/v3.1...v3.2
