@@ -22,14 +22,14 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
-Please ensure you download a <ins>versioned archive</ins> from:
-<https://github.com/martinh/libconfuse/releases/>
+> Please ensure you download a <ins>versioned archive</ins> from:
+> <https://github.com/martinh/libconfuse/releases/>
 
 
 Documentation
 -------------
 
-* [API reference/manual](http://www.nongnu.org/confuse/manual/)
+* [API reference manual](http://www.nongnu.org/confuse/manual/)
 * [Tutorial](http://www.nongnu.org/confuse/tutorial-html/)
 
 
