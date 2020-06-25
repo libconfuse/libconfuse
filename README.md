@@ -10,10 +10,8 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Examples](#examples)
-* [Download](#download)
 * [Building](#building)
 * [Documentation](#documentation)
-* [News](#news)
 
 
 Introduction
@@ -21,17 +19,18 @@ Introduction
 
 libConfuse is a configuration file parser library, licensed under the
 terms of the [ISC license][1], written in C.  It supports sections and
-(lists of) values (strings, integers, floats, booleans, and sections),
-as well as some other features such as single/double-quoted strings,
-environment variable expansion, functions and nested include statements.
+(lists of) values, as well as other features such as single/double
+quoted strings, environment variable expansion, functions and nested
+include statements.  Values can be strings, integers, floats, booleans,
+and sections.
 
 The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
 The library is available pre-built in many Linux and UNIX distributions.
-See the following pages for information on how to download and build it
-yourself:
+The latest source release is available from the releases pages, build
+instructions below.  Please ensure you download a *versioned* archive:
 
 <https://github.com/martinh/libconfuse/releases/>
 
