@@ -28,9 +28,7 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
-The library is available pre-built in many Linux and UNIX distributions.
-The latest source release is available from the releases pages, build
-instructions below.  Please ensure you download a *versioned* archive:
+Please ensure you download a <ins>versioned archive</ins>:
 
 <https://github.com/martinh/libconfuse/releases/>
 
