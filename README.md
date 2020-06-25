@@ -28,8 +28,7 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
-Please ensure you download a <ins>versioned archive</ins>:
-
+Please ensure you download a <ins>versioned archive</ins> from:
 <https://github.com/martinh/libconfuse/releases/>
 
 
