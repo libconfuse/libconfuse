@@ -83,6 +83,7 @@ int main(int argc, char **argv)
 	unsigned int i;
 	cfg_t *cfg;
 	unsigned n;
+	int rc = 0;
 	int ret;
 
 	cfg_opt_t proxy_opts[] = {
@@ -129,10 +130,12 @@ int main(int argc, char **argv)
 	printf("ret == %d\n", ret);
 	if (ret == CFG_FILE_ERROR) {
 		perror("test.conf");
-		return 1;
+		rc = 1;
+		goto end;
 	} else if (ret == CFG_PARSE_ERROR) {
 		fprintf(stderr, "parse error\n");
-		return 2;
+		rc = 2;
+		goto end;
 	}
 
 	printf("backlog == %ld\n", cfg_getint(cfg, "backlog"));
@@ -217,6 +220,7 @@ int main(int argc, char **argv)
 		fclose(fp);
 	}
 
+end:
 	cfg_free(cfg);
-	return 0;
+	return rc;
 }
