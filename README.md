@@ -23,7 +23,7 @@ gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
 > Please ensure you download a <ins>versioned archive</ins> from:
-> <https://github.com/martinh/libconfuse/releases/>
+> <https://github.com/libconfuse/libconfuse/releases/>
 
 
 Documentation
@@ -95,7 +95,7 @@ Please use the [issue tracker][2] to report bugs and feature requests.
 
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
-[2]:                https://github.com/martinh/libconfuse/issues
+[2]:                https://github.com/libconfuse/libconfuse/issues
 [Travis]:           https://travis-ci.org/troglobit/libconfuse
 [Travis Status]:    https://travis-ci.org/troglobit/libconfuse.png?branch=master
 [Coverity Scan]:    https://scan.coverity.com/projects/6674
