@@ -350,22 +350,22 @@ extern const char __export confuse_author[];
 /** Initialize a string option
  */
 #define CFG_STR(name, def, flags) \
-  __CFG_STR(name, def, flags, 0, 0)
+  __CFG_STR(name, def, flags, NULL, NULL)
 
 /** Initialize a string list option
  */
 #define CFG_STR_LIST(name, def, flags) \
-  __CFG_STR_LIST(name, def, flags, 0, 0)
+  __CFG_STR_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a string option with a value parsing callback
  */
 #define CFG_STR_CB(name, def, flags, cb) \
-  __CFG_STR(name, def, flags, 0, cb)
+  __CFG_STR(name, def, flags, NULL, cb)
 
 /** Initialize a string list option with a value parsing callback
  */
 #define CFG_STR_LIST_CB(name, def, flags, cb) \
-  __CFG_STR_LIST(name, def, flags, 0, cb)
+  __CFG_STR_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" string option.
  *
@@ -408,7 +408,7 @@ extern const char __export confuse_author[];
  * Alternatively, the default value can be set after the opts struct
  * is defined, as in:
  * <pre>
- * char *user = 0;
+ * char *user = NULL;
  * ...
  * cfg_opt_t opts[] = {
  *      CFG_SIMPLE_STR("user", &user),
@@ -420,7 +420,7 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SIMPLE_STR(name, svalue) \
-  __CFG_STR(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_STR(name, NULL, CFGF_NONE, svalue, NULL)
 
 
 #define __CFG_INT(_name, _def, _flags, _svalue, _cb) { \
@@ -443,22 +443,22 @@ extern const char __export confuse_author[];
 /** Initialize an integer option
  */
 #define CFG_INT(name, def, flags) \
-  __CFG_INT(name, def, flags, 0, 0)
+  __CFG_INT(name, def, flags, NULL, NULL)
 
 /** Initialize an integer list option
  */
 #define CFG_INT_LIST(name, def, flags) \
-  __CFG_INT_LIST(name, def, flags, 0, 0)
+  __CFG_INT_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize an integer option with a value parsing callback
  */
 #define CFG_INT_CB(name, def, flags, cb) \
-  __CFG_INT(name, def, flags, 0, cb)
+  __CFG_INT(name, def, flags, NULL, cb)
 
 /** Initialize an integer list option with a value parsing callback
  */
 #define CFG_INT_LIST_CB(name, def, flags, cb) \
-  __CFG_INT_LIST(name, def, flags, 0, cb)
+  __CFG_INT_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" integer option (see documentation for
  * CFG_SIMPLE_STR for more information).
@@ -467,7 +467,7 @@ extern const char __export confuse_author[];
  * Otherwise, you will have strange problems on 64-bit architectures.
  */
 #define CFG_SIMPLE_INT(name, svalue) \
-  __CFG_INT(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_INT(name, 0, CFGF_NONE, svalue, NULL)
 
 
 
@@ -491,28 +491,28 @@ extern const char __export confuse_author[];
 /** Initialize a floating point option
  */
 #define CFG_FLOAT(name, def, flags) \
-  __CFG_FLOAT(name, def, flags, 0, 0)
+  __CFG_FLOAT(name, def, flags, NULL, NULL)
 
 /** Initialize a floating point list option
  */
 #define CFG_FLOAT_LIST(name, def, flags) \
-  __CFG_FLOAT_LIST(name, def, flags, 0, 0)
+  __CFG_FLOAT_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a floating point option with a value parsing callback
  */
 #define CFG_FLOAT_CB(name, def, flags, cb) \
-  __CFG_FLOAT(name, def, flags, 0, cb)
+  __CFG_FLOAT(name, def, flags, NULL, cb)
 
 /** Initialize a floating point list option with a value parsing callback
  */
 #define CFG_FLOAT_LIST_CB(name, def, flags, cb) \
-  __CFG_FLOAT_LIST(name, def, flags, 0, cb)
+  __CFG_FLOAT_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" floating point option (see documentation for
  * CFG_SIMPLE_STR for more information).
  */
 #define CFG_SIMPLE_FLOAT(name, svalue) \
-  __CFG_FLOAT(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_FLOAT(name, 0, CFGF_NONE, svalue, NULL)
 
 
 
@@ -536,28 +536,28 @@ extern const char __export confuse_author[];
 /** Initialize a boolean option
  */
 #define CFG_BOOL(name, def, flags) \
-  __CFG_BOOL(name, def, flags, 0, 0)
+  __CFG_BOOL(name, def, flags, NULL, NULL)
 
 /** Initialize a boolean list option
  */
 #define CFG_BOOL_LIST(name, def, flags) \
-  __CFG_BOOL_LIST(name, def, flags, 0, 0)
+  __CFG_BOOL_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a boolean option with a value parsing callback
  */
 #define CFG_BOOL_CB(name, def, flags, cb) \
-  __CFG_BOOL(name, def, flags, 0, cb)
+  __CFG_BOOL(name, def, flags, NULL, cb)
 
 /** Initialize a boolean list option with a value parsing callback
  */
 #define CFG_BOOL_LIST_CB(name, def, flags, cb) \
-  __CFG_BOOL_LIST(name, def, flags, 0, cb)
+  __CFG_BOOL_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" boolean option (see documentation for
  * CFG_SIMPLE_STR for more information).
  */
 #define CFG_SIMPLE_BOOL(name, svalue) \
-  __CFG_BOOL(name, cfg_false, CFGF_NONE, svalue, 0)
+  __CFG_BOOL(name, cfg_false, CFGF_NONE, svalue, NULL)
 
 
 
@@ -626,12 +626,12 @@ extern const char __export confuse_author[];
  * @see cfg_callback_t, cfg_free_func_t
  */
 #define CFG_PTR_CB(name, def, flags, parsecb, freecb) \
-  __CFG_PTR(name, def, flags, 0, parsecb, freecb)
+  __CFG_PTR(name, def, flags, NULL, parsecb, freecb)
 
 /** Initialize a list of user-defined options
  */
 #define CFG_PTR_LIST_CB(name, def, flags, parsecb, freecb) \
-  __CFG_PTR(name, def, flags | CFGF_LIST, 0, parsecb, freecb)
+  __CFG_PTR(name, def, flags | CFGF_LIST, NULL, parsecb, freecb)
 
 /*#define CFG_SIMPLE_PTR(name, svalue, cb) \
   __CFG_PTR(name, 0, 0, svalue, cb)*/
