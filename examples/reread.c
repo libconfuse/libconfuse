@@ -5,7 +5,7 @@
 #include <locale.h>
 #include "confuse.h"
 
-cfg_t *cfg = 0;
+cfg_t *cfg = NULL;
 const char *config_filename = "./reread.conf";
 
 void read_config(void)
@@ -73,7 +73,7 @@ int main(void)
 	}
 
 	cfg_free(cfg);
-	cfg = 0;
+	cfg = NULL;
 
 	return 0;
 }
