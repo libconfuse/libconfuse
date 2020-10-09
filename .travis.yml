@@ -1,5 +1,8 @@
 # Travis CI integration
 # Defaults to GNU GCC and autotools: ./configure && make && make test
+arch:
+ - amd64
+ - ppc64le
 
 language: c
 
