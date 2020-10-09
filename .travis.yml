@@ -1,5 +1,6 @@
 # Travis CI integration
 # Defaults to GNU GCC and autotools: ./configure && make && make test
+
 language: c
 
 # Use docker for quicker builds, it now allows https://docs.travis-ci.com/user/apt/
