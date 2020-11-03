@@ -71,7 +71,7 @@ int cb_validate_bookmark(cfg_t *cfg, cfg_opt_t *opt)
 		cfg_error(cfg, "section is NULL!?");
 		return -1;
 	}
-	if (cfg_getstr(sec, "machine") == 0) {
+	if (cfg_getstr(sec, "machine") == NULL) {
 		cfg_error(cfg, "machine option must be set for bookmark '%s'", cfg_title(sec));
 		return -1;
 	}
@@ -88,17 +88,17 @@ int main(int argc, char **argv)
 
 	cfg_opt_t proxy_opts[] = {
 		CFG_INT("type", 0, CFGF_NONE),
-		CFG_STR("host", 0, CFGF_NONE),
+		CFG_STR("host", NULL, CFGF_NONE),
 		CFG_STR_LIST("exclude", "{localhost, .localnet}", CFGF_NONE),
 		CFG_INT("port", 21, CFGF_NONE),
 		CFG_END()
 	};
 	cfg_opt_t bookmark_opts[] = {
-		CFG_STR("machine", 0, CFGF_NONE),
+		CFG_STR("machine", NULL, CFGF_NONE),
 		CFG_INT("port", 21, CFGF_NONE),
-		CFG_STR("login", 0, CFGF_NONE),
-		CFG_STR("password", 0, CFGF_NONE),
-		CFG_STR("directory", 0, CFGF_NONE),
+		CFG_STR("login", NULL, CFGF_NONE),
+		CFG_STR("password", NULL, CFGF_NONE),
+		CFG_STR("directory", NULL, CFGF_NONE),
 		CFG_BOOL("passive-mode", cfg_false, CFGF_NONE),
 		CFG_SEC("proxy", proxy_opts, CFGF_NONE),
 		CFG_END()
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 		if (pxy) {
 			int j, m;
 
-			if (cfg_getstr(pxy, "host") == 0) {
+			if (cfg_getstr(pxy, "host") == NULL) {
 				printf("      no proxy host is set, setting it to 'localhost'...\n");
 				/* For sections without CFGF_MULTI flag set, there is
 				 * also an extended syntax to get an option in a

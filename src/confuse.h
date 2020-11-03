@@ -330,30 +330,42 @@ extern const char __export confuse_copyright[];
 extern const char __export confuse_version[];
 extern const char __export confuse_author[];
 
-#define __CFG_STR(name, def, flags, svalue, cb) \
-  {name,0,CFGT_STR,0,0,flags,0,{0,0,cfg_false,def,0},0,{.string=svalue},cb,0,0,0,0}
-#define __CFG_STR_LIST(name, def, flags, svalue, cb) \
-  {name,0,CFGT_STR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.string=svalue},cb,0,0,0,0}
+#define __CFG_STR(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_STR, \
+	.flags = _flags, \
+	.def = { .string = _def, }, \
+	.simple_value = { .string = _svalue, }, \
+	.parsecb = _cb, \
+}
+#define __CFG_STR_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_STR, \
+	.flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .string = _svalue, }, \
+	.parsecb = _cb, \
+}
 
 /** Initialize a string option
  */
 #define CFG_STR(name, def, flags) \
-  __CFG_STR(name, def, flags, 0, 0)
+  __CFG_STR(name, def, flags, NULL, NULL)
 
 /** Initialize a string list option
  */
 #define CFG_STR_LIST(name, def, flags) \
-  __CFG_STR_LIST(name, def, flags, 0, 0)
+  __CFG_STR_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a string option with a value parsing callback
  */
 #define CFG_STR_CB(name, def, flags, cb) \
-  __CFG_STR(name, def, flags, 0, cb)
+  __CFG_STR(name, def, flags, NULL, cb)
 
 /** Initialize a string list option with a value parsing callback
  */
 #define CFG_STR_LIST_CB(name, def, flags, cb) \
-  __CFG_STR_LIST(name, def, flags, 0, cb)
+  __CFG_STR_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" string option.
  *
@@ -396,7 +408,7 @@ extern const char __export confuse_author[];
  * Alternatively, the default value can be set after the opts struct
  * is defined, as in:
  * <pre>
- * char *user = 0;
+ * char *user = NULL;
  * ...
  * cfg_opt_t opts[] = {
  *      CFG_SIMPLE_STR("user", &user),
@@ -408,33 +420,45 @@ extern const char __export confuse_author[];
  *
  */
 #define CFG_SIMPLE_STR(name, svalue) \
-  __CFG_STR(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_STR(name, NULL, CFGF_NONE, svalue, NULL)
 
 
-#define __CFG_INT(name, def, flags, svalue, cb) \
-  {name,0,CFGT_INT,0,0,flags,0,{def,0,cfg_false,0,0},0,{.number=svalue},cb,0,0,0,0}
-#define __CFG_INT_LIST(name, def, flags, svalue, cb) \
-  {name,0,CFGT_INT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.number=svalue},cb,0,0,0,0}
+#define __CFG_INT(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_INT, \
+	.flags = _flags, \
+	.def = { .number = _def, }, \
+	.simple_value = { .number = _svalue, }, \
+	.parsecb = _cb, \
+}
+#define __CFG_INT_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_INT, \
+	.flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .number = _svalue, }, \
+	.parsecb = _cb, \
+}
 
 /** Initialize an integer option
  */
 #define CFG_INT(name, def, flags) \
-  __CFG_INT(name, def, flags, 0, 0)
+  __CFG_INT(name, def, flags, NULL, NULL)
 
 /** Initialize an integer list option
  */
 #define CFG_INT_LIST(name, def, flags) \
-  __CFG_INT_LIST(name, def, flags, 0, 0)
+  __CFG_INT_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize an integer option with a value parsing callback
  */
 #define CFG_INT_CB(name, def, flags, cb) \
-  __CFG_INT(name, def, flags, 0, cb)
+  __CFG_INT(name, def, flags, NULL, cb)
 
 /** Initialize an integer list option with a value parsing callback
  */
 #define CFG_INT_LIST_CB(name, def, flags, cb) \
-  __CFG_INT_LIST(name, def, flags, 0, cb)
+  __CFG_INT_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" integer option (see documentation for
  * CFG_SIMPLE_STR for more information).
@@ -443,73 +467,97 @@ extern const char __export confuse_author[];
  * Otherwise, you will have strange problems on 64-bit architectures.
  */
 #define CFG_SIMPLE_INT(name, svalue) \
-  __CFG_INT(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_INT(name, 0, CFGF_NONE, svalue, NULL)
 
 
 
-#define __CFG_FLOAT(name, def, flags, svalue, cb) \
-  {name,0,CFGT_FLOAT,0,0,flags,0,{0,def,cfg_false,0,0},0,{.fpnumber=svalue},cb,0,0,0,0}
-#define __CFG_FLOAT_LIST(name, def, flags, svalue, cb) \
-  {name,0,CFGT_FLOAT,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.fpnumber=svalue},cb,0,0,0,0}
+#define __CFG_FLOAT(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_FLOAT, \
+	.flags = _flags, \
+	.def = { .fpnumber = _def, }, \
+	.simple_value = { .fpnumber = _svalue, }, \
+	.parsecb = _cb, \
+}
+#define __CFG_FLOAT_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_FLOAT, \
+	.flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .fpnumber = _svalue, }, \
+	.parsecb = _cb, \
+}
 
 /** Initialize a floating point option
  */
 #define CFG_FLOAT(name, def, flags) \
-  __CFG_FLOAT(name, def, flags, 0, 0)
+  __CFG_FLOAT(name, def, flags, NULL, NULL)
 
 /** Initialize a floating point list option
  */
 #define CFG_FLOAT_LIST(name, def, flags) \
-  __CFG_FLOAT_LIST(name, def, flags, 0, 0)
+  __CFG_FLOAT_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a floating point option with a value parsing callback
  */
 #define CFG_FLOAT_CB(name, def, flags, cb) \
-  __CFG_FLOAT(name, def, flags, 0, cb)
+  __CFG_FLOAT(name, def, flags, NULL, cb)
 
 /** Initialize a floating point list option with a value parsing callback
  */
 #define CFG_FLOAT_LIST_CB(name, def, flags, cb) \
-  __CFG_FLOAT_LIST(name, def, flags, 0, cb)
+  __CFG_FLOAT_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" floating point option (see documentation for
  * CFG_SIMPLE_STR for more information).
  */
 #define CFG_SIMPLE_FLOAT(name, svalue) \
-  __CFG_FLOAT(name, 0, CFGF_NONE, svalue, 0)
+  __CFG_FLOAT(name, 0, CFGF_NONE, svalue, NULL)
 
 
 
-#define __CFG_BOOL(name, def, flags, svalue, cb) \
-  {name,0,CFGT_BOOL,0,0,flags,0,{0,0,def,0,0},0,{.boolean=svalue},cb,0,0,0,0}
-#define __CFG_BOOL_LIST(name, def, flags, svalue, cb) \
-  {name,0,CFGT_BOOL,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.boolean=svalue},cb,0,0,0,0}
+#define __CFG_BOOL(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_BOOL, \
+	.flags = _flags, \
+	.def = { .boolean = _def, }, \
+	.simple_value = { .boolean = _svalue, }, \
+	.parsecb = _cb, \
+}
+#define __CFG_BOOL_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, \
+	.type = CFGT_BOOL, \
+	.flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .boolean = _svalue, }, \
+	.parsecb = _cb, \
+}
 
 /** Initialize a boolean option
  */
 #define CFG_BOOL(name, def, flags) \
-  __CFG_BOOL(name, def, flags, 0, 0)
+  __CFG_BOOL(name, def, flags, NULL, NULL)
 
 /** Initialize a boolean list option
  */
 #define CFG_BOOL_LIST(name, def, flags) \
-  __CFG_BOOL_LIST(name, def, flags, 0, 0)
+  __CFG_BOOL_LIST(name, def, flags, NULL, NULL)
 
 /** Initialize a boolean option with a value parsing callback
  */
 #define CFG_BOOL_CB(name, def, flags, cb) \
-  __CFG_BOOL(name, def, flags, 0, cb)
+  __CFG_BOOL(name, def, flags, NULL, cb)
 
 /** Initialize a boolean list option with a value parsing callback
  */
 #define CFG_BOOL_LIST_CB(name, def, flags, cb) \
-  __CFG_BOOL_LIST(name, def, flags, 0, cb)
+  __CFG_BOOL_LIST(name, def, flags, NULL, cb)
 
 /** Initialize a "simple" boolean option (see documentation for
  * CFG_SIMPLE_STR for more information).
  */
 #define CFG_SIMPLE_BOOL(name, svalue) \
-  __CFG_BOOL(name, cfg_false, CFGF_NONE, svalue, 0)
+  __CFG_BOOL(name, cfg_false, CFGF_NONE, svalue, NULL)
 
 
 
@@ -524,8 +572,12 @@ extern const char __export confuse_author[];
  * cfg_gettsec() function)
  *
  */
-#define CFG_SEC(name, opts, flags) \
-  {name,0,CFGT_SEC,0,0,flags,opts,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
+#define CFG_SEC(_name, _opts, _flags) { \
+	.name = _name, \
+	.type = CFGT_SEC, \
+	.flags = _flags, \
+	.subopts = _opts, \
+}
 
 
 
@@ -535,14 +587,31 @@ extern const char __export confuse_author[];
  *
  * @see cfg_func_t
  */
-#define CFG_FUNC(name, func) \
-  {name,0,CFGT_FUNC,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},func,{0},0,0,0,0,0}
+#define CFG_FUNC(_name, _func) { \
+	.name = _name, \
+	.type = CFGT_FUNC, \
+	.func = _func, \
+}
 
 
-#define __CFG_PTR(name, def, flags, svalue, parsecb, freecb) \
-  {name,0,CFGT_PTR,0,0,flags,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
-#define __CFG_PTR_LIST(name, def, flags, svalue, parsecb, freecb) \
-  {name,0,CFGT_PTR,0,0,flags | CFGF_LIST,0,{0,0,cfg_false,0,def},0,{.ptr=svalue},parsecb,0,0,0,freecb}
+#define __CFG_PTR(_name, _def, _flags, _svalue, _parsecb, _freecb) { \
+	.name = _name, \
+	.type = CFGT_PTR, \
+	.flags = _flags, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .ptr = _svalue, }, \
+	.parsecb = _parsecb, \
+	.freecb = _freecb, \
+}
+#define __CFG_PTR_LIST(name, def, flags, svalue, parsecb, freecb) { \
+	.name = _name, \
+	.type = CFGT_PTR, \
+	.flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, \
+	.simple_value = { .ptr = _svalue, }, \
+	.parsecb = _parsecb, \
+	.freecb = _freecb, \
+}
 
 /** Initialize a user-defined option
  *
@@ -557,12 +626,12 @@ extern const char __export confuse_author[];
  * @see cfg_callback_t, cfg_free_func_t
  */
 #define CFG_PTR_CB(name, def, flags, parsecb, freecb) \
-  __CFG_PTR(name, def, flags, 0, parsecb, freecb)
+  __CFG_PTR(name, def, flags, NULL, parsecb, freecb)
 
 /** Initialize a list of user-defined options
  */
 #define CFG_PTR_LIST_CB(name, def, flags, parsecb, freecb) \
-  __CFG_PTR(name, def, flags | CFGF_LIST, 0, parsecb, freecb)
+  __CFG_PTR(name, def, flags | CFGF_LIST, NULL, parsecb, freecb)
 
 /*#define CFG_SIMPLE_PTR(name, svalue, cb) \
   __CFG_PTR(name, 0, 0, svalue, cb)*/
@@ -572,7 +641,7 @@ extern const char __export confuse_author[];
  * the option list.
  */
 #define CFG_END() \
-  {0,0,CFGT_NONE,0,0,CFGF_NONE,0,{0,0,cfg_false,0,0},0,{0},0,0,0,0,0}
+  { .type = CFGT_NONE, }
 
 
 

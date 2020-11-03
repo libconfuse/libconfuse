@@ -59,7 +59,7 @@ const char confuse_version[] = PACKAGE_VERSION;
 const char confuse_copyright[] = PACKAGE_STRING " by Martin Hedenfalk <martin@bzero.se>";
 const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
 
-char *cfg_yylval = 0;
+char *cfg_yylval = NULL;
 
 extern int  cfg_yylex(cfg_t *cfg);
 extern void cfg_yylex_destroy(void);
@@ -858,7 +858,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 			cfg->opts[i].flags |= CFGF_RESET;
 			cfg->opts[i].flags &= ~CFGF_MODIFIED;
 		} else if (!is_set(CFGF_MULTI, cfg->opts[i].flags)) {
-			cfg_setopt(cfg, &cfg->opts[i], 0);
+			cfg_setopt(cfg, &cfg->opts[i], NULL);
 			cfg->opts[i].flags |= CFGF_DEFINIT;
 		}
 	}
@@ -1002,7 +1002,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		break;
 
 	case CFGT_SEC:
-		if (is_set(CFGF_MULTI, opt->flags) || val->section == 0) {
+		if (is_set(CFGF_MULTI, opt->flags) || val->section == NULL) {
 			if (val->section) {
 				val->section->path = NULL; /* Global search path */
 				cfg_free(val->section);
@@ -1102,7 +1102,7 @@ DLLIMPORT int cfg_opt_setmulti(cfg_t *cfg, cfg_opt_t *opt, unsigned int nvalues,
 
 	old = *opt;
 	opt->nvalues = 0;
-	opt->values = 0;
+	opt->values = NULL;
 
 	for (i = 0; i < nvalues; i++) {
 		if (cfg_setopt(cfg, opt, values[i]))
@@ -1273,7 +1273,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 	char *opttitle = NULL;
 	cfg_opt_t *opt = NULL;
 	cfg_value_t *val = NULL;
-	cfg_opt_t funcopt = CFG_STR(0, 0, 0);
+	cfg_opt_t funcopt = CFG_STR(NULL, NULL, 0);
+
 	int ignore = 0;		/* ignore until this token, traverse parser w/o error */
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
@@ -1419,7 +1420,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
+			if (cfg_setopt(cfg, opt, cfg_yylval) == NULL)
 				goto error;
 
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
@@ -1446,7 +1447,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					goto error;
 				}
 
-				if (cfg_setopt(cfg, opt, cfg_yylval) == 0)
+				if (cfg_setopt(cfg, opt, cfg_yylval) == NULL)
 					goto error;
 				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
@@ -1487,7 +1488,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			val->section->path = cfg->path; /* Remember global search path */
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
-			rc = cfg_parse_internal(val->section, level + 1, -1, 0);
+			rc = cfg_parse_internal(val->section, level + 1, -1, NULL);
 			if (rc != STATE_EOF)
 				goto error;
 
@@ -1835,9 +1836,9 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 	}
 
 	cfg->flags = flags;
-	cfg->filename = 0;
+	cfg->filename = NULL;
 	cfg->line = 0;
-	cfg->errfunc = 0;
+	cfg->errfunc = NULL;
 
 #if defined(ENABLE_NLS) && defined(HAVE_GETTEXT)
 	bindtextdomain(PACKAGE, LOCALEDIR);
@@ -1850,13 +1851,13 @@ DLLIMPORT cfg_t *cfg_init(cfg_opt_t *opts, cfg_flag_t flags)
 
 DLLIMPORT char *cfg_tilde_expand(const char *filename)
 {
-	char *expanded = 0;
+	char *expanded = NULL;
 
 #ifndef _WIN32
 	/* Do tilde expansion */
 	if (filename[0] == '~') {
-		struct passwd *passwd = 0;
-		const char *file = 0;
+		struct passwd *passwd = NULL;
+		const char *file = NULL;
 
 		if (filename[1] == '/' || filename[1] == 0) {
 			/* ~ or ~/path */
@@ -1867,7 +1868,7 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 			char *user;
 
 			file = strchr(filename, '/');
-			if (file == 0)
+			if (file == NULL)
 				file = filename + strlen(filename);
 
 			user = malloc(file - filename);
@@ -2013,7 +2014,7 @@ DLLIMPORT int cfg_include(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **arg
 
 static cfg_value_t *cfg_opt_getval(cfg_opt_t *opt, unsigned int index)
 {
-	cfg_value_t *val = 0;
+	cfg_value_t *val = NULL;
 
 	if (index != 0 && !is_set(CFGF_LIST, opt->flags) && !is_set(CFGF_MULTI, opt->flags)) {
 		errno = EINVAL;
@@ -2517,12 +2518,12 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 
 DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 {
-	return cfg_opt_print_pff_indent(opt, fp, 0, indent);
+	return cfg_opt_print_pff_indent(opt, fp, NULL, indent);
 }
 
 DLLIMPORT int cfg_opt_print(cfg_opt_t *opt, FILE *fp)
 {
-	return cfg_opt_print_pff_indent(opt, fp, 0, 0);
+	return cfg_opt_print_pff_indent(opt, fp, NULL, 0);
 }
 
 static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
@@ -2542,12 +2543,12 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 
 DLLIMPORT int cfg_print_indent(cfg_t *cfg, FILE *fp, int indent)
 {
-	return cfg_print_pff_indent(cfg, fp, 0, indent);
+	return cfg_print_pff_indent(cfg, fp, NULL, indent);
 }
 
 DLLIMPORT int cfg_print(cfg_t *cfg, FILE *fp)
 {
-	return cfg_print_pff_indent(cfg, fp, 0, 0);
+	return cfg_print_pff_indent(cfg, fp, NULL, 0);
 }
 
 DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt, cfg_print_func_t pf)
@@ -2607,7 +2608,7 @@ static cfg_opt_t *cfg_getopt_array(cfg_opt_t *rootopts, int cfg_flags, const cha
 				return NULL;
 			}
 
-			if (!is_set(CFGF_MULTI, secopt->flags) && (seccfg = cfg_opt_getnsec(secopt, 0)) != 0)
+			if (!is_set(CFGF_MULTI, secopt->flags) && (seccfg = cfg_opt_getnsec(secopt, 0)) != NULL)
 				opts = seccfg->opts;
 			else
 				opts = secopt->subopts;

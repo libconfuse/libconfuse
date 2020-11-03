@@ -295,9 +295,9 @@ int main(void)
 	};
 
 	cfg_opt_t opts[] = {
-		CFG_BOOL_LIST("bool", cfg_false, CFGF_NONE),
+		CFG_BOOL_LIST("bool", NULL, CFGF_NONE),
 		CFG_STR_LIST("string", NULL, CFGF_NONE),
-		CFG_INT_LIST("int", 0, CFGF_NONE),
+		CFG_INT_LIST("int", NULL, CFGF_NONE),
 		CFG_FLOAT_LIST("float", "0.0", CFGF_NONE),
 		CFG_SEC("sub", sub_opts,
 			CFGF_MULTI | CFGF_TITLE | CFGF_NO_TITLE_DUPES),

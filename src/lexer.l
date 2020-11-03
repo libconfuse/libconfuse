@@ -141,7 +141,7 @@ void cfg_scan_fp_end(void);
     if(e && e[1] == '-')
         *e = 0;
     else
-        e = 0;
+        e = NULL;
     var = getenv(yytext+2);
     if(!var && e)
         var = e+2;
@@ -271,7 +271,7 @@ $\{[^}]*\} {
     if (e && e[1] == '-')
         *e = 0;
     else
-        e = 0;
+        e = NULL;
     var = getenv(yytext+2);
     if (!var && e)
         var = e+2;
@@ -300,7 +300,7 @@ void cfg_dummy_function(void)
     /* please compiler :-)
      * otherwise "defined but not used" warning
      */
-    yyunput(0, 0);
+    yyunput(0, NULL);
 }
 
 int cfg_lexer_include(cfg_t *cfg, const char *filename)
