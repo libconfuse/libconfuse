@@ -23,13 +23,13 @@ AC_ARG_ENABLE([examples],
 	[], [enable_examples=yes])
 AM_CONDITIONAL([ENABLE_EXAMPLES], [test "$enable_examples" = yes])
 
-# 0.18.2.1 updates AM_GNU_GETTEXT() to use AC_PROG_MKDIR_P instead of
-# AM_PROG_MKDIR_P, but 0.18.1.1 is included in Ubuntu 12.04 LTS.
-# Fortunately Ubuntu 14.04 LTS ships 0.18.3.1 and Debian Jessie 0.19.3
-# Unfortunately CentOS7, RHEL7 ships 0.18.2.1, so for best compat.
-# level at this point in time we set 0.18.2.
+# 0.19.6 enables AM_GNU_GETTEXT_REQUIRE_VERSION whixh is required
+# for use with support compiling if gettext 0.20 or later is found.
+# Thus a minimum of Ubuntu 16.04, Debian Stretch, CentOS7, or RHEL7, 
+# is now require.
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.2])
+AM_GNU_GETTEXT_VERSION([0.19.6])
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.6])
 
 # Checks for header files.
 AC_HEADER_STDC
