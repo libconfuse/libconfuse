@@ -942,11 +942,31 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &i) != 0)
 				return NULL;
 		} else {
+			int radix;
+			const char *int_str;
 			if (!value) {
 				errno = EINVAL;
 				return NULL;
 			}
-			i = strtol(value, &endptr, 0);
+			// Guess radix
+			radix = 0;
+			int_str = value;
+			if (value[0] == '0') {
+				switch (value[1]) {
+					case 'b':
+						radix = 2;
+						int_str = &value[2];
+						break;
+					case 'x':
+						radix = 16;
+						int_str = &value[2];
+						break;
+					default:
+						radix = 8;
+						int_str = &value[1];
+				}
+			}
+			i = strtol(int_str, &endptr, radix);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
 				return NULL;
@@ -1238,7 +1258,7 @@ static int call_function(cfg_t *cfg, cfg_opt_t *opt, cfg_opt_t *funcopt)
 		errno = EINVAL;
 		return CFG_FAIL;
 	}
-		
+
 	/*
 	 * create am argv string vector and call the registered function
 	 */
