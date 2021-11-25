@@ -343,7 +343,7 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 	if (!index) {
 		opt = cfg_getopt_leaf(sec, name);
 
-		if (!opt && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags))
+		if (!opt && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags) && !is_set(CFGF_KEYSTRVAL, sec->flags))
 			cfg_error(cfg, _("no such option '%s'"), name);
 	}
 
