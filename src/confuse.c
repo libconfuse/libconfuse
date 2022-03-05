@@ -867,12 +867,12 @@ static void cfg_init_defaults(cfg_t *cfg)
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 {
 	cfg_value_t *val = NULL;
-	int b;
 	const char *s;
-	double f;
-	long int i;
-	void *p;
 	char *endptr;
+	long int i;
+	double f;
+	void *p;
+	int b;
 
 	if (!cfg || !opt) {
 		errno = EINVAL;
@@ -942,35 +942,37 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			if ((*opt->parsecb) (cfg, opt, value, &i) != 0)
 				return NULL;
 		} else {
-			int radix;
-			const char *int_str;
+			const char *str;
+			int radix = 0;
+
 			if (!value) {
 				errno = EINVAL;
 				return NULL;
 			}
-			// Guess radix
-			radix = 0;
-			int_str = value;
+
+			str = value;
 			if (value[0] == '0') {
 				switch (value[1]) {
-					case 'b':
-						radix = 2;
-						int_str = &value[2];
-						break;
-					case 'x':
-						radix = 16;
-						int_str = &value[2];
-						break;
-					default:
-						radix = 8;
-						int_str = &value[1];
+				case 'b':
+					radix = 2;
+					str = &value[2];
+					break;
+				case 'x':
+					radix = 16;
+					str = &value[2];
+					break;
+				default:
+					radix = 8;
+					str = &value[1];
 				}
 			}
-			i = strtol(int_str, &endptr, radix);
+
+			i = strtol(str, &endptr, radix);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
 				return NULL;
 			}
+
 			if (errno == ERANGE) {
 				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
 				return NULL;
