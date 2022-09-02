@@ -3,6 +3,13 @@ Change Log
 
 All relevant changes to the project are documented in this file.
 
+[v3.4][UNRELEASED]
+------------------
+
+### Fixes
+* Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
+
+
 [v3.3][] - 2020-06-25
 ---------------------
 
