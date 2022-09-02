@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: confuse 2.6-2\n"
+"Project-Id-Version: confuse 3.3-1\n"
 "Report-Msgid-Bugs-To: https://github.com/martinh/libconfuse/issues\n"
 "POT-Creation-Date: 2020-06-22 11:38+0200\n"
-"PO-Revision-Date: 2019-11-25 18:16-0500\n"
+"PO-Revision-Date: 2020-12-26 08:50+0100\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
@@ -23,7 +23,7 @@ msgid "no such option '%s'"
 msgstr "keine solche Option »%s«"
 
 #: src/confuse.c:328
-#, fuzzy, c-format
+#, c-format
 msgid "no sub-section '%s' in '%s'"
 msgstr "kein Unterabschnitt »%s« in »%s«"
 
