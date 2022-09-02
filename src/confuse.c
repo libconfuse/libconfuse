@@ -1894,18 +1894,20 @@ DLLIMPORT char *cfg_tilde_expand(const char *filename)
 			passwd = getpwuid(geteuid());
 			file = filename + 1;
 		} else {
-			/* ~user or ~user/path */
-			char *user;
+			char *user; /* ~user or ~user/path */
+			size_t len;
 
 			file = strchr(filename, '/');
 			if (file == NULL)
 				file = filename + strlen(filename);
 
-			user = malloc(file - filename);
+			len = file - filename - 1;
+			user = malloc(len + 1);
 			if (!user)
 				return NULL;
 
-			strncpy(user, filename + 1, file - filename - 1);
+			strncpy(user, &filename[1], len);
+			user[len] = 0;
 			passwd = getpwnam(user);
 			free(user);
 		}
