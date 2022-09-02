@@ -6,7 +6,10 @@ All relevant changes to the project are documented in this file.
 [v3.4][UNRELEASED]
 ------------------
 
+### Changes
+
 ### Fixes
+* Issue #153: German translation update
 * Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
 
 
