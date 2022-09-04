@@ -671,7 +671,8 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 	if (!dupopts)
 		return NULL;
 
-	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
+	if (n)
+		memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
 	for (i = 0; i < n; i++) {
 		/* Clear dynamic ptrs, protecting the original on failure */
