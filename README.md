@@ -1,6 +1,6 @@
 libConfuse
 ==========
-[![Travis Status][]][Travis] [![Coverity Status][]][Coverity Scan]
+[![Badge][]][ISC] [![GitHub Status][]][GitHub] [![Coverity Status][]][Coverity Scan]
 
 * [Introduction](#introduction)
 * [Documentation](#documentation)
@@ -96,7 +96,9 @@ Please use the [issue tracker][2] to report bugs and feature requests.
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
 [2]:                https://github.com/libconfuse/libconfuse/issues
-[Travis]:           https://travis-ci.org/troglobit/libconfuse
-[Travis Status]:    https://travis-ci.org/troglobit/libconfuse.png?branch=master
+[ISC]:              https://en.wikipedia.org/wiki/ISC_license
+[Badge]:            https://img.shields.io/badge/License-ISC-blue.svg
+[GitHub]:           https://github.com/libconfuse/libconfuse/actions/workflows/build.yml/
+[GitHub Status]:    https://github.com/libconfuse/libconfuse/actions/workflows/build.yml/badge.svg
 [Coverity Scan]:    https://scan.coverity.com/projects/6674
 [Coverity Status]:  https://scan.coverity.com/projects/6674/badge.svg
