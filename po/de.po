@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: confuse 3.3-1\n"
-"Report-Msgid-Bugs-To: https://github.com/martinh/libconfuse/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/libconfuse/libconfuse/issues\n"
 "POT-Creation-Date: 2020-06-22 11:38+0200\n"
 "PO-Revision-Date: 2020-12-26 08:50+0100\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"

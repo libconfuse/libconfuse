@@ -59,7 +59,7 @@ the [Pro Git][gitbook] online book:
     Signed-off-by: First Lastname <some.email@example.com>
 
 
-[github]:   https://github.com/martinh/libconfuse/
+[github]:   https://github.com/libconfuse/libconfuse/
 [KNF]:      https://en.wikipedia.org/wiki/Kernel_Normal_Form
 [style]:    https://www.kernel.org/doc/html/latest/process/coding-style.html
 [gitbook]:  https://git-scm.com/book/ch5-2.html
