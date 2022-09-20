@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef __has_feature
+# define __has_feature(x) 0
+#endif
+
 static int no_foo(cfg_t *cfg, cfg_opt_t *opt)
 {
 	return !strncmp(cfg_opt_name(opt), "foo-", 4);
@@ -42,6 +46,11 @@ int main(void)
 	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	fclose(f);
 
+#if __has_feature(memory_sanitizer)
+	/* Skip check since fmemopen(2) is broken with sanitizers, see
+	 *   https://github.com/google/sanitizers/issues/628
+	 */
+#else
 	fprintf(stderr, "no_foo filter:\n%s", buf);
 	fail_unless(strstr(buf, "foo-") == NULL);
 	fail_unless(strstr(buf, "bar-") != NULL);
@@ -56,6 +65,7 @@ int main(void)
 	fprintf(stderr, "no_bar filter:\n%s", buf);
 	fail_unless(strstr(buf, "foo-") != NULL);
 	fail_unless(strstr(buf, "bar-") == NULL);
+#endif
 
 	cfg_free(cfg);
 

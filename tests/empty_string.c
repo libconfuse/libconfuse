@@ -6,6 +6,10 @@
 extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
 
+#ifndef __has_feature
+# define __has_feature(x) 0
+#endif
+
 int main(void)
 {
 	cfg_opt_t opts[] = {
@@ -28,6 +32,11 @@ int main(void)
 	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	cfg_free(cfg);
 
+#if __has_feature(address_sanitizer) || __has_feature(memory_sanitizer) || defined(__SANITIZE_ADDRESS__)
+	/* Skip check since fmemopen(2) is broken with sanitizers, see
+	 *   https://github.com/google/sanitizers/issues/628
+	 */
+#else
 	/*
 	 * try to reload the generated temporary config file to check
 	 * that the default is indeed overridden by an empty string
@@ -36,9 +45,11 @@ int main(void)
 	fail_unless(cfg != NULL);
 	fail_unless(fseek(f, 0L, SEEK_SET) == 0);
 	fail_unless(cfg_parse_fp(cfg, f) == CFG_SUCCESS);
-	fclose(f);
 	fail_unless(strcmp(cfg_getstr(cfg, "string"), "") == 0);
 	cfg_free(cfg);
+#endif
+
+	fclose(f);
 
 	return 0;
 }
