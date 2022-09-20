@@ -39,7 +39,7 @@ int main(void)
 	cfg_set_print_filter_func(cfg, no_foo);
 	f = fmemopen(buf, sizeof(buf), "w+");
 	fail_unless(f != NULL);
-	cfg_print(cfg, f);
+	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	fclose(f);
 
 	fprintf(stderr, "no_foo filter:\n%s", buf);
@@ -49,7 +49,7 @@ int main(void)
 	cfg_set_print_filter_func(cfg, no_bar);
 	f = fmemopen(buf, sizeof(buf), "w+");
 	fail_unless(f != NULL);
-	cfg_print(cfg, f);
+	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	fclose(f);
 
 	fprintf(stderr, "----\n");
