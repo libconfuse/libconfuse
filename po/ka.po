@@ -1,0 +1,160 @@
+# Georgian translation for libconfuse.
+# Copyright (C) 2022 Martin Hedenfalk
+# This file is distributed under the same license as the confuse package.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: confuse 3.4-dev\n"
+"Report-Msgid-Bugs-To: https://github.com/libconfuse/libconfuse/issues\n"
+"POT-Creation-Date: 2022-12-04 19:32+0100\n"
+"PO-Revision-Date: 2022-12-04 19:43+0100\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: src/confuse.c:326 src/confuse.c:347 src/confuse.c:2328
+#, c-format
+msgid "no such option '%s'"
+msgstr "უცნობი პარამეტრი: %s"
+
+#: src/confuse.c:328
+#, c-format
+msgid "no sub-section '%s' in '%s'"
+msgstr "'%2$s'-ში ქვესექცია '%1$s' არ არსებობს"
+
+#: src/confuse.c:330
+#, c-format
+msgid "no sub-section title/index for '%s'"
+msgstr "'%s'-სთვის ქვესექციის სათაური/ინდექსი არ არსებობს"
+
+#: src/confuse.c:756
+#, c-format
+msgid "duplicate option '%s' not allowed"
+msgstr "პარამეტრის '%s' დუბლირება აკრძალულია"
+
+#: src/confuse.c:924
+#, c-format
+msgid "found duplicate title '%s'"
+msgstr "ნაპოვნია დუბლირებული სათაური '%s'"
+
+#: src/confuse.c:972
+#, c-format
+msgid "invalid integer value for option '%s'"
+msgstr "არასწორი მთელი რიცხვის მნიშვნელობა პარამეტრისთვის '%s'"
+
+#: src/confuse.c:977
+#, c-format
+msgid "integer value for option '%s' is out of range"
+msgstr "მთელი რიცხვის მნიშვნელობა პარამეტრისთვის '%s' დასაშვებ დიაპაზონს გარეთაა"
+
+#: src/confuse.c:995
+#, c-format
+msgid "invalid floating point value for option '%s'"
+msgstr "არასწორი მცურავწერტილიანი მნიშვნელობა პარამეტრისთვის '%s'"
+
+#: src/confuse.c:999
+#, c-format
+msgid "floating point value for option '%s' is out of range"
+msgstr "მცურავწერტილიანი მნიშვნელობა ბარამეტრისთვის '%s' დასაშვებ დიაპაზონს გარეთაა"
+
+#: src/confuse.c:1085
+#, c-format
+msgid "invalid boolean value for option '%s'"
+msgstr "არასწორი ლოგიკური მნიშვნელობა პარამეტრისთვის '%s'"
+
+#: src/confuse.c:1284
+#, c-format
+msgid "dropping deprecated configuration option '%s'"
+msgstr "მოძველებული კონფიგურაციის პარამეტრის ('%s') მოცილება"
+
+#: src/confuse.c:1287
+#, c-format
+msgid "found deprecated option '%s', please update configuration file."
+msgstr "ნაპოვნია მოძველებული პარამეტრი '%s'. განაახლეთ კონფიგურაციის ფაილი."
+
+#: src/confuse.c:1319
+msgid "premature end of file"
+msgstr "ფაილის მოულოდნელი დასასრული"
+
+#: src/confuse.c:1340
+msgid "unexpected closing brace"
+msgstr "მოულოდნელი დამხურავი ფრჩხილი"
+
+#: src/confuse.c:1361 src/confuse.c:1441 src/confuse.c:1468 src/confuse.c:1491
+#: src/confuse.c:1606 src/confuse.c:1650
+#, c-format
+msgid "unexpected token '%s'"
+msgstr "მოულოდნელი კოდი '%s'"
+
+#: src/confuse.c:1403
+#, c-format
+msgid "attempt to append to non-list option '%s'"
+msgstr "სიის ტიპის არმქონე პარამეტრისთვის ('%s') ბოლოში მიწერის მცდელობა"
+
+#: src/confuse.c:1416
+#, c-format
+msgid "missing equal sign after option '%s'"
+msgstr "პარამეტრის ('%s') შემდეგ ტოლობის ნიშანი აკლია"
+
+#: src/confuse.c:1498
+#, c-format
+msgid "missing opening brace for section '%s'"
+msgstr "გამხსნელი ფრჩხილი სექციისთვის '%s' აუცილებელია"
+
+#: src/confuse.c:1525
+#, c-format
+msgid "missing title for section '%s'"
+msgstr "სათაური სექციისთვის '%s' აუცილებელია"
+
+#: src/confuse.c:1537
+#, c-format
+msgid "missing parenthesis for function '%s'"
+msgstr "მშობლობა ფუნქციისთვის '%s' აუცილებელია"
+
+#: src/confuse.c:1559 src/confuse.c:1572
+#, c-format
+msgid "syntax error in call of function '%s'"
+msgstr "სინტაქსური შეცდომა ფუნქციის ('%s') გამოძახებისას"
+
+#: src/confuse.c:1666
+#, c-format
+msgid "Internal error in cfg_parse_internal(), unknown state %d"
+msgstr "cfg_parse_intenal()-ის შიდა შეცდომა. უცნობი მდგომარეობა %d"
+
+#: src/confuse.c:2040
+msgid "wrong number of arguments to cfg_include()"
+msgstr "cfg_include()-ის არგუმენტების რიცხვი არასწორია"
+
+#: src/lexer.l:163
+#, c-format
+msgid "invalid octal number '%s'"
+msgstr "'%s' არასწორი რვაობითი რიცხვია"
+
+#: src/lexer.l:169
+#, c-format
+msgid "bad escape sequence '%s'"
+msgstr "არასწორი სპეციალური მიმდევრობა '%s'"
+
+#: src/lexer.l:240
+msgid "unterminated string constant"
+msgstr "დაუსრულებელი სტრიქონი კონსტანტა"
+
+#: src/lexer.l:313
+msgid "includes nested too deeply"
+msgstr "ჩასმების სიღრმე მეტისმეტად დიდია"
+
+#: src/lexer.l:325
+#, c-format
+msgid "%s: Not found in search path"
+msgstr "%s: ვერ ვიპოვე შესაძლო ბილიკებში"
+
+#: src/lexer.l:334
+#, c-format
+msgid "%s: Failed tilde expand"
+msgstr "%s: ტილდის გაშლის შეცდომა"
