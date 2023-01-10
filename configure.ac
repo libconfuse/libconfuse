@@ -31,6 +31,9 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.6])
 AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.6])
 
+# Checks for OS settings.
+AC_SYS_LARGEFILE
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([unistd.h string.h strings.h sys/stat.h windows.h])
