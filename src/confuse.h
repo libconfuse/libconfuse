@@ -770,6 +770,9 @@ DLLIMPORT cfg_errfunc_t __export cfg_set_error_function(cfg_t *cfg, cfg_errfunc_
 /** Show a parser error. Any user-defined error reporting function is called.
  * @see cfg_set_error_function
  */
+#ifdef __GNUC__
+__attribute__((__format__(__printf__, 2, 3)))
+#endif
 DLLIMPORT void __export cfg_error(cfg_t *cfg, const char *fmt, ...);
 
 /** Returns the option comment
