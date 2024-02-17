@@ -207,7 +207,7 @@ typedef int (*cfg_validate_callback_t)(cfg_t *cfg, cfg_opt_t *opt);
  * This callback function is called before an option is set using the
  * cfg_set*() APIs.  The function is called only for strings, integers,
  * and floats.  Compared to the regular callback function this takes a
- * value pointer argument which must be casted before use, but can also
+ * value pointer argument which must be cast before use, but can also
  * be used to correct a value before it is set, e.g. when a too large
  * value is set this can be used to set the MAX.
  *
@@ -664,7 +664,7 @@ extern const char __export confuse_author[];
  *     setlocale(LC_MESSAGES, "");
  *     setlocale(LC_CTYPE, "");
  * </pre>
- * @param opts An arrary of options
+ * @param opts An array of options
  * @param flags One or more flags (bitwise or'ed together). Currently only
  * CFGF_NOCASE and CFGF_IGNORE_UNKNOWN are available. Use 0 if no flags are
  * needed.
@@ -697,7 +697,7 @@ DLLIMPORT int __export cfg_add_searchpath(cfg_t *cfg, const char *dir);
  * and should be freed by the caller.
  *
  * @param path The linked list of cfg_searchpath_t structs, each
- * containg a directory to be searched
+ * containing a directory to be searched
  * @param file The file for which to search
  *
  * @return If the file is found on the searchpath then the full
