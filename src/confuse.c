@@ -33,6 +33,7 @@
 # include <unistd.h>
 #endif
 #include <ctype.h>
+#include <limits.h>
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -260,7 +261,7 @@ static long int cfg_opt_gettsecidx(cfg_opt_t *opt, const char *title)
 }
 
 static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
-				    long int *index)
+				    unsigned int *index)
 {
 	cfg_opt_t *opt = NULL;
 	cfg_t *sec = cfg;
@@ -312,13 +313,14 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 				break;
 			}
 
-			i = strtol(title, &endptr, 0);
-			if (*endptr != '\0')
+			errno = 0;
+			i = strtoul(title, &endptr, 0);
+			if (*endptr != '\0' || errno || i > UINT_MAX)
 				i = -1;
 		} while(0);
 
 		if (index)
-			*index = i;
+			*index = i >= 0 ? i : UINT_MAX;
 
 		sec = i >= 0 ? cfg_opt_getnsec(opt, i) : NULL;
 		if (!sec && !is_set(CFGF_IGNORE_UNKNOWN, cfg->flags)) {
@@ -595,7 +597,7 @@ DLLIMPORT cfg_t *cfg_gettsec(cfg_t *cfg, const char *name, const char *title)
 DLLIMPORT cfg_t *cfg_getsec(cfg_t *cfg, const char *name)
 {
 	cfg_opt_t *opt;
-	long int index;
+	unsigned int index;
 
 	opt = cfg_getopt_secidx(cfg, name, &index);
 	return cfg_opt_getnsec(opt, index);
@@ -671,7 +673,8 @@ static cfg_opt_t *cfg_dupopt_array(cfg_opt_t *opts)
 	if (!dupopts)
 		return NULL;
 
-	memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
+	if (n)
+		memcpy(dupopts, opts, n * sizeof(cfg_opt_t));
 
 	for (i = 0; i < n; i++) {
 		/* Clear dynamic ptrs, protecting the original on failure */
@@ -2377,7 +2380,7 @@ DLLIMPORT int cfg_rmnsec(cfg_t *cfg, const char *name, unsigned int index)
 DLLIMPORT int cfg_rmsec(cfg_t *cfg, const char *name)
 {
 	cfg_opt_t *opt;
-	long int index;
+	unsigned int index;
 
 	opt = cfg_getopt_secidx(cfg, name, &index);
 	return cfg_opt_rmnsec(opt, index);
