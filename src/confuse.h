@@ -386,7 +386,7 @@ extern const char __export confuse_author[];
  *
  * @param name name of the option
  * @param svalue pointer to a character pointer (a char **). This value
- * must be initalized either to NULL or to a malloc()'ed string. You
+ * must be initialized either to NULL or to a malloc()'ed string. You
  * can't use
  * <pre>
  * char *user = "joe";
