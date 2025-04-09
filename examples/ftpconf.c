@@ -28,11 +28,11 @@ int conf_alias(cfg_t *cfg, cfg_opt_t *opt, int argc, const char **argv)
 int conf_parse_acb(cfg_t *cfg, cfg_opt_t *opt, const char *value, void *result)
 {
 	if (strcmp(value, "yes") == 0)
-		*(int *)result = ACB_YES;
+		*(long int *)result = ACB_YES;
 	else if (strcmp(value, "no") == 0)
-		*(int *)result = ACB_NO;
+		*(long int *)result = ACB_NO;
 	else if (strcmp(value, "ask") == 0)
-		*(int *)result = ACB_ASK;
+		*(long int *)result = ACB_ASK;
 	else {
 		cfg_error(cfg, "invalid value for option '%s': %s", cfg_opt_name(opt), value);
 		return -1;
