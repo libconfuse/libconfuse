@@ -39,9 +39,15 @@ int main(void)
 	cfg_set_print_filter_func(cfg, no_foo);
 	f = fmemopen(buf, sizeof(buf), "w+");
 	fail_unless(f != NULL);
-	cfg_print(cfg, f);
+	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	fclose(f);
 
+#if defined(__has_feature)
+# if __has_feature(memory_sanitizer)
+	/* Skip check since fmemopen(2) is broken with sanitizers, see
+	 *   https://github.com/google/sanitizers/issues/628
+	 */
+# else
 	fprintf(stderr, "no_foo filter:\n%s", buf);
 	fail_unless(strstr(buf, "foo-") == NULL);
 	fail_unless(strstr(buf, "bar-") != NULL);
@@ -49,13 +55,15 @@ int main(void)
 	cfg_set_print_filter_func(cfg, no_bar);
 	f = fmemopen(buf, sizeof(buf), "w+");
 	fail_unless(f != NULL);
-	cfg_print(cfg, f);
+	fail_unless(cfg_print(cfg, f) == CFG_SUCCESS);
 	fclose(f);
 
 	fprintf(stderr, "----\n");
 	fprintf(stderr, "no_bar filter:\n%s", buf);
 	fail_unless(strstr(buf, "foo-") != NULL);
 	fail_unless(strstr(buf, "bar-") == NULL);
+# endif
+#endif
 
 	cfg_free(cfg);
 
