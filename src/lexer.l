@@ -397,14 +397,14 @@ static char *trim_whitespace(char *str, unsigned int len)
 	return str;
 
     while (len > 1) {
-	if ((str[len] == 0 || isspace(str[len])) && isspace(str[len - 1]))
+	if ((str[len] == 0 || isspace((unsigned char)str[len])) && isspace((unsigned char)str[len - 1]))
 	    len--;
 	else
 	    break;
     }
     str[len] = 0;
 
-    while (isspace(*str))
+    while (isspace((unsigned char)*str))
 	str++;
 
     return str;
