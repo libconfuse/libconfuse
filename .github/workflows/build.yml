@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -y install tree doxygen autopoint
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Configure
         run: |
           ./autogen.sh
@@ -44,7 +44,7 @@ jobs:
         run: |
           make check || (cat test/test-suite.log; false)
       - name: Upload Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: libconfuse-test-${{ matrix.compiler }}
           path: test/*
