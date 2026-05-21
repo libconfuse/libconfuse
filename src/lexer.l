@@ -136,7 +136,9 @@ void cfg_scan_fp_end(void);
 <dq_str>$\{[^}]*\} { /* environment variable substitution */
     char *var;
     char *e;
-    yytext[strlen(yytext) - 1] = 0;
+    const size_t len = strlen(yytext) - 1;
+    const char end_symbol = yytext[len];
+    yytext[len] = 0;
     e = strchr(yytext+2, ':');
     if(e && e[1] == '-')
         *e = 0;
@@ -147,6 +149,10 @@ void cfg_scan_fp_end(void);
         var = e+2;
     while(var && *var)
         qputc(*var++);
+
+    if(e)
+        *e = ':';
+    yytext[len] = end_symbol;
 }
 <dq_str>\n   {
     qputc('\n');
@@ -265,8 +271,9 @@ void cfg_scan_fp_end(void);
 $\{[^}]*\} {
     char *var;
     char *e;
-
-    yytext[strlen(yytext) - 1] = 0;
+    const size_t len = strlen(yytext) - 1;
+    const char end_symbol = yytext[len];
+    yytext[len] = 0;
     e = strchr(yytext+2, ':');
     if (e && e[1] == '-')
         *e = 0;
@@ -277,8 +284,14 @@ $\{[^}]*\} {
         var = e+2;
     if (!var)
         var = "";
-    cfg_yylval = var;
-
+    qstring_index = 0;
+    while(*var)
+        qputc(*var++);
+    qputc('\0');
+    cfg_yylval = cfg_qstring;
+    if (e)
+        *e = ':';
+    yytext[len] = end_symbol;
     return CFGT_STR;
 }
 
