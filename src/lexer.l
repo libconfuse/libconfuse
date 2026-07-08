@@ -75,6 +75,17 @@ struct {
 } cfg_include_stack[MAX_INCLUDE_DEPTH];
 int cfg_include_stack_ptr = 0;
 
+/* Verbatim capture buffer for CFGT_RAWSEC bodies.  While capturing, every
+ * byte the scanner matches is echoed here via YY_USER_ACTION, so the body
+ * is stored exactly as written while the parser walks it as usual. */
+static int cfg_raw_capturing = 0;
+static char *cfg_raw_buf = NULL;
+static size_t cfg_raw_len = 0;
+static size_t cfg_raw_cap = 0;
+static void cfg_raw_append(const char *s, int n);
+
+#define YY_USER_ACTION if (cfg_raw_capturing) cfg_raw_append(yytext, yyleng);
+
 void cfg_scan_fp_begin(FILE *fp);
 void cfg_scan_fp_end(void);
 
@@ -316,6 +327,39 @@ void cfg_dummy_function(void)
     yyunput(0, NULL);
 }
 
+static void cfg_raw_append(const char *s, int n)
+{
+    if (cfg_raw_len + (size_t)n + 1 > cfg_raw_cap) {
+        cfg_raw_cap = (cfg_raw_len + (size_t)n + 1) * 2;
+        cfg_raw_buf = (char *)realloc(cfg_raw_buf, cfg_raw_cap);
+        assert(cfg_raw_buf);
+    }
+    memcpy(cfg_raw_buf + cfg_raw_len, s, n);
+    cfg_raw_len += n;
+}
+
+/* Start capturing the verbatim bytes of a CFGT_RAWSEC body.*/
+void cfg_raw_begin(void)
+{
+    cfg_raw_len = 0;
+    cfg_raw_capturing = 1;
+}
+
+/* Stop raw capturing and return the body.*/
+char *cfg_raw_end(void)
+{
+    cfg_raw_capturing = 0;
+    if (cfg_raw_len > 0 && cfg_raw_buf[cfg_raw_len - 1] == '}')
+        cfg_raw_len--;
+    if (!cfg_raw_buf) {
+        cfg_raw_buf = (char *)malloc(1);
+        assert(cfg_raw_buf);
+        cfg_raw_cap = 1;
+    }
+    cfg_raw_buf[cfg_raw_len] = '\0';
+    return cfg_raw_buf;
+}
+
 int cfg_lexer_include(cfg_t *cfg, const char *filename)
 {
     FILE *fp;
@@ -460,5 +504,16 @@ void cfg_scan_fp_end(void)
 	    free(cfg_qstring);
     cfg_qstring = NULL;
     qstring_index = qstring_len = 0;
+
+    /* Release the raw-capture buffer once a top-level parse is done.
+     * Guard against buffer pops that happen *during* a capture (an
+     * include() inside a raw section), which must keep the buffer. */
+    if (!cfg_raw_capturing) {
+	    if (cfg_raw_buf)
+	        free(cfg_raw_buf);
+	    cfg_raw_buf = NULL;
+	    cfg_raw_len = cfg_raw_cap = 0;
+    }
+
     cfg_yypop_buffer_state();
 }

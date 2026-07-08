@@ -78,7 +78,8 @@ enum cfg_type_t {
 	CFGT_SEC,    /**< section */
 	CFGT_FUNC,   /**< function */
 	CFGT_PTR,    /**< pointer to user-defined value */
-	CFGT_COMMENT /**< comment/annotation */
+	CFGT_COMMENT,/**< comment/annotation */
+	CFGT_RAWSEC  /**< section whose body is captured verbatim as a string */
 };
 typedef enum cfg_type_t cfg_type_t;
 
@@ -265,6 +266,7 @@ struct cfg_t {
 				 * any error message. */
 	cfg_searchpath_t *path;	/**< Linked list of directories to search */
 	cfg_print_filter_func_t pff; /**< Printing filter function */
+	char *raw;		/**< Verbatim body, set for CFGT_RAWSEC sections */
 };
 
 /** Data structure holding the value of a fundamental option value.
@@ -351,6 +353,15 @@ extern const char __export confuse_author[];
  */
 #define CFG_STR(name, def, flags) \
   __CFG_STR(name, def, flags, NULL, NULL)
+
+/** Initialize a raw section option.
+ */
+#define CFG_RAWSEC(_name, _flags) { \
+	.name = _name, \
+	.type = CFGT_RAWSEC, \
+	.flags = _flags, \
+	.subopts = NULL, \
+}
 
 /** Initialize a string list option
  */
@@ -987,6 +998,13 @@ DLLIMPORT unsigned int __export cfg_size(cfg_t *cfg, const char *name);
  * should not be modified.
  */
 DLLIMPORT const char *__export cfg_title(cfg_t *cfg);
+
+/** Return the verbatim body of a raw section (CFGT_RAWSEC).
+ *
+ * @param cfg The raw section context.
+ * @return Returns the captured body, or 0 if none. Do not modify.
+ */
+DLLIMPORT const char *__export cfg_getraw(cfg_t *cfg);
 
 /** Return the name of a section.
  *

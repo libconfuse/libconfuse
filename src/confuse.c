@@ -66,6 +66,8 @@ extern void cfg_yylex_destroy(void);
 extern int  cfg_lexer_include(cfg_t *cfg, const char *fname);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
+extern void cfg_raw_begin(void);
+extern char *cfg_raw_end(void);
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
@@ -292,7 +294,7 @@ static cfg_opt_t *cfg_getopt_secidx(cfg_t *cfg, const char *name,
 			char *endptr;
 
 			opt = cfg_getopt_leaf(sec, secname);
-			if (!opt || opt->type != CFGT_SEC) {
+			if (!opt || (opt->type != CFGT_SEC && opt->type != CFGT_RAWSEC)) {
 				opt = NULL;
 				break;
 			}
@@ -374,6 +376,13 @@ DLLIMPORT const char *cfg_title(cfg_t *cfg)
 {
 	if (cfg)
 		return cfg->title;
+	return NULL;
+}
+
+DLLIMPORT const char *cfg_getraw(cfg_t *cfg)
+{
+	if (cfg)
+		return cfg->raw;
 	return NULL;
 }
 
@@ -548,7 +557,7 @@ DLLIMPORT void *cfg_getptr(cfg_t *cfg, const char *name)
 
 DLLIMPORT cfg_t *cfg_opt_getnsec(cfg_opt_t *opt, unsigned int index)
 {
-	if (!opt || opt->type != CFGT_SEC) {
+	if (!opt || (opt->type != CFGT_SEC && opt->type != CFGT_RAWSEC)) {
 		errno = EINVAL;
 		return NULL;
 	}
@@ -762,7 +771,7 @@ static void cfg_init_defaults(cfg_t *cfg)
 		if (cfg->opts[i].simple_value.ptr || is_set(CFGF_NODEFAULT, cfg->opts[i].flags))
 			continue;
 
-		if (cfg->opts[i].type != CFGT_SEC) {
+		if (cfg->opts[i].type != CFGT_SEC && cfg->opts[i].type != CFGT_RAWSEC) {
 			cfg->opts[i].flags |= CFGF_DEFINIT;
 
 			if (is_set(CFGF_LIST, cfg->opts[i].flags) || cfg->opts[i].def.parsed) {
@@ -864,6 +873,8 @@ static void cfg_init_defaults(cfg_t *cfg)
 	}
 }
 
+static cfg_opt_t rawsec_no_opts[] = { CFG_END() };
+
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 {
 	cfg_value_t *val = NULL;
@@ -894,7 +905,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		if (opt->nvalues == 0 || is_set(CFGF_MULTI, opt->flags) || is_set(CFGF_LIST, opt->flags)) {
 			val = NULL;
 
-			if (opt->type == CFGT_SEC && is_set(CFGF_TITLE, opt->flags)) {
+			if ((opt->type == CFGT_SEC || opt->type == CFGT_RAWSEC) && is_set(CFGF_TITLE, opt->flags)) {
 				unsigned int i;
 
 				/* XXX: Check if there already is a section with the same title. */
@@ -1073,6 +1084,53 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		}
 		if (!is_set(CFGF_DEFINIT, opt->flags))
 			cfg_init_defaults(val->section);
+		break;
+
+	case CFGT_RAWSEC:
+		if (is_set(CFGF_MULTI, opt->flags) || val->section == NULL) {
+			if (val->section) {
+				val->section->path = NULL; /* Global search path */
+				cfg_free(val->section);
+			}
+			val->section = calloc(1, sizeof(cfg_t));
+			if (!val->section)
+				return NULL;
+
+			val->section->name = strdup(opt->name);
+			if (!val->section->name) {
+				free(val->section);
+				return NULL;
+			}
+
+			/* The body is walked by the mini discard parser, so it must ignore. */
+			val->section->flags = cfg->flags | CFGF_IGNORE_UNKNOWN;
+			val->section->filename = cfg->filename ? strdup(cfg->filename) : NULL;
+			if (cfg->filename && !val->section->filename) {
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
+
+			val->section->line = cfg->line;
+			val->section->errfunc = cfg->errfunc;
+			val->section->title = value ? strdup(value) : NULL;
+			if (value && !val->section->title) {
+				free(val->section->filename);
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
+
+			/* A raw section carries no sub-options */
+			val->section->opts = cfg_dupopt_array(rawsec_no_opts);
+			if (!val->section->opts) {
+				free(val->section->title);
+				free(val->section->filename);
+				free(val->section->name);
+				free(val->section);
+				return NULL;
+			}
+		}
 		break;
 
 	case CFGT_BOOL:
@@ -1382,7 +1440,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				goto error;
 			}
 
-			if (opt->type == CFGT_SEC) {
+			if (opt->type == CFGT_SEC || opt->type == CFGT_RAWSEC) {
 				if (is_set(CFGF_TITLE, opt->flags))
 					state = 6;
 				else
@@ -1510,9 +1568,23 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			val->section->path = cfg->path; /* Remember global search path */
 			val->section->line = cfg->line;
 			val->section->errfunc = cfg->errfunc;
+
+			if (opt->type == CFGT_RAWSEC)
+				cfg_raw_begin();
+
 			rc = cfg_parse_internal(val->section, level + 1, -1, NULL);
-			if (rc != STATE_EOF)
+			if (rc != STATE_EOF) {
+				if (opt->type == CFGT_RAWSEC)
+					cfg_raw_end();
 				goto error;
+			}
+
+			if (opt->type == CFGT_RAWSEC) {
+				free(val->section->raw);
+				val->section->raw = strdup(cfg_raw_end());
+				if (!val->section->raw)
+					goto error;
+			}
 
 			cfg->line = val->section->line;
 			if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
@@ -1593,11 +1665,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				state = 12; /* Section, ignore all until closing brace */
 			} else if (tok == CFGT_STR) {
 				state = 11; /* No '=' ... must be a titled section */
-			} else if (tok == '}' && force_state == 10) {
+			} else if (tok == '}') {
 				if (comment)
 					free(comment);
 
-				return STATE_CONTINUE;
+				return force_state >= 10 ? STATE_CONTINUE : STATE_EOF;
 			}
 			break;
 
@@ -1610,11 +1682,21 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 12: /* unknown option, recursively ignore entire sub-section */
-			rc = cfg_parse_internal(cfg, level + 1, 10, NULL);
-			if (rc != STATE_CONTINUE)
-				goto error;
-			ignore = '}';
-			state = 13;
+			if (tok == '}') {
+				state = force_state >= 10 ? 15 : 0;
+				break;
+			} else if (tok == CFGT_COMMENT) {
+				state = 15;
+				rc = cfg_parse_internal(cfg, level + 1, 15, NULL);
+				if (rc != STATE_CONTINUE)
+					goto error;
+				break;
+			} else {
+				rc = cfg_parse_internal(cfg, level + 1, 10, NULL);
+				if (rc != STATE_CONTINUE)
+					goto error;
+				state = force_state >= 10 ? 15 : 0;
+			}
 			break;
 
 		case 13: /* unknown option, consume tokens silently until end of func/list */
@@ -1627,16 +1709,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				break;
 			}
 
-			/* Are we done with recursive ignore of sub-section? */
-			if (force_state == 10) {
-				if (comment)
-					free(comment);
-
-				return STATE_CONTINUE;
-			}
-
 			ignore = 0;
-			state = 0;
+			state = force_state >= 10 ? 15 : 0;
 			break;
 
 		case 14: /* unknown option, assuming value or start of list */
@@ -1652,13 +1726,14 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			}
 
 			ignore = 0;
-			if (force_state == 10)
-				state = 15;
-			else
-				state = 0;
+			state = force_state >= 10 ? 15 : 0;
 			break;
 
 		case 15: /* unknown option, dummy read of next parameter in sub-section */
+			if (tok == CFGT_COMMENT)
+				continue;
+			else if (tok == '}')
+				return force_state >= 10 ? STATE_CONTINUE : STATE_EOF;
 			state = 10;
 			break;
 
@@ -1946,7 +2021,7 @@ DLLIMPORT int cfg_free_value(cfg_opt_t *opt)
 		for (i = 0; i < opt->nvalues; i++) {
 			if (opt->type == CFGT_STR) {
 				free((void *)opt->values[i]->string);
-			} else if (opt->type == CFGT_SEC) {
+			} else if (opt->type == CFGT_SEC || opt->type == CFGT_RAWSEC) {
 				opt->values[i]->section->path = NULL; /* Global search path */
 				cfg_free(opt->values[i]->section);
 			} else if (opt->type == CFGT_PTR && opt->freecb && opt->values[i]->ptr) {
@@ -2019,6 +2094,8 @@ DLLIMPORT int cfg_free(cfg_t *cfg)
 		free(cfg->title);
 	if (cfg->filename)
 		free(cfg->filename);
+	if (cfg->raw)
+		free(cfg->raw);
 
 	free(cfg);
 	if (isroot)
@@ -2460,6 +2537,7 @@ DLLIMPORT int cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 
 	case CFGT_NONE:
 	case CFGT_SEC:
+	case CFGT_RAWSEC:
 	case CFGT_FUNC:
 	case CFGT_PTR:
 	case CFGT_COMMENT:
@@ -2502,6 +2580,18 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 			cfg_print_pff_indent(sec, fp, pff, indent + 1);
 			cfg_indent(fp, indent);
 			fprintf(fp, "}\n");
+		}
+	} else if (opt->type == CFGT_RAWSEC) {
+		cfg_t *sec;
+		unsigned int i;
+
+		for (i = 0; i < cfg_opt_size(opt); i++) {
+			sec = cfg_opt_getnsec(opt, i);
+			cfg_indent(fp, indent);
+			if (is_set(CFGF_TITLE, opt->flags))
+				fprintf(fp, "%s \"%s\" {%s}\n", opt->name, cfg_title(sec), sec->raw ? sec->raw : "");
+			else
+				fprintf(fp, "%s {%s}\n", opt->name, sec->raw ? sec->raw : "");
 		}
 	} else if (opt->type != CFGT_FUNC && opt->type != CFGT_NONE) {
 		if (is_set(CFGF_LIST, opt->flags)) {
