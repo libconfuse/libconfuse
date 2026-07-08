@@ -360,6 +360,25 @@ char *cfg_raw_end(void)
     return cfg_raw_buf;
 }
 
+/* Whether a raw body is currently being captured. */
+int cfg_raw_active(void)
+{
+    return cfg_raw_capturing;
+}
+
+/* Current length of the capture buffer, and truncation back to a mark;
+ * used to drop an include() call from the captured body. */
+size_t cfg_raw_tell(void)
+{
+    return cfg_raw_len;
+}
+
+void cfg_raw_seek(size_t pos)
+{
+    if (pos <= cfg_raw_len)
+        cfg_raw_len = pos;
+}
+
 int cfg_lexer_include(cfg_t *cfg, const char *filename)
 {
     FILE *fp;

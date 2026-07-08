@@ -68,6 +68,9 @@ extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
 extern void cfg_raw_begin(void);
 extern char *cfg_raw_end(void);
+extern int  cfg_raw_active(void);
+extern size_t cfg_raw_tell(void);
+extern void cfg_raw_seek(size_t pos);
 
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
@@ -875,6 +878,30 @@ static void cfg_init_defaults(cfg_t *cfg)
 
 static cfg_opt_t rawsec_no_opts[] = { CFG_END() };
 
+/* Append an include() function to a section's (already duplicated) option
+ * array, so that CFGF_USE_INCLUDE_FUNCTION sections gain include support. */
+static int cfg_section_add_include(cfg_t *sec)
+{
+	int num = cfg_numopts(sec->opts);
+	cfg_opt_t *opts;
+
+	opts = reallocarray(sec->opts, num + 2, sizeof(cfg_opt_t));
+	if (!opts)
+		return CFG_FAIL;
+
+	sec->opts = opts;
+	memset(&sec->opts[num], 0, sizeof(cfg_opt_t));
+	sec->opts[num].name = strdup("include");
+	if (!sec->opts[num].name)
+		return CFG_FAIL;
+	sec->opts[num].type = CFGT_FUNC;
+	sec->opts[num].func = &cfg_include;
+
+	memset(&sec->opts[num + 1], 0, sizeof(cfg_opt_t)); /* new CFG_END() */
+
+	return CFG_SUCCESS;
+}
+
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 {
 	cfg_value_t *val = NULL;
@@ -1081,6 +1108,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				free(val->section);
 				return NULL;
 			}
+
+			if (is_set(CFGF_USE_INCLUDE_FUNCTION, opt->flags) &&
+			    cfg_section_add_include(val->section) != CFG_SUCCESS)
+				return NULL;
 		}
 		if (!is_set(CFGF_DEFINIT, opt->flags))
 			cfg_init_defaults(val->section);
@@ -1121,7 +1152,8 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				return NULL;
 			}
 
-			/* A raw section carries no sub-options */
+			/* A raw section carries no sub-options, unless it opts in
+			 * to include() via CFGF_USE_INCLUDE_FUNCTION. */
 			val->section->opts = cfg_dupopt_array(rawsec_no_opts);
 			if (!val->section->opts) {
 				free(val->section->title);
@@ -1130,6 +1162,10 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				free(val->section);
 				return NULL;
 			}
+
+			if (is_set(CFGF_USE_INCLUDE_FUNCTION, opt->flags) &&
+			    cfg_section_add_include(val->section) != CFG_SUCCESS)
+				return NULL;
 		}
 		break;
 
@@ -1358,6 +1394,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 	int ignore = 0;		/* ignore until this token, traverse parser w/o error */
 	int num_values = 0;	/* number of values found for a list option */
 	int rc;
+	size_t rawmark = 0;	/* capture offset before a func, for include() expansion */
 
 	if (force_state != -1)
 		state = force_state;
@@ -1446,6 +1483,8 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 				else
 					state = 5;
 			} else if (opt->type == CFGT_FUNC) {
+				if (cfg_raw_active())
+					rawmark = cfg_raw_tell() - strlen(cfg_yylval);
 				state = 7;
 			} else {
 				state = 1;
@@ -1616,6 +1655,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (tok == ')') {
 				if (call_function(cfg, opt, &funcopt))
 					goto error;
+				/* Replace an include() call
+				 * by its expanded content
+				 * in the raw capture*/
+				if (cfg_raw_active() && opt && opt->func == cfg_include)
+					cfg_raw_seek(rawmark);
 				state = 0;
 			} else if (tok == CFGT_STR) {
 				val = cfg_addval(&funcopt);
@@ -1637,6 +1681,11 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (tok == ')') {
 				if (call_function(cfg, opt, &funcopt))
 					goto error;
+				/* Replace an include() call
+				 * by its expanded content
+				 * in the raw capture*/
+				if (cfg_raw_active() && opt && opt->func == cfg_include)
+					cfg_raw_seek(rawmark);
 				state = 0;
 			} else if (tok == ',') {
 				state = 8;

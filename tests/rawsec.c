@@ -90,11 +90,41 @@ static void check_multi_titled(void)
 	cfg_free(cfg);
 }
 
+/*
+ * With CFGF_USE_INCLUDE_FUNCTION an include() inside a raw body is expanded
+ * into the captured text: the included file's content replaces the call.
+ */
+static void check_include(void)
+{
+	cfg_opt_t opts[] = {
+		CFG_RAWSEC("mod", CFGF_USE_INCLUDE_FUNCTION),
+		CFG_END()
+	};
+	cfg_t *cfg = cfg_init(opts, 0);
+	const char *raw;
+
+	fail_unless(cfg_parse_buf(cfg,
+		"mod {\n"
+		"    before = 1\n"
+		"    include(\"" SRC_DIR "/rawinc.conf\")\n"
+		"    after = 2\n"
+		"}") == CFG_SUCCESS);
+
+	raw = cfg_getraw(cfg_getsec(cfg, "mod"));
+	fail_unless(raw != NULL);
+	fail_unless(strstr(raw, "before = 1") != NULL);
+	fail_unless(strstr(raw, "included = yes") != NULL);
+	fail_unless(strstr(raw, "after = 2") != NULL);
+	fail_unless(strstr(raw, "include(") == NULL);
+	cfg_free(cfg);
+}
+
 int main(void)
 {
 	check_verbatim();
 	check_deferred();
 	check_multi_titled();
+	check_include();
 
 	return 0;
 }
