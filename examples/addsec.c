@@ -66,10 +66,12 @@ int main(void)
 	/* Add a new section */
 	sec = cfg_addtsec(cfg, "argument", "two");
 	cfg_setstr(sec, "value", "foo");
+	/* Add an existing section */
+	sec = cfg_addtsec(cfg, "argument", "three");
+	cfg_setstr(sec, "value", "gazonk!!");
 	print_message();
 
 	cfg_free(cfg);
 
 	return 0;
-
 }
