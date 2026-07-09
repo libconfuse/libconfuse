@@ -1,4 +1,4 @@
-EXTRA_DIST        = annotate.conf a.conf b.conf spdir check_confuse.h
+EXTRA_DIST        = annotate.conf a.conf b.conf rawinc.conf spdir check_confuse.h
 
 TESTS             = keyval
 TESTS            += suite_single
@@ -24,6 +24,7 @@ TESTS            += setopt_ptr
 TESTS            += setmulti_reset
 TESTS            += print_filter
 TESTS            += modified_flag
+TESTS            += rawsec
 
 check_PROGRAMS    = $(TESTS)
 
