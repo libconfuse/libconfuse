@@ -81,6 +81,11 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 #define STATE_EOF -1
 #define STATE_ERROR 1
 
+/* Guard against stack exhaustion from deeply/infinitely nested sections,
+ * similar in spirit to MAX_INCLUDE_DEPTH in lexer.l for include() nesting.
+ */
+#define CFG_MAX_NESTING_DEPTH 500
+
 #ifndef HAVE_FMEMOPEN
 extern FILE *fmemopen(void *buf, size_t size, const char *type);
 #endif
@@ -1400,6 +1405,13 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 		state = force_state;
 	if (force_opt)
 		opt = force_opt;
+
+	if (level > CFG_MAX_NESTING_DEPTH) {
+		cfg_error(cfg, _("too deeply nested sections (max %d), "
+				 "bailing out to avoid stack exhaustion"),
+			  CFG_MAX_NESTING_DEPTH);
+		goto error;
+	}
 
 	while (1) {
 		int tok = cfg_yylex(cfg);
