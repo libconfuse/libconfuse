@@ -24,6 +24,7 @@ suite_ptr
 suite_single
 suite_validate
 include
+int_types
 quote_before_print
 single_title_sections
 searchpath

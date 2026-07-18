@@ -26,6 +26,7 @@ TESTS            += print_filter
 TESTS            += modified_flag
 TESTS            += rawsec
 TESTS            += comment_parsing
+TESTS            += int_types
 
 check_PROGRAMS    = $(TESTS)
 

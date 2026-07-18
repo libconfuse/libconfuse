@@ -34,6 +34,7 @@
 #endif
 #include <ctype.h>
 #include <limits.h>
+#include <inttypes.h>
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -465,6 +466,81 @@ DLLIMPORT signed long cfg_getint(cfg_t *cfg, const char *name)
 	return cfg_getnint(cfg, name, 0);
 }
 
+DLLIMPORT int64_t cfg_opt_getnint64(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_INT64) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->i64;
+	if (opt->simple_value.i64)
+		return *opt->simple_value.i64;
+
+	return 0;
+}
+
+DLLIMPORT int64_t cfg_getnint64(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnint64(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT int64_t cfg_getint64(cfg_t *cfg, const char *name)
+{
+	return cfg_getnint64(cfg, name, 0);
+}
+
+DLLIMPORT uint32_t cfg_opt_getnuint32(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_UINT32) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->u32;
+	if (opt->simple_value.u32)
+		return *opt->simple_value.u32;
+
+	return 0;
+}
+
+DLLIMPORT uint32_t cfg_getnuint32(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnuint32(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT uint32_t cfg_getuint32(cfg_t *cfg, const char *name)
+{
+	return cfg_getnuint32(cfg, name, 0);
+}
+
+DLLIMPORT uint64_t cfg_opt_getnuint64(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_UINT64) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->u64;
+	if (opt->simple_value.u64)
+		return *opt->simple_value.u64;
+
+	return 0;
+}
+
+DLLIMPORT uint64_t cfg_getnuint64(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnuint64(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT uint64_t cfg_getuint64(cfg_t *cfg, const char *name)
+{
+	return cfg_getnuint64(cfg, name, 0);
+}
+
 DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index)
 {
 	if (!opt || opt->type != CFGT_FLOAT) {
@@ -848,6 +924,18 @@ static void cfg_init_defaults(cfg_t *cfg)
 					cfg_opt_setnint(&cfg->opts[i], cfg->opts[i].def.number, 0);
 					break;
 
+				case CFGT_INT64:
+					cfg_opt_setnint64(&cfg->opts[i], cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_UINT32:
+					cfg_opt_setnuint32(&cfg->opts[i], (uint32_t)cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_UINT64:
+					cfg_opt_setnuint64(&cfg->opts[i], (uint64_t)cfg->opts[i].def.number, 0);
+					break;
+
 				case CFGT_FLOAT:
 					cfg_opt_setnfloat(&cfg->opts[i], cfg->opts[i].def.fpnumber, 0);
 					break;
@@ -910,12 +998,45 @@ static int cfg_section_add_include(cfg_t *sec)
 	return CFG_SUCCESS;
 }
 
+/*
+ * Detect an integer radix prefix, like strtol() base 0 but also handling
+ * binary '0b' (see issue #145).  Points *digits at the first digit after
+ * any prefix and returns the radix.
+ */
+static int cfg_int_radix(const char *value, const char **digits)
+{
+	int radix = 0;
+
+	*digits = value;
+	if (value[0] == '0') {
+		switch (value[1]) {
+		case 'b':
+			radix = 2;
+			*digits = &value[2];
+			break;
+
+		case 'x':
+			radix = 16;
+			*digits = &value[2];
+			break;
+
+		default:
+			radix = 8;
+			*digits = &value[1];
+		}
+	}
+
+	return radix;
+}
+
 DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 {
 	cfg_value_t *val = NULL;
 	const char *s;
 	char *endptr;
 	long int i;
+	int64_t i64;
+	uint64_t u64;
 	double f;
 	void *p;
 	int b;
@@ -989,30 +1110,14 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				return NULL;
 		} else {
 			const char *str;
-			int radix = 0;
+			int radix;
 
 			if (!value) {
 				errno = EINVAL;
 				return NULL;
 			}
 
-			str = value;
-			if (value[0] == '0') {
-				switch (value[1]) {
-				case 'b':
-					radix = 2;
-					str = &value[2];
-					break;
-				case 'x':
-					radix = 16;
-					str = &value[2];
-					break;
-				default:
-					radix = 8;
-					str = &value[1];
-				}
-			}
-
+			radix = cfg_int_radix(value, &str);
 			i = strtol(str, &endptr, radix);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
@@ -1025,6 +1130,73 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			}
 		}
 		val->number = i;
+		break;
+
+	case CFGT_INT64:
+		if (opt->parsecb) {
+			if ((*opt->parsecb) (cfg, opt, value, &i64) != 0)
+				return NULL;
+		} else {
+			const char *str;
+			int radix;
+
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
+
+			radix = cfg_int_radix(value, &str);
+			errno = 0;
+			i64 = strtoll(str, &endptr, radix);
+			if (*endptr != '\0') {
+				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
+				return NULL;
+			}
+
+			if (errno == ERANGE) {
+				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
+				return NULL;
+			}
+		}
+		val->i64 = i64;
+		break;
+
+	case CFGT_UINT32:
+	case CFGT_UINT64:
+		if (opt->parsecb) {
+			if ((*opt->parsecb) (cfg, opt, value, &u64) != 0)
+				return NULL;
+		} else {
+			const char *str;
+			int radix;
+
+			if (!value) {
+				errno = EINVAL;
+				return NULL;
+			}
+
+			if (value[0] == '-') {
+				cfg_error(cfg, _("negative value for unsigned option '%s'"), opt->name);
+				return NULL;
+			}
+
+			radix = cfg_int_radix(value, &str);
+			errno = 0;
+			u64 = strtoull(str, &endptr, radix);
+			if (*endptr != '\0') {
+				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
+				return NULL;
+			}
+
+			if (errno == ERANGE || (opt->type == CFGT_UINT32 && u64 > UINT32_MAX)) {
+				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
+				return NULL;
+			}
+		}
+		if (opt->type == CFGT_UINT32)
+			val->u32 = (uint32_t)u64;
+		else
+			val->u64 = u64;
 		break;
 
 	case CFGT_FLOAT:
@@ -2279,6 +2451,111 @@ DLLIMPORT int cfg_setint(cfg_t *cfg, const char *name, long int value)
 	return cfg_setnint(cfg, name, value, 0);
 }
 
+DLLIMPORT int cfg_opt_setnint64(cfg_opt_t *opt, int64_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_INT64) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->i64 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnint64(cfg_t *cfg, const char *name, int64_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnint64(opt, value, index);
+}
+
+DLLIMPORT int cfg_setint64(cfg_t *cfg, const char *name, int64_t value)
+{
+	return cfg_setnint64(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnuint32(cfg_opt_t *opt, uint32_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_UINT32) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->u32 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnuint32(cfg_t *cfg, const char *name, uint32_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnuint32(opt, value, index);
+}
+
+DLLIMPORT int cfg_setuint32(cfg_t *cfg, const char *name, uint32_t value)
+{
+	return cfg_setnuint32(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnuint64(cfg_opt_t *opt, uint64_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_UINT64) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->u64 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnuint64(cfg_t *cfg, const char *name, uint64_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnuint64(opt, value, index);
+}
+
+DLLIMPORT int cfg_setuint64(cfg_t *cfg, const char *name, uint64_t value)
+{
+	return cfg_setnuint64(cfg, name, value, 0);
+}
+
 DLLIMPORT int cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int index)
 {
 	cfg_value_t *val;
@@ -2401,6 +2678,18 @@ static int cfg_addlist_internal(cfg_opt_t *opt, unsigned int nvalues, va_list ap
 		switch (opt->type) {
 		case CFGT_INT:
 			result = cfg_opt_setnint(opt, va_arg(ap, int), opt->nvalues);
+			break;
+
+		case CFGT_INT64:
+			result = cfg_opt_setnint64(opt, va_arg(ap, int64_t), opt->nvalues);
+			break;
+
+		case CFGT_UINT32:
+			result = cfg_opt_setnuint32(opt, va_arg(ap, uint32_t), opt->nvalues);
+			break;
+
+		case CFGT_UINT64:
+			result = cfg_opt_setnuint64(opt, va_arg(ap, uint64_t), opt->nvalues);
 			break;
 
 		case CFGT_FLOAT:
@@ -2582,6 +2871,18 @@ DLLIMPORT int cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 	switch (opt->type) {
 	case CFGT_INT:
 		fprintf(fp, "%ld", cfg_opt_getnint(opt, index));
+		break;
+
+	case CFGT_INT64:
+		fprintf(fp, "%" PRId64, cfg_opt_getnint64(opt, index));
+		break;
+
+	case CFGT_UINT32:
+		fprintf(fp, "%" PRIu32, cfg_opt_getnuint32(opt, index));
+		break;
+
+	case CFGT_UINT64:
+		fprintf(fp, "%" PRIu64, cfg_opt_getnuint64(opt, index));
 		break;
 
 	case CFGT_FLOAT:
