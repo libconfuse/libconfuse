@@ -1,30 +1,54 @@
 
-Compilation of the static library with MinGW.
----------------------------------------------
+Building libConfuse on Windows with MSYS2/MINGW64
+=================================================
 
-* QUICK START
+libConfuse builds on Windows using its normal GNU autotools flow inside
+an MSYS2 environment.  This is the tested, supported method -- the same
+steps run on every commit, see the "msys2" job in the source tree's
+.github/workflows/build.yml.
 
-1) In order to build the library successfully, you should first check that the
-   MinGW 'bin' directory is in the PATH environment variable.
-
-2) Then, if running in Windows launch the script 'build.bat' to produce
-   'libconfuse.a' or if crosscompiling just run ming32-make
-
-This script has been tested with MinGW 3.1.0 under Windows 2000.
-The Makefile has been tested with MinGW 3.15.2 under Fedora 13.
-It should also work with other versions of MinGW and Windows.
+The build.bat and hand-written Makefile also in this directory target a
+long-obsolete MinGW toolchain and do not build the bundled fmemopen() and
+reallocarray() replacements that Windows needs, so linking against their
+output fails with undefined references (see issue #172).  They are kept
+only for historical reference -- use the steps below instead.
 
 
-* DETAILED DESCRIPTION
+Prerequisites
+-------------
 
-The build script is very simple. It just sets the relative path to the source
-directory and the compilation flags. Then, it runs the appropriate gcc
-commands to produce the object files. Finally, it uses the 'ar' command to
-produce the static library 'libconfuse.a'.
+1. Install MSYS2, see https://www.msys2.org/
+2. Open the "MSYS2 MINGW64" shell (not the plain MSYS shell).
+3. Install the build tools:
 
-Once you've built the library, you need only two files to add libConfuse to
-your project: 'confuse.h' located in the source directory and 'libconfuse.a'.
+       pacman -S git gcc make autoconf automake libtool flex \
+                 gettext-devel pkgconf doxygen
 
-Here is an example of how to use this library under Windows with MinGW:
-gcc -Wall -I..\..\src  -L. -o myexample.exe myexample.c -lconfuse
 
+Build and install
+-----------------
+
+       ./autogen.sh
+       ./configure --prefix=/mingw64
+       make
+       make check                 # optional, runs the unit tests
+       make install
+
+To skip the example programs, which only add libtool wrapper warnings
+under recent GCC, configure with --disable-examples.
+
+This installs the shared library libconfuse-*.dll and its import library,
+the confuse.h header, and the libconfuse.pc pkg-config file, all under
+/mingw64.
+
+
+Using the library
+-----------------
+
+With pkg-config:
+
+       gcc myprog.c $(pkg-config --cflags --libs libconfuse) -o myprog.exe
+
+or directly:
+
+       gcc -I/mingw64/include myprog.c -L/mingw64/lib -lconfuse -o myprog.exe
