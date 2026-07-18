@@ -90,3 +90,58 @@ jobs:
       - name: Build & Check
         run: |
           make distcheck || (find . -name test-suite.log -exec cat {} +; false)
+  macos:
+    # Build and test on macOS.  The 'compat' variant forces the bundled
+    # fmemopen() replacement (ac_cv_func_fmemopen=no) so its funopen path
+    # is exercised even though modern macOS has a native fmemopen, see #147.
+    name: macOS ${{ matrix.fmemopen }}
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - fmemopen: native
+            confflags: ""
+          - fmemopen: compat
+            confflags: "ac_cv_func_fmemopen=no"
+      fail-fast: false
+    env:
+      MAKEFLAGS: -j3
+    steps:
+      - name: Install dependencies
+        run: brew install autoconf automake libtool gettext flex doxygen
+      - uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          export PATH="$(brew --prefix gettext)/bin:$(brew --prefix flex)/bin:$PATH"
+          ./autogen.sh
+          ./configure --prefix= ${{ matrix.confflags }}
+      - name: Build
+        run: make
+      - name: Test
+        run: make check || (cat tests/test-suite.log; false)
+  msys2:
+    # Verify the library builds and tests on Windows via MSYS2/MINGW64, see #172
+    name: msys2
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: git gcc make autoconf automake libtool flex gettext-devel pkgconf doxygen tree
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --prefix=
+      - name: Build
+        run: make
+      - name: Test
+        run: make check || (cat tests/test-suite.log; false)
+      - name: Install and inspect
+        run: |
+          DESTDIR=~/tmp make install-strip
+          tree ~/tmp
