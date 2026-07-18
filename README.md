@@ -25,9 +25,9 @@ Documentation
 - [Doxygen Documentation][CodeDocs], regenerated on every commit
    - [API Reference](https://codedocs.xyz/libconfuse/libconfuse/confuse_8h.html)
    - [Tutorial](https://codedocs.xyz/libconfuse/libconfuse/tutorial.html)
-- [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
+- [simple.c](https://github.com/libconfuse/libconfuse/blob/master/examples/simple.c) and [simple.conf](https://github.com/libconfuse/libconfuse/blob/master/examples/simple.conf)
   show how to use the "simple" versions of options
-- [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
+- [cfgtest.c](https://github.com/libconfuse/libconfuse/blob/master/examples/cfgtest.c) and [test.conf](https://github.com/libconfuse/libconfuse/blob/master/examples/test.conf)
   show most of the features of confuse, including lists and functions
 
 Build & Install
