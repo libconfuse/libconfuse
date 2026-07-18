@@ -29,8 +29,9 @@ int main(void)
 	fail_unless(cfg_size(cfg, "section") == 3);
 	fail_unless(cfg_title(cfg_gettsec(cfg, "section", "title_three")));
 
-	/* attempt to add a pre-existing section should fail */
-	fail_unless(!cfg_addtsec(cfg, "section", "title_three"));
+	/* adding a pre-existing section returns that same section, see issue #158 */
+	fail_unless(cfg_addtsec(cfg, "section", "title_three") == cfg_gettsec(cfg, "section", "title_three"));
+	fail_unless(cfg_size(cfg, "section") == 3);
 
 	cfg_free(cfg);
 

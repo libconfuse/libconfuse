@@ -63,10 +63,14 @@ int main(void)
 	read_config();
 	print_message();
 
-	/* Add a new section */
+	/* "two" is new, cfg_addtsec() creates and returns it */
 	sec = cfg_addtsec(cfg, "argument", "two");
 	cfg_setstr(sec, "value", "foo");
-	/* Add an existing section */
+
+	/*
+	 * "three" is already in reread.conf, cfg_addtsec() returns
+	 * that same section so we can update it in place
+	 */
 	sec = cfg_addtsec(cfg, "argument", "three");
 	cfg_setstr(sec, "value", "gazonk!!");
 	print_message();
