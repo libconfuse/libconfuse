@@ -777,10 +777,10 @@ extern const char __export confuse_author[];    /**< libConfuse author string */
 
 /** Initialize a section
  *
- * @param name The name of the option
- * @param opts Array of options that are valid within this section
-
- * @param flags Flags, specify CFGF_MULTI if it should be possible to
+ * @param _name  The name of the option
+ * @param _opts  Array of options that are valid within this section
+ *
+ * @param _flags Flags, specify CFGF_MULTI if it should be possible to
  * have multiples of the same section, and CFGF_TITLE if the
  * section(s) must have a title (which can be used in the
  * cfg_gettsec() function)
@@ -796,8 +796,8 @@ extern const char __export confuse_author[];    /**< libConfuse author string */
 
 
 /** Initialize a function
- * @param name The name of the option
- * @param func The callback function.
+ * @param _name The name of the option
+ * @param _func The callback function.
  *
  * @see cfg_func_t
  */
