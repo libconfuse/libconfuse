@@ -108,7 +108,9 @@ jobs:
       MAKEFLAGS: -j3
     steps:
       - name: Install dependencies
-        run: brew install autoconf automake libtool gettext flex doxygen
+        run: |
+          brew untap aws/tap 2>/dev/null || true
+          brew install autoconf automake libtool gettext flex doxygen
       - uses: actions/checkout@v6
       - name: Configure
         run: |
