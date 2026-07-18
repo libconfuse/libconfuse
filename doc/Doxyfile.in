@@ -1122,6 +1122,10 @@ HTML_EXTRA_STYLESHEET  = @top_srcdir@/doc/codedocs.css
 
 HTML_EXTRA_FILES       =
 
+# Offer a light/dark toggle and follow the reader's OS preference by default.
+
+HTML_COLORSTYLE        = TOGGLE
+
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
 # this color. Hue is specified as an angle on a colorwheel, see
