@@ -13,16 +13,26 @@ All relevant changes to the project are documented in this file.
 * Support for an `include()` function within a section, enabled with
   the `CFGF_USE_INCLUDE_FUNCTION` flag, by Alexey Volokitin
 * Support binary radix (`0b...`) for `CFG_INT`, issue #145
+* Add support for fixed-width and unsigned integer types,
+  `CFG_INT8/16/32/64` and `CFG_UINT8/16/32/64`, alongside the
+  platform-width `CFG_INT`, issue #11
 * Automatic large file support (LFS), by Mike Frysinger
 * Georgian translation, by Temuri Doghonadze
 
 ### Fixes
 
+* Issue #147: fix the bundled `fmemopen()` replacement for systems
+  without a native one (e.g. older macOS/BSD), so the write-then-read
+  round-trip works; diagnosed by sevan
+* Issue #150: comments are now accepted anywhere between tokens, e.g.
+  inside lists and inline C-style, not only before an option name
 * Issue #152: fail to build with gettext 0.20, by heitbaum
 * Issue #153: German translation update
 * Issue #158: `cfg_addtsec()` returns the existing section when the
   title already exists, matching the documented behavior
 * Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
+* Issue #172: document the working MSYS2/MINGW64 Windows build; the old
+  windows/mingw instructions were obsolete and failed to link
 * Issue #179: `cfg_addlist()` now preserves default list values when
   appending, by Yi Chen
 * Issue #180: `isspace()` argument fix, could crash the lexer, by
@@ -34,6 +44,8 @@ All relevant changes to the project are documented in this file.
 * Only apply search path logic to relative pathnames, absolute paths
   are no longer altered, by Rasmus Villemoes
 * Remove spurious 'no such option' errors for `KEYSTRVAL` sections
+* Fix `configure` failure with autoconf 2.73, backslash continuations
+  in the `AC_CONFIG_FILES` list are no longer accepted
 
 [v3.3][] - 2020-06-25
 ---------------------
@@ -421,6 +433,7 @@ v1.2.2 - 2002-11-27
 
 
 [UNRELEASED]: https://github.com/libconfuse/libconfuse/compare/v3.3...HEAD
+[v3.4]:   https://github.com/libconfuse/libconfuse/compare/v3.3...v3.4
 [v3.3]:   https://github.com/libconfuse/libconfuse/compare/v3.2.2...v3.3
 [v3.2.2]: https://github.com/libconfuse/libconfuse/compare/v3.2.1...v3.2.2
 [v3.2.1]: https://github.com/libconfuse/libconfuse/compare/v3.2...v3.2.1
