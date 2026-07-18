@@ -18,12 +18,12 @@ integrate with your code.
 Documentation
 -------------
 
-* [Doxygen Documentation][CodeDocs], regenerated on every commit
-  - [API Reference](https://codedocs.xyz/libconfuse/libconfuse/confuse_8h.html)
-  - [Tutorial](https://codedocs.xyz/libconfuse/libconfuse/tutorial.html)
-* [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
+- [Doxygen Documentation][CodeDocs], regenerated on every commit
+   - [API Reference](https://codedocs.xyz/libconfuse/libconfuse/confuse_8h.html)
+   - [Tutorial](https://codedocs.xyz/libconfuse/libconfuse/tutorial.html)
+- [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
   show how to use the "simple" versions of options
-* [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
+- [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
   show most of the features of confuse, including lists and functions
 
 Build & Install
@@ -49,22 +49,23 @@ $ sudo make install
 $ sudo ldconfig
 ```
 
-See the INSTALL file for the full installation instructions.
+See the INSTALL file (included in versioned release archives) for the
+full installation instructions.
 
 When checking out the code from GitHub, use <kbd>./autogen.sh</kbd> to
 generate a `configure` script.  This means you also need the following
 tools:
 
-* autoconf
-* automake
-* libtool
-* gettext
-* autopoint
-* flex
+- autoconf
+- automake
+- libtool
+- gettext
+- autopoint
+- flex
 
 To build the documentation you also need the following tool:
 
-* doxygen
+- doxygen
 
 This is an optional step, so you must build it explicitly from
 its directory:
