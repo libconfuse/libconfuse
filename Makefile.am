@@ -1,6 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-ACLOCAL_AMFLAGS  = -I m4
 CLEANFILES       = *~ '\#*\#'
 pkgconfigdir     = $(libdir)/pkgconfig
 pkgconfig_DATA   = libconfuse.pc

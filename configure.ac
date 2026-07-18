@@ -1,25 +1,26 @@
 # Process this file with -*- autoconf -*- to produce a configure script.
-# The bundled autogen.sh script does this and also calls autoamake. 
-AC_PREREQ(2.50)
+# The bundled autogen.sh script does this and also calls automake.
+AC_PREREQ([2.69])
 
-AC_INIT(libConfuse, 3.4-dev, https://github.com/libconfuse/libconfuse/issues, confuse)
-AC_CONFIG_AUX_DIR(support)
+AC_INIT([libConfuse], [3.4-dev], [https://github.com/libconfuse/libconfuse/issues], [confuse])
+AC_CONFIG_AUX_DIR([support])
+AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign dist-xz])
 AM_SILENT_RULES([no])
 
-AM_CONFIG_HEADER(config.h)
-AC_CONFIG_SRCDIR(src/confuse.c)
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([src/confuse.c])
 
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_AR
-AM_PROG_LEX
+AC_PROG_LEX([noyywrap])
 
 LT_INIT([win32-dll])
 
 # optional building of examples:
 AC_ARG_ENABLE([examples],
-	[AC_HELP_STRING([--disable-examples], [don't build examples in examples])],
+	[AS_HELP_STRING([--disable-examples], [don't build examples in examples])],
 	[], [enable_examples=yes])
 AM_CONDITIONAL([ENABLE_EXAMPLES], [test "$enable_examples" = yes])
 
@@ -35,7 +36,6 @@ AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.6])
 AC_SYS_LARGEFILE
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([unistd.h string.h strings.h sys/stat.h windows.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
