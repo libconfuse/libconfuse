@@ -8,10 +8,28 @@ All relevant changes to the project are documented in this file.
 
 ### Changes
 
-### Fixes
-* Issue #153: German translation update
-* Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
+* Support for `CFGT_RAWSEC`, capture a section body verbatim, by
+  Alexey Volokitin
+* Support for an `include()` function within a section, enabled with
+  the `CFGF_USE_INCLUDE_FUNCTION` flag, by Alexey Volokitin
+* Support binary radix (`0b...`) for `CFG_INT`, issue #145
+* Automatic large file support (LFS), by Mike Frysinger
+* Georgian translation, by Temuri Doghonadze
 
+### Fixes
+
+* Issue #152: fail to build with gettext 0.20, by heitbaum
+* Issue #153: German translation update
+* Issue #158: `cfg_addtsec()` returns the existing section when the
+  title already exists, matching the documented behavior
+* Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
+* Issue #180: `isspace()` argument fix, could crash the lexer, by
+  Thomas Klausner
+* Fix null termination when expanding environment variables, by
+  Igor Ponomarenko
+* Only apply search path logic to relative pathnames, absolute paths
+  are no longer altered, by Rasmus Villemoes
+* Remove spurious 'no such option' errors for `KEYSTRVAL` sections
 
 [v3.3][] - 2020-06-25
 ---------------------
