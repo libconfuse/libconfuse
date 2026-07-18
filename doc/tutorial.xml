@@ -132,6 +132,20 @@ target = ${USER:-User}
             <literal>052</literal> and <literal>0b101010</literal> all
             specify the same value.
         </para>
+        <para>
+            A plain <function>CFG_INT()</function> stores its value in a C
+            <literal>long int</literal>, so its width follows the platform:
+            64 bits on most 64-bit systems, but only 32 bits on 32-bit
+            platforms, where values outside the signed 32-bit range do not
+            fit. It is also always signed. When you need a defined width or
+            an unsigned value, use the fixed-width macros instead:
+            <function>CFG_INT8()</function>, <function>CFG_INT16()</function>,
+            <function>CFG_INT32()</function> and
+            <function>CFG_INT64()</function>, or their unsigned counterparts
+            <function>CFG_UINT8()</function> through
+            <function>CFG_UINT64()</function>. These have the same width on
+            every platform and reject out-of-range values while parsing.
+        </para>
         <para id="negative-repeat-problem">
             But, wait a moment, what if the user specified a negative value for
             "repeat"?  Or a too large positive value? libConfuse can handle

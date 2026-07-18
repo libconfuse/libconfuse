@@ -477,7 +477,11 @@ extern const char __export confuse_author[];
 	.parsecb = _cb, \
 }
 
-/** Initialize an integer option
+/** Initialize an integer option.
+ *
+ * The value is a C `long int`, so it is platform width -- 32-bit on ILP32
+ * platforms -- and always signed.  For a defined width or an unsigned
+ * value use CFG_INT8() ... CFG_INT64() or CFG_UINT8() ... CFG_UINT64()
  */
 #define CFG_INT(name, def, flags) \
   __CFG_INT(name, def, flags, NULL, NULL)
