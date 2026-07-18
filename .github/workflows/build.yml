@@ -42,9 +42,51 @@ jobs:
           tree ~/tmp
       - name: Run Unit Tests
         run: |
-          make check || (cat test/test-suite.log; false)
+          make check || (cat tests/test-suite.log; false)
       - name: Upload Test Results
         uses: actions/upload-artifact@v7
         with:
           name: libconfuse-test-${{ matrix.compiler }}
           path: tests/*
+  asan:
+    # Run the unit tests under AddressSanitizer + UBSan (LSan ships with
+    # ASan on Linux).  -fno-sanitize-recover makes UBSan abort instead of
+    # just warn, so latent memory and undefined-behavior errors fail CI.
+    name: asan
+    runs-on: ubuntu-latest
+    env:
+      MAKEFLAGS: -j3
+      CC: clang
+      CFLAGS: -fsanitize=address,undefined,implicit-conversion -fno-sanitize-recover=all -fno-omit-frame-pointer -g -O1
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install tree doxygen autopoint clang
+      - uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --prefix=
+      - name: Build and unit test under AddressSanitizer and UBSan
+        run: |
+          make check || (cat tests/test-suite.log; false)
+  distcheck:
+    # Verify the release tarball builds, tests, and is self-contained
+    name: distcheck
+    runs-on: ubuntu-latest
+    env:
+      MAKEFLAGS: -j3
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install tree doxygen xmlto libxml2-utils autopoint gettext
+      - uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --prefix=
+      - name: Build & Check
+        run: |
+          make distcheck || (find . -name test-suite.log -exec cat {} +; false)
