@@ -1,0 +1,18 @@
+# CodeDocs.xyz configuration, see https://codedocs.xyz
+#
+# libConfuse ships a doc/Doxyfile.in template that needs ./configure, which
+# CodeDocs cannot run, so the relevant Doxygen options are set directly here.
+
+TAGLINKS =
+
+PROJECT_NAME  = "libConfuse"
+PROJECT_BRIEF = "Small configuration file parser library for C"
+
+# C library: the public API lives in confuse.h, documented in confuse.c.
+OPTIMIZE_OUTPUT_FOR_C = YES
+INPUT                 = src/confuse.h src/confuse.c
+
+# Render the example programs referenced with @example in confuse.h, and
+# let the reader browse the annotated source.
+EXAMPLE_PATH   = examples
+SOURCE_BROWSER = YES

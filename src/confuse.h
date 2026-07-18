@@ -1781,14 +1781,15 @@ DLLIMPORT cfg_validate_callback2_t __export cfg_set_validate_func2(cfg_t *cfg, c
 #endif
 #endif /* CONFUSE_H_ */
 
-/** @example ftpconf.c
- */
-
-/** @example simple.c
- */
-
-/** @example reread.c
- */
+/** @example simple.c */
+/** @example reread.c */
+/** @example parsebuf.c */
+/** @example addsec.c */
+/** @example nested.c */
+/** @example env.c */
+/** @example deprecated.c */
+/** @example cli.c */
+/** @example ftpconf.c */
 
 /**
  * Local Variables:
