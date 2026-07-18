@@ -1013,40 +1013,172 @@ DLLIMPORT long int __export cfg_getnint(cfg_t *cfg, const char *name, unsigned i
  */
 DLLIMPORT long int __export cfg_getint(cfg_t *cfg, const char *name);
 
-/** Fixed-width and unsigned integer accessors.  These behave like
- * cfg_opt_getnint()/cfg_getnint()/cfg_getint() but for the fixed-width
- * signed (CFGT_INT8/16/32/64) and unsigned (CFGT_UINT8/16/32/64) types.
+/** Returns the value of a CFGT_INT64 (64-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnint64
  */
 DLLIMPORT int64_t __export cfg_opt_getnint64(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getint64(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getint64
+ */
 DLLIMPORT int64_t __export cfg_getnint64(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_INT64 (64-bit signed) option, same as cfg_getnint64() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT int64_t __export cfg_getint64(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_UINT32 (32-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnuint32
+ */
 DLLIMPORT uint32_t __export cfg_opt_getnuint32(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getuint32(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getuint32
+ */
 DLLIMPORT uint32_t __export cfg_getnuint32(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_UINT32 (32-bit unsigned) option, same as cfg_getnuint32() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT uint32_t __export cfg_getuint32(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_UINT64 (64-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnuint64
+ */
 DLLIMPORT uint64_t __export cfg_opt_getnuint64(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getuint64(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getuint64
+ */
 DLLIMPORT uint64_t __export cfg_getnuint64(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_UINT64 (64-bit unsigned) option, same as cfg_getnuint64() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT uint64_t __export cfg_getuint64(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_INT8 (8-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnint8
+ */
 DLLIMPORT int8_t __export cfg_opt_getnint8(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getint8(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getint8
+ */
 DLLIMPORT int8_t __export cfg_getnint8(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_INT8 (8-bit signed) option, same as cfg_getnint8() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT int8_t __export cfg_getint8(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_INT16 (16-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnint16
+ */
 DLLIMPORT int16_t __export cfg_opt_getnint16(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getint16(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getint16
+ */
 DLLIMPORT int16_t __export cfg_getnint16(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_INT16 (16-bit signed) option, same as cfg_getnint16() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT int16_t __export cfg_getint16(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_INT32 (32-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnint32
+ */
 DLLIMPORT int32_t __export cfg_opt_getnint32(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getint32(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getint32
+ */
 DLLIMPORT int32_t __export cfg_getnint32(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_INT32 (32-bit signed) option, same as cfg_getnint32() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT int32_t __export cfg_getint32(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_UINT8 (8-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnuint8
+ */
 DLLIMPORT uint8_t __export cfg_opt_getnuint8(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getuint8(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getuint8
+ */
 DLLIMPORT uint8_t __export cfg_getnuint8(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_UINT8 (8-bit unsigned) option, same as cfg_getnuint8() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT uint8_t __export cfg_getuint8(cfg_t *cfg, const char *name);
 
+/** Returns the value of a CFGT_UINT16 (16-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The value at @p index, or 0 if unset or on error.
+ * @see cfg_getnuint16
+ */
 DLLIMPORT uint16_t __export cfg_opt_getnuint16(cfg_opt_t *opt, unsigned int index);
+/** Indexed version of cfg_getuint16(), used for lists.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getuint16
+ */
 DLLIMPORT uint16_t __export cfg_getnuint16(cfg_t *cfg, const char *name, unsigned int index);
+/** Returns the value of a CFGT_UINT16 (16-bit unsigned) option, same as cfg_getnuint16() with index 0.
+ * @param cfg  The configuration file context.
+ * @param name The name of the option.
+ * @return The value, or the default from the cfg_opt_t if the option was not set.
+ */
 DLLIMPORT uint16_t __export cfg_getuint16(cfg_t *cfg, const char *name);
 
 /** Returns the value of a floating point option, given a cfg_opt_t pointer.
@@ -1126,8 +1258,20 @@ DLLIMPORT cfg_bool_t __export cfg_getnbool(cfg_t *cfg, const char *name, unsigne
 DLLIMPORT cfg_bool_t __export cfg_getbool(cfg_t *cfg, const char *name);
 
 
+/** Returns the value of a user-defined (CFGT_PTR) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param index Index of the value to get, zero based.
+ * @return The stored pointer at @p index, or NULL if unset or on error.
+ * @see cfg_getnptr
+ */
 DLLIMPORT void *__export cfg_opt_getnptr(cfg_opt_t *opt, unsigned int index);
-DLLIMPORT void *__export cfg_getnptr(cfg_t *cfg, const char *name, unsigned int indx);
+/** Indexed version of cfg_getptr(), used for lists of user-defined values.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param index Index of the value to get, zero based.
+ * @see cfg_getptr
+ */
+DLLIMPORT void *__export cfg_getnptr(cfg_t *cfg, const char *name, unsigned int index);
 
 /** Returns the value of a user-defined option (void pointer).
  * @param cfg The configuration file context.
@@ -1366,40 +1510,188 @@ DLLIMPORT int __export cfg_setint(cfg_t *cfg, const char *name, long int value);
  */
 DLLIMPORT int __export cfg_setnint(cfg_t *cfg, const char *name, long int value, unsigned int index);
 
-/** Fixed-width and unsigned integer setters.  These mirror
- * cfg_opt_setnint()/cfg_setint()/cfg_setnint() for the fixed-width
- * signed (CFGT_INT8/16/32/64) and unsigned (CFGT_UINT8/16/32/64) types.
+/** Set the value of a CFGT_INT64 (64-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
  */
 DLLIMPORT int __export cfg_opt_setnint64(cfg_opt_t *opt, int64_t value, unsigned int index);
+/** Set the value of a CFGT_INT64 (64-bit signed) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setint64(cfg_t *cfg, const char *name, int64_t value);
+/** Set a value of a CFGT_INT64 (64-bit signed) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnint64(cfg_t *cfg, const char *name, int64_t value, unsigned int index);
 
+/** Set the value of a CFGT_UINT32 (32-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnuint32(cfg_opt_t *opt, uint32_t value, unsigned int index);
+/** Set the value of a CFGT_UINT32 (32-bit unsigned) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setuint32(cfg_t *cfg, const char *name, uint32_t value);
+/** Set a value of a CFGT_UINT32 (32-bit unsigned) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnuint32(cfg_t *cfg, const char *name, uint32_t value, unsigned int index);
 
+/** Set the value of a CFGT_UINT64 (64-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnuint64(cfg_opt_t *opt, uint64_t value, unsigned int index);
+/** Set the value of a CFGT_UINT64 (64-bit unsigned) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setuint64(cfg_t *cfg, const char *name, uint64_t value);
+/** Set a value of a CFGT_UINT64 (64-bit unsigned) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnuint64(cfg_t *cfg, const char *name, uint64_t value, unsigned int index);
 
+/** Set the value of a CFGT_INT8 (8-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnint8(cfg_opt_t *opt, int8_t value, unsigned int index);
+/** Set the value of a CFGT_INT8 (8-bit signed) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setint8(cfg_t *cfg, const char *name, int8_t value);
+/** Set a value of a CFGT_INT8 (8-bit signed) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnint8(cfg_t *cfg, const char *name, int8_t value, unsigned int index);
 
+/** Set the value of a CFGT_INT16 (16-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnint16(cfg_opt_t *opt, int16_t value, unsigned int index);
+/** Set the value of a CFGT_INT16 (16-bit signed) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setint16(cfg_t *cfg, const char *name, int16_t value);
+/** Set a value of a CFGT_INT16 (16-bit signed) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnint16(cfg_t *cfg, const char *name, int16_t value, unsigned int index);
 
+/** Set the value of a CFGT_INT32 (32-bit signed) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnint32(cfg_opt_t *opt, int32_t value, unsigned int index);
+/** Set the value of a CFGT_INT32 (32-bit signed) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setint32(cfg_t *cfg, const char *name, int32_t value);
+/** Set a value of a CFGT_INT32 (32-bit signed) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnint32(cfg_t *cfg, const char *name, int32_t value, unsigned int index);
 
+/** Set the value of a CFGT_UINT8 (8-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnuint8(cfg_opt_t *opt, uint8_t value, unsigned int index);
+/** Set the value of a CFGT_UINT8 (8-bit unsigned) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setuint8(cfg_t *cfg, const char *name, uint8_t value);
+/** Set a value of a CFGT_UINT8 (8-bit unsigned) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnuint8(cfg_t *cfg, const char *name, uint8_t value, unsigned int index);
 
+/** Set the value of a CFGT_UINT16 (16-bit unsigned) option, given a cfg_opt_t pointer.
+ * @param opt   The option structure (eg, as returned from cfg_getopt())
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_opt_setnuint16(cfg_opt_t *opt, uint16_t value, unsigned int index);
+/** Set the value of a CFGT_UINT16 (16-bit unsigned) option.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setuint16(cfg_t *cfg, const char *name, uint16_t value);
+/** Set a value of a CFGT_UINT16 (16-bit unsigned) option at a given list index.
+ * @param cfg   The configuration file context.
+ * @param name  The name of the option.
+ * @param value The value to set.
+ * @param index Index in the value array to modify; must be 0 unless CFGF_LIST is set.
+ * @return POSIX OK(0), or non-zero on failure.
+ */
 DLLIMPORT int __export cfg_setnuint16(cfg_t *cfg, const char *name, uint16_t value, unsigned int index);
 
 /** Set a value of a floating point option.
@@ -1527,6 +1819,10 @@ DLLIMPORT int __export cfg_setnstr(cfg_t *cfg, const char *name, const char *val
  */
 DLLIMPORT int __export cfg_setlist(cfg_t *cfg, const char *name, unsigned int nvalues, ...);
 
+/** Count the number of options in a cfg_opt_t array.
+ * @param opts A cfg_opt_t array, terminated by CFG_END().
+ * @return The number of options in @p opts, excluding the terminating CFG_END().
+ */
 DLLIMPORT int __export cfg_numopts(cfg_opt_t *opts);
 
 /** Return number of options in a file or section
