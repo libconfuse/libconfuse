@@ -2,15 +2,6 @@ libConfuse
 ==========
 [![Badge][]][ISC] [![Release Badge][]][Release] [![GitHub Status][]][GitHub] [![Coverity Status][]][Coverity Scan] [![CodeDocs Status][]][CodeDocs]
 
-* [Introduction](#introduction)
-* [Documentation](#documentation)
-* [Examples](#examples)
-* [Build & Install](#build--install)
-* [Origin & References](#origin--references)
-
-Introduction
-------------
-
 libConfuse is a configuration file parser library written in C.  It
 supports sections and (lists of) values, as well as other features such
 as single/double quoted strings, environment variable expansion,
@@ -21,20 +12,15 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
-> [!IMPORTANT]
-> Please ensure you download a <ins>versioned archive</ins> from the
-> official [releases page][3].
+> Ensure you download a __versioned archive__ from the official
+> [releases page][3].
 
 Documentation
 -------------
 
 * [API reference and tutorial][CodeDocs], regenerated on every commit
-
-Examples
---------
-
 * [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
-  shows how to use the "simple" versions of options
+  show how to use the "simple" versions of options
 * [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
   show most of the features of confuse, including lists and functions
 

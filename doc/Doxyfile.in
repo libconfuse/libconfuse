@@ -760,6 +760,8 @@ WARN_LOGFILE           =
 
 INPUT                  = @top_srcdir@/README.md \
                          @top_srcdir@/doc/tutorial.md \
+                         @top_srcdir@/HACKING.md \
+                         @top_srcdir@/ChangeLog.md \
                          @top_srcdir@/src/confuse.c \
                          @top_srcdir@/src/confuse.h
 

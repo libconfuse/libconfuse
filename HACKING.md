@@ -5,7 +5,7 @@ Maintenance
 -----------
 
 * Encourage contributors to write tests, in particular for new features
-* Run tests regularly, use Travis-CI to do this automatically
+* Run tests regularly, GitHub Actions CI does this automatically
 * Leverage GitHub issues for milestone planning
 * Reference issues from GitHub pull requests to alert issue subscribers
 * Bump library ABI version just before release!
