@@ -147,3 +147,23 @@ jobs:
         run: |
           DESTDIR=~/tmp make install-strip
           tree ~/tmp
+  ilp32:
+    # Build and test as a 32-bit (ILP32) target, where long is 32-bit, to
+    # prove CFG_INT64 & co. carry full width and that CFG_INT is unchanged
+    name: ilp32
+    runs-on: ubuntu-latest
+    env:
+      MAKEFLAGS: -j3
+      CC: gcc -m32
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install gcc-multilib tree doxygen autopoint gettext
+      - uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          ./autogen.sh
+          ./configure --prefix=
+      - name: Build and test
+        run: make check || (cat tests/test-suite.log; false)
