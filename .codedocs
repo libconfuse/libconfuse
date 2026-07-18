@@ -18,3 +18,6 @@ USE_MDFILE_AS_MAINPAGE = README.md
 # @include in the tutorial, and let the reader browse the annotated source.
 EXAMPLE_PATH   = examples doc
 SOURCE_BROWSER = YES
+
+# Hide the internal __CFG_* helper macros; only the public CFG_* API is documented.
+EXCLUDE_SYMBOLS = __CFG_*

@@ -79,7 +79,7 @@ enum cfg_type_t {
 typedef enum cfg_type_t cfg_type_t;
 
 /** Flags. */
-#define CFGF_NONE           (0)
+#define CFGF_NONE           (0)        /**< no flags */
 #define CFGF_MULTI          (1 <<  0) /**< option may be specified multiple times (only applies to sections) */
 #define CFGF_LIST           (1 <<  1) /**< option is a list */
 #define CFGF_NOCASE         (1 <<  2) /**< configuration file is case insensitive */
@@ -88,8 +88,8 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_NO_TITLE_DUPES (1 <<  5) /**< multiple section titles must be unique
 					  (duplicates raises an error, only applies to sections) */
 
-#define CFGF_RESET          (1 <<  6)
-#define CFGF_DEFINIT        (1 <<  7)
+#define CFGF_RESET          (1 <<  6) /**< used internally to clear an option's values before (re)setting */
+#define CFGF_DEFINIT        (1 <<  7) /**< used internally, the option's default value has been initialized */
 #define CFGF_IGNORE_UNKNOWN (1 <<  8) /**< ignore unknown options in configuration files */
 #define CFGF_DEPRECATED     (1 <<  9) /**< option is deprecated and should be ignored. */
 #define CFGF_DROP           (1 << 10) /**< option should be dropped after parsing */
@@ -98,11 +98,11 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFGF_KEYSTRVAL      (1 << 13) /**< section has free-form key=value string options created when parsing file */
 #define CFGF_USE_INCLUDE_FUNCTION (1 << 14) /**< add an include() function to the section's options */
 
-/** Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
-#define CFG_SUCCESS     0
-#define CFG_FAIL       -1
-#define CFG_FILE_ERROR -1
-#define CFG_PARSE_ERROR 1
+/* Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
+#define CFG_SUCCESS     0  /**< Success, all OK (POSIX '0') */
+#define CFG_FAIL       -1  /**< Generic failure */
+#define CFG_FILE_ERROR -1  /**< Error opening the configuration file */
+#define CFG_PARSE_ERROR 1  /**< Error parsing the configuration */
 
 typedef union cfg_value_t cfg_value_t;
 typedef union cfg_simple_t cfg_simple_t;
@@ -630,37 +630,57 @@ extern const char __export confuse_author[];
 
 /** Initialize an 8-bit signed integer option */
 #define CFG_INT8(name, def, flags)              __CFG_INT8(name, def, flags, NULL, NULL)
+/** Initialize an 8-bit signed integer list option */
 #define CFG_INT8_LIST(name, def, flags)         __CFG_INT8_LIST(name, def, flags, NULL, NULL)
+/** Initialize an 8-bit signed integer option with a parsing callback */
 #define CFG_INT8_CB(name, def, flags, cb)       __CFG_INT8(name, def, flags, NULL, cb)
+/** Initialize an 8-bit signed integer list option with a parsing callback */
 #define CFG_INT8_LIST_CB(name, def, flags, cb)  __CFG_INT8_LIST(name, def, flags, NULL, cb)
+/** Initialize a "simple" 8-bit signed integer option, svalue is an int8_t * */
 #define CFG_SIMPLE_INT8(name, svalue)           __CFG_INT8(name, 0, CFGF_NONE, svalue, NULL)
 
 /** Initialize a 16-bit signed integer option */
 #define CFG_INT16(name, def, flags)             __CFG_INT16(name, def, flags, NULL, NULL)
+/** Initialize a 16-bit signed integer list option */
 #define CFG_INT16_LIST(name, def, flags)        __CFG_INT16_LIST(name, def, flags, NULL, NULL)
+/** Initialize a 16-bit signed integer option with a parsing callback */
 #define CFG_INT16_CB(name, def, flags, cb)      __CFG_INT16(name, def, flags, NULL, cb)
+/** Initialize a 16-bit signed integer list option with a parsing callback */
 #define CFG_INT16_LIST_CB(name, def, flags, cb) __CFG_INT16_LIST(name, def, flags, NULL, cb)
+/** Initialize a "simple" 16-bit signed integer option, svalue is an int16_t * */
 #define CFG_SIMPLE_INT16(name, svalue)          __CFG_INT16(name, 0, CFGF_NONE, svalue, NULL)
 
 /** Initialize a 32-bit signed integer option */
 #define CFG_INT32(name, def, flags)             __CFG_INT32(name, def, flags, NULL, NULL)
+/** Initialize a 32-bit signed integer list option */
 #define CFG_INT32_LIST(name, def, flags)        __CFG_INT32_LIST(name, def, flags, NULL, NULL)
+/** Initialize a 32-bit signed integer option with a parsing callback */
 #define CFG_INT32_CB(name, def, flags, cb)      __CFG_INT32(name, def, flags, NULL, cb)
+/** Initialize a 32-bit signed integer list option with a parsing callback */
 #define CFG_INT32_LIST_CB(name, def, flags, cb) __CFG_INT32_LIST(name, def, flags, NULL, cb)
+/** Initialize a "simple" 32-bit signed integer option, svalue is an int32_t * */
 #define CFG_SIMPLE_INT32(name, svalue)          __CFG_INT32(name, 0, CFGF_NONE, svalue, NULL)
 
 /** Initialize an 8-bit unsigned integer option */
 #define CFG_UINT8(name, def, flags)              __CFG_UINT8(name, def, flags, NULL, NULL)
+/** Initialize an 8-bit unsigned integer list option */
 #define CFG_UINT8_LIST(name, def, flags)         __CFG_UINT8_LIST(name, def, flags, NULL, NULL)
+/** Initialize an 8-bit unsigned integer option with a parsing callback */
 #define CFG_UINT8_CB(name, def, flags, cb)       __CFG_UINT8(name, def, flags, NULL, cb)
+/** Initialize an 8-bit unsigned integer list option with a parsing callback */
 #define CFG_UINT8_LIST_CB(name, def, flags, cb)  __CFG_UINT8_LIST(name, def, flags, NULL, cb)
+/** Initialize a "simple" 8-bit unsigned integer option, svalue is a uint8_t * */
 #define CFG_SIMPLE_UINT8(name, svalue)           __CFG_UINT8(name, 0, CFGF_NONE, svalue, NULL)
 
 /** Initialize a 16-bit unsigned integer option */
 #define CFG_UINT16(name, def, flags)             __CFG_UINT16(name, def, flags, NULL, NULL)
+/** Initialize a 16-bit unsigned integer list option */
 #define CFG_UINT16_LIST(name, def, flags)        __CFG_UINT16_LIST(name, def, flags, NULL, NULL)
+/** Initialize a 16-bit unsigned integer option with a parsing callback */
 #define CFG_UINT16_CB(name, def, flags, cb)      __CFG_UINT16(name, def, flags, NULL, cb)
+/** Initialize a 16-bit unsigned integer list option with a parsing callback */
 #define CFG_UINT16_LIST_CB(name, def, flags, cb) __CFG_UINT16_LIST(name, def, flags, NULL, cb)
+/** Initialize a "simple" 16-bit unsigned integer option, svalue is a uint16_t * */
 #define CFG_SIMPLE_UINT16(name, svalue)          __CFG_UINT16(name, 0, CFGF_NONE, svalue, NULL)
 
 
