@@ -98,6 +98,13 @@ static void list_integer_test(void)
 
 	fail_unless(cfg_getint(cfg, "integer") == 4711);
 	fail_unless(cfg_getnint(cfg, "integer", 1) == 123456789);
+	fail_unless(cfg_parse_buf(cfg, "") == CFG_SUCCESS);
+	fail_unless(cfg_addlist(cfg, "integer", 2, 11, 22) == CFG_SUCCESS);
+	fail_unless(cfg_size(cfg, "integer") == 4);
+	fail_unless(cfg_getnint(cfg, "integer", 0) == 4711);
+	fail_unless(cfg_getnint(cfg, "integer", 1) == 123456789);
+	fail_unless(cfg_getnint(cfg, "integer", 2) == 11);
+	fail_unless(cfg_getnint(cfg, "integer", 3) == 22);
 	buf = "integer = {-46}";
 	fail_unless(cfg_parse_buf(cfg, buf) == CFG_SUCCESS);
 	fail_unless(cfg_size(cfg, "integer") == 1);

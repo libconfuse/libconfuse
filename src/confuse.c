@@ -2446,6 +2446,7 @@ DLLIMPORT int cfg_addlist(cfg_t *cfg, const char *name, unsigned int nvalues, ..
 		return CFG_FAIL;
 	}
 
+	opt->flags &= ~CFGF_RESET;
 	va_start(ap, nvalues);
 	cfg_addlist_internal(opt, nvalues, ap);
 	va_end(ap);
