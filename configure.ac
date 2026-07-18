@@ -50,15 +50,15 @@ AM_CONDITIONAL(MISSING_REALLOCARRAY, [test "x$ac_cv_func_reallocarray" = "xno"])
 AM_CONDITIONAL(WINDOWS_BUILD, [test "x$ac_cv_header_windows_h" = "xyes"])
 
 # Files to generate
-AC_CONFIG_FILES([Makefile \
-		 src/Makefile \
-		 examples/Makefile \
-                 po/Makefile.in \
-		 m4/Makefile \
-		 tests/Makefile \
-		 doc/Makefile \
-                 doc/Doxyfile \
-		 libconfuse.pc \
+AC_CONFIG_FILES([Makefile
+		 src/Makefile
+		 examples/Makefile
+		 po/Makefile.in
+		 m4/Makefile
+		 tests/Makefile
+		 doc/Makefile
+		 doc/Doxyfile
+		 libconfuse.pc
 		 libconfuse.spec])
 AC_OUTPUT
 
