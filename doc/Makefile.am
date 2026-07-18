@@ -1,5 +1,4 @@
-EXTRA_DIST        = doxygen-footer.html doxygen-header.html doxygen.css \
-		    codedocs.css tutorial.md $(TUTORIAL_CSOURCES) \
+EXTRA_DIST        = codedocs.css tutorial.md $(TUTORIAL_CSOURCES) \
 		    Doxyfile.in Doxyfile
 
 # Tutorial code listings, embedded in tutorial.md via Doxygen @include.
