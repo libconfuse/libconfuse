@@ -83,7 +83,12 @@ enum cfg_type_t {
 	CFGT_RAWSEC, /**< section whose body is captured verbatim as a string */
 	CFGT_INT64,  /**< 64-bit signed integer */
 	CFGT_UINT32, /**< 32-bit unsigned integer */
-	CFGT_UINT64  /**< 64-bit unsigned integer */
+	CFGT_UINT64, /**< 64-bit unsigned integer */
+	CFGT_INT8,   /**< 8-bit signed integer */
+	CFGT_INT16,  /**< 16-bit signed integer */
+	CFGT_INT32,  /**< 32-bit signed integer */
+	CFGT_UINT8,  /**< 8-bit unsigned integer */
+	CFGT_UINT16  /**< 16-bit unsigned integer */
 };
 typedef enum cfg_type_t cfg_type_t;
 
@@ -278,7 +283,12 @@ struct cfg_t {
  */
 union cfg_value_t {
 	long int number;	/**< integer value */
-	int64_t i64;		/**< 64-bit signed integer value */
+	int8_t   i8;		/**< 8-bit signed integer value */
+	int16_t  i16;		/**< 16-bit signed integer value */
+	int32_t  i32;		/**< 32-bit signed integer value */
+	int64_t  i64;		/**< 64-bit signed integer value */
+	uint8_t  u8;		/**< 8-bit unsigned integer value */
+	uint16_t u16;		/**< 16-bit unsigned integer value */
 	uint32_t u32;		/**< 32-bit unsigned integer value */
 	uint64_t u64;		/**< 64-bit unsigned integer value */
 	double fpnumber;	/**< floating point value */
@@ -293,7 +303,12 @@ union cfg_value_t {
  */
 union cfg_simple_t {
 	long int *number;
-	int64_t *i64;
+	int8_t   *i8;
+	int16_t  *i16;
+	int32_t  *i32;
+	int64_t  *i64;
+	uint8_t  *u8;
+	uint16_t *u16;
 	uint32_t *u32;
 	uint64_t *u64;
 	double *fpnumber;
@@ -581,6 +596,82 @@ extern const char __export confuse_author[];
 #define CFG_UINT64_LIST_CB(name, def, flags, cb) __CFG_UINT64_LIST(name, def, flags, NULL, cb)
 /** Initialize a "simple" 64-bit unsigned integer option, svalue is a uint64_t * */
 #define CFG_SIMPLE_UINT64(name, svalue)          __CFG_UINT64(name, 0, CFGF_NONE, svalue, NULL)
+
+#define __CFG_INT8(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT8, .flags = _flags, \
+	.def = { .number = _def, }, .simple_value = { .i8 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_INT8_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT8, .flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, .simple_value = { .i8 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_INT16(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT16, .flags = _flags, \
+	.def = { .number = _def, }, .simple_value = { .i16 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_INT16_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT16, .flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, .simple_value = { .i16 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_INT32(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT32, .flags = _flags, \
+	.def = { .number = _def, }, .simple_value = { .i32 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_INT32_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_INT32, .flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, .simple_value = { .i32 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_UINT8(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_UINT8, .flags = _flags, \
+	.def = { .number = _def, }, .simple_value = { .u8 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_UINT8_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_UINT8, .flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, .simple_value = { .u8 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_UINT16(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_UINT16, .flags = _flags, \
+	.def = { .number = _def, }, .simple_value = { .u16 = _svalue, }, .parsecb = _cb, \
+}
+#define __CFG_UINT16_LIST(_name, _def, _flags, _svalue, _cb) { \
+	.name = _name, .type = CFGT_UINT16, .flags = _flags | CFGF_LIST, \
+	.def = { .parsed = _def, }, .simple_value = { .u16 = _svalue, }, .parsecb = _cb, \
+}
+
+/** Initialize an 8-bit signed integer option */
+#define CFG_INT8(name, def, flags)              __CFG_INT8(name, def, flags, NULL, NULL)
+#define CFG_INT8_LIST(name, def, flags)         __CFG_INT8_LIST(name, def, flags, NULL, NULL)
+#define CFG_INT8_CB(name, def, flags, cb)       __CFG_INT8(name, def, flags, NULL, cb)
+#define CFG_INT8_LIST_CB(name, def, flags, cb)  __CFG_INT8_LIST(name, def, flags, NULL, cb)
+#define CFG_SIMPLE_INT8(name, svalue)           __CFG_INT8(name, 0, CFGF_NONE, svalue, NULL)
+
+/** Initialize a 16-bit signed integer option */
+#define CFG_INT16(name, def, flags)             __CFG_INT16(name, def, flags, NULL, NULL)
+#define CFG_INT16_LIST(name, def, flags)        __CFG_INT16_LIST(name, def, flags, NULL, NULL)
+#define CFG_INT16_CB(name, def, flags, cb)      __CFG_INT16(name, def, flags, NULL, cb)
+#define CFG_INT16_LIST_CB(name, def, flags, cb) __CFG_INT16_LIST(name, def, flags, NULL, cb)
+#define CFG_SIMPLE_INT16(name, svalue)          __CFG_INT16(name, 0, CFGF_NONE, svalue, NULL)
+
+/** Initialize a 32-bit signed integer option */
+#define CFG_INT32(name, def, flags)             __CFG_INT32(name, def, flags, NULL, NULL)
+#define CFG_INT32_LIST(name, def, flags)        __CFG_INT32_LIST(name, def, flags, NULL, NULL)
+#define CFG_INT32_CB(name, def, flags, cb)      __CFG_INT32(name, def, flags, NULL, cb)
+#define CFG_INT32_LIST_CB(name, def, flags, cb) __CFG_INT32_LIST(name, def, flags, NULL, cb)
+#define CFG_SIMPLE_INT32(name, svalue)          __CFG_INT32(name, 0, CFGF_NONE, svalue, NULL)
+
+/** Initialize an 8-bit unsigned integer option */
+#define CFG_UINT8(name, def, flags)              __CFG_UINT8(name, def, flags, NULL, NULL)
+#define CFG_UINT8_LIST(name, def, flags)         __CFG_UINT8_LIST(name, def, flags, NULL, NULL)
+#define CFG_UINT8_CB(name, def, flags, cb)       __CFG_UINT8(name, def, flags, NULL, cb)
+#define CFG_UINT8_LIST_CB(name, def, flags, cb)  __CFG_UINT8_LIST(name, def, flags, NULL, cb)
+#define CFG_SIMPLE_UINT8(name, svalue)           __CFG_UINT8(name, 0, CFGF_NONE, svalue, NULL)
+
+/** Initialize a 16-bit unsigned integer option */
+#define CFG_UINT16(name, def, flags)             __CFG_UINT16(name, def, flags, NULL, NULL)
+#define CFG_UINT16_LIST(name, def, flags)        __CFG_UINT16_LIST(name, def, flags, NULL, NULL)
+#define CFG_UINT16_CB(name, def, flags, cb)      __CFG_UINT16(name, def, flags, NULL, cb)
+#define CFG_UINT16_LIST_CB(name, def, flags, cb) __CFG_UINT16_LIST(name, def, flags, NULL, cb)
+#define CFG_SIMPLE_UINT16(name, svalue)          __CFG_UINT16(name, 0, CFGF_NONE, svalue, NULL)
 
 
 
@@ -933,8 +1024,8 @@ DLLIMPORT long int __export cfg_getnint(cfg_t *cfg, const char *name, unsigned i
 DLLIMPORT long int __export cfg_getint(cfg_t *cfg, const char *name);
 
 /** Fixed-width and unsigned integer accessors.  These behave like
- * cfg_opt_getnint()/cfg_getnint()/cfg_getint() but for the CFGT_INT64,
- * CFGT_UINT32, and CFGT_UINT64 option types, respectively.
+ * cfg_opt_getnint()/cfg_getnint()/cfg_getint() but for the fixed-width
+ * signed (CFGT_INT8/16/32/64) and unsigned (CFGT_UINT8/16/32/64) types.
  */
 DLLIMPORT int64_t __export cfg_opt_getnint64(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT int64_t __export cfg_getnint64(cfg_t *cfg, const char *name, unsigned int index);
@@ -947,6 +1038,26 @@ DLLIMPORT uint32_t __export cfg_getuint32(cfg_t *cfg, const char *name);
 DLLIMPORT uint64_t __export cfg_opt_getnuint64(cfg_opt_t *opt, unsigned int index);
 DLLIMPORT uint64_t __export cfg_getnuint64(cfg_t *cfg, const char *name, unsigned int index);
 DLLIMPORT uint64_t __export cfg_getuint64(cfg_t *cfg, const char *name);
+
+DLLIMPORT int8_t __export cfg_opt_getnint8(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT int8_t __export cfg_getnint8(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT int8_t __export cfg_getint8(cfg_t *cfg, const char *name);
+
+DLLIMPORT int16_t __export cfg_opt_getnint16(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT int16_t __export cfg_getnint16(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT int16_t __export cfg_getint16(cfg_t *cfg, const char *name);
+
+DLLIMPORT int32_t __export cfg_opt_getnint32(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT int32_t __export cfg_getnint32(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT int32_t __export cfg_getint32(cfg_t *cfg, const char *name);
+
+DLLIMPORT uint8_t __export cfg_opt_getnuint8(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT uint8_t __export cfg_getnuint8(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT uint8_t __export cfg_getuint8(cfg_t *cfg, const char *name);
+
+DLLIMPORT uint16_t __export cfg_opt_getnuint16(cfg_opt_t *opt, unsigned int index);
+DLLIMPORT uint16_t __export cfg_getnuint16(cfg_t *cfg, const char *name, unsigned int index);
+DLLIMPORT uint16_t __export cfg_getuint16(cfg_t *cfg, const char *name);
 
 /** Returns the value of a floating point option, given a cfg_opt_t pointer.
  * @param opt The option structure (eg, as returned from cfg_getopt())
@@ -1266,8 +1377,8 @@ DLLIMPORT int __export cfg_setint(cfg_t *cfg, const char *name, long int value);
 DLLIMPORT int __export cfg_setnint(cfg_t *cfg, const char *name, long int value, unsigned int index);
 
 /** Fixed-width and unsigned integer setters.  These mirror
- * cfg_opt_setnint()/cfg_setint()/cfg_setnint() for the CFGT_INT64,
- * CFGT_UINT32, and CFGT_UINT64 option types, respectively.
+ * cfg_opt_setnint()/cfg_setint()/cfg_setnint() for the fixed-width
+ * signed (CFGT_INT8/16/32/64) and unsigned (CFGT_UINT8/16/32/64) types.
  */
 DLLIMPORT int __export cfg_opt_setnint64(cfg_opt_t *opt, int64_t value, unsigned int index);
 DLLIMPORT int __export cfg_setint64(cfg_t *cfg, const char *name, int64_t value);
@@ -1280,6 +1391,26 @@ DLLIMPORT int __export cfg_setnuint32(cfg_t *cfg, const char *name, uint32_t val
 DLLIMPORT int __export cfg_opt_setnuint64(cfg_opt_t *opt, uint64_t value, unsigned int index);
 DLLIMPORT int __export cfg_setuint64(cfg_t *cfg, const char *name, uint64_t value);
 DLLIMPORT int __export cfg_setnuint64(cfg_t *cfg, const char *name, uint64_t value, unsigned int index);
+
+DLLIMPORT int __export cfg_opt_setnint8(cfg_opt_t *opt, int8_t value, unsigned int index);
+DLLIMPORT int __export cfg_setint8(cfg_t *cfg, const char *name, int8_t value);
+DLLIMPORT int __export cfg_setnint8(cfg_t *cfg, const char *name, int8_t value, unsigned int index);
+
+DLLIMPORT int __export cfg_opt_setnint16(cfg_opt_t *opt, int16_t value, unsigned int index);
+DLLIMPORT int __export cfg_setint16(cfg_t *cfg, const char *name, int16_t value);
+DLLIMPORT int __export cfg_setnint16(cfg_t *cfg, const char *name, int16_t value, unsigned int index);
+
+DLLIMPORT int __export cfg_opt_setnint32(cfg_opt_t *opt, int32_t value, unsigned int index);
+DLLIMPORT int __export cfg_setint32(cfg_t *cfg, const char *name, int32_t value);
+DLLIMPORT int __export cfg_setnint32(cfg_t *cfg, const char *name, int32_t value, unsigned int index);
+
+DLLIMPORT int __export cfg_opt_setnuint8(cfg_opt_t *opt, uint8_t value, unsigned int index);
+DLLIMPORT int __export cfg_setuint8(cfg_t *cfg, const char *name, uint8_t value);
+DLLIMPORT int __export cfg_setnuint8(cfg_t *cfg, const char *name, uint8_t value, unsigned int index);
+
+DLLIMPORT int __export cfg_opt_setnuint16(cfg_opt_t *opt, uint16_t value, unsigned int index);
+DLLIMPORT int __export cfg_setuint16(cfg_t *cfg, const char *name, uint16_t value);
+DLLIMPORT int __export cfg_setnuint16(cfg_t *cfg, const char *name, uint16_t value, unsigned int index);
 
 /** Set a value of a floating point option.
  *

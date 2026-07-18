@@ -10,14 +10,21 @@
 
 static int64_t  si;
 static uint32_t su;
+static uint8_t  su8;
 
 static cfg_opt_t opts[] = {
+	CFG_INT8  ("i8",  0, CFGF_NONE),
+	CFG_INT16 ("i16", 0, CFGF_NONE),
+	CFG_INT32 ("i32", 0, CFGF_NONE),
 	CFG_INT64 ("i64", 7, CFGF_NONE),
+	CFG_UINT8 ("u8",  0, CFGF_NONE),
+	CFG_UINT16("u16", 0, CFGF_NONE),
 	CFG_UINT32("u32", 0, CFGF_NONE),
 	CFG_UINT64("u64", 0, CFGF_NONE),
 	CFG_INT64_LIST("list", 0, CFGF_NONE),
 	CFG_SIMPLE_INT64 ("si", &si),
 	CFG_SIMPLE_UINT32("su", &su),
+	CFG_SIMPLE_UINT8 ("su8", &su8),
 	CFG_END()
 };
 
@@ -57,24 +64,42 @@ int main(void)
 	fail_unless(cfg_addlist(cfg, "list", 1, INT64_C(5000000000)) == CFG_SUCCESS);
 	fail_unless(cfg_getnint64(cfg, "list", 4) == INT64_C(5000000000));
 
-	/* Simple-value binding, incl. a value below INT32_MIN */
-	fail_unless(cfg_parse_buf(cfg, "si = -9000000000\nsu = 4000000000\n") == CFG_SUCCESS);
+	/* Narrow widths: boundary values parse and read back correctly */
+	fail_unless(cfg_parse_buf(cfg,
+				  "i8 = -128\ni16 = 32767\ni32 = -2147483648\n"
+				  "u8 = 255\nu16 = 65535\n") == CFG_SUCCESS);
+	fail_unless(cfg_getint8(cfg, "i8") == -128);
+	fail_unless(cfg_getint16(cfg, "i16") == 32767);
+	fail_unless(cfg_getint32(cfg, "i32") == INT32_MIN);
+	fail_unless(cfg_getuint8(cfg, "u8") == 255);
+	fail_unless(cfg_getuint16(cfg, "u16") == 65535);
+
+	/* Simple-value binding, incl. a value below INT32_MIN and a
+	 * narrow (1-byte) unsigned binding that must not overwrite past it */
+	fail_unless(cfg_parse_buf(cfg, "si = -9000000000\nsu = 4000000000\nsu8 = 200\n") == CFG_SUCCESS);
 	fail_unless(si == INT64_C(-9000000000));
 	fail_unless(su == 4000000000U);
+	fail_unless(su8 == 200);
 	cfg_free(cfg);
 
-	/* Range checking: reject out-of-range and negative unsigned */
-	cfg = cfg_init(opts, CFGF_NONE);
-	fail_unless(cfg_parse_buf(cfg, "u32 = 4294967296\n") != CFG_SUCCESS);
-	cfg_free(cfg);
+	/* One-past-max, overflow, and negative-into-unsigned input is
+	 * rejected for every width.  A fresh context each time since a
+	 * failed parse may leave partial state. */
+	{
+		static const char *bad[] = {
+			"i8 = 128\n",   "u8 = 256\n",
+			"i16 = 32768\n", "u16 = 65536\n",
+			"i32 = 2147483648\n", "u32 = 4294967296\n",
+			"u32 = -1\n",   "u64 = 99999999999999999999999\n",
+		};
+		size_t k;
 
-	cfg = cfg_init(opts, CFGF_NONE);
-	fail_unless(cfg_parse_buf(cfg, "u32 = -1\n") != CFG_SUCCESS);
-	cfg_free(cfg);
-
-	cfg = cfg_init(opts, CFGF_NONE);
-	fail_unless(cfg_parse_buf(cfg, "u64 = 99999999999999999999999\n") != CFG_SUCCESS);
-	cfg_free(cfg);
+		for (k = 0; k < sizeof(bad) / sizeof(bad[0]); k++) {
+			cfg = cfg_init(opts, CFGF_NONE);
+			fail_unless(cfg_parse_buf(cfg, bad[k]) != CFG_SUCCESS);
+			cfg_free(cfg);
+		}
+	}
 
 	/* Print -> reparse round-trip keeps full-width values intact */
 	cfg = cfg_init(opts, CFGF_NONE);

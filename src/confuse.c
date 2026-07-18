@@ -541,6 +541,131 @@ DLLIMPORT uint64_t cfg_getuint64(cfg_t *cfg, const char *name)
 	return cfg_getnuint64(cfg, name, 0);
 }
 
+DLLIMPORT int8_t cfg_opt_getnint8(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_INT8) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->i8;
+	if (opt->simple_value.i8)
+		return *opt->simple_value.i8;
+
+	return 0;
+}
+
+DLLIMPORT int8_t cfg_getnint8(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnint8(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT int8_t cfg_getint8(cfg_t *cfg, const char *name)
+{
+	return cfg_getnint8(cfg, name, 0);
+}
+
+DLLIMPORT int16_t cfg_opt_getnint16(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_INT16) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->i16;
+	if (opt->simple_value.i16)
+		return *opt->simple_value.i16;
+
+	return 0;
+}
+
+DLLIMPORT int16_t cfg_getnint16(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnint16(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT int16_t cfg_getint16(cfg_t *cfg, const char *name)
+{
+	return cfg_getnint16(cfg, name, 0);
+}
+
+DLLIMPORT int32_t cfg_opt_getnint32(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_INT32) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->i32;
+	if (opt->simple_value.i32)
+		return *opt->simple_value.i32;
+
+	return 0;
+}
+
+DLLIMPORT int32_t cfg_getnint32(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnint32(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT int32_t cfg_getint32(cfg_t *cfg, const char *name)
+{
+	return cfg_getnint32(cfg, name, 0);
+}
+
+DLLIMPORT uint8_t cfg_opt_getnuint8(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_UINT8) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->u8;
+	if (opt->simple_value.u8)
+		return *opt->simple_value.u8;
+
+	return 0;
+}
+
+DLLIMPORT uint8_t cfg_getnuint8(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnuint8(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT uint8_t cfg_getuint8(cfg_t *cfg, const char *name)
+{
+	return cfg_getnuint8(cfg, name, 0);
+}
+
+DLLIMPORT uint16_t cfg_opt_getnuint16(cfg_opt_t *opt, unsigned int index)
+{
+	if (!opt || opt->type != CFGT_UINT16) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	if (opt->values && index < opt->nvalues)
+		return opt->values[index]->u16;
+	if (opt->simple_value.u16)
+		return *opt->simple_value.u16;
+
+	return 0;
+}
+
+DLLIMPORT uint16_t cfg_getnuint16(cfg_t *cfg, const char *name, unsigned int index)
+{
+	return cfg_opt_getnuint16(cfg_getopt(cfg, name), index);
+}
+
+DLLIMPORT uint16_t cfg_getuint16(cfg_t *cfg, const char *name)
+{
+	return cfg_getnuint16(cfg, name, 0);
+}
+
 DLLIMPORT double cfg_opt_getnfloat(cfg_opt_t *opt, unsigned int index)
 {
 	if (!opt || opt->type != CFGT_FLOAT) {
@@ -924,8 +1049,28 @@ static void cfg_init_defaults(cfg_t *cfg)
 					cfg_opt_setnint(&cfg->opts[i], cfg->opts[i].def.number, 0);
 					break;
 
+				case CFGT_INT8:
+					cfg_opt_setnint8(&cfg->opts[i], (int8_t)cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_INT16:
+					cfg_opt_setnint16(&cfg->opts[i], (int16_t)cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_INT32:
+					cfg_opt_setnint32(&cfg->opts[i], (int32_t)cfg->opts[i].def.number, 0);
+					break;
+
 				case CFGT_INT64:
 					cfg_opt_setnint64(&cfg->opts[i], cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_UINT8:
+					cfg_opt_setnuint8(&cfg->opts[i], (uint8_t)cfg->opts[i].def.number, 0);
+					break;
+
+				case CFGT_UINT16:
+					cfg_opt_setnuint16(&cfg->opts[i], (uint16_t)cfg->opts[i].def.number, 0);
 					break;
 
 				case CFGT_UINT32:
@@ -1132,6 +1277,9 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 		val->number = i;
 		break;
 
+	case CFGT_INT8:
+	case CFGT_INT16:
+	case CFGT_INT32:
 	case CFGT_INT64:
 		if (opt->parsecb) {
 			if ((*opt->parsecb) (cfg, opt, value, &i64) != 0)
@@ -1158,9 +1306,32 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				return NULL;
 			}
 		}
-		val->i64 = i64;
+		{
+			int64_t lo = INT64_MIN, hi = INT64_MAX;
+
+			switch (opt->type) {
+			case CFGT_INT8:  lo = INT8_MIN;  hi = INT8_MAX;  break;
+			case CFGT_INT16: lo = INT16_MIN; hi = INT16_MAX; break;
+			case CFGT_INT32: lo = INT32_MIN; hi = INT32_MAX; break;
+			default:         break;
+			}
+
+			if (i64 < lo || i64 > hi) {
+				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
+				return NULL;
+			}
+
+			switch (opt->type) {
+			case CFGT_INT8:  val->i8  = (int8_t)i64;  break;
+			case CFGT_INT16: val->i16 = (int16_t)i64; break;
+			case CFGT_INT32: val->i32 = (int32_t)i64; break;
+			default:         val->i64 = i64;          break;
+			}
+		}
 		break;
 
+	case CFGT_UINT8:
+	case CFGT_UINT16:
 	case CFGT_UINT32:
 	case CFGT_UINT64:
 		if (opt->parsecb) {
@@ -1188,15 +1359,33 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				return NULL;
 			}
 
-			if (errno == ERANGE || (opt->type == CFGT_UINT32 && u64 > UINT32_MAX)) {
+			if (errno == ERANGE) {
 				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
 				return NULL;
 			}
 		}
-		if (opt->type == CFGT_UINT32)
-			val->u32 = (uint32_t)u64;
-		else
-			val->u64 = u64;
+		{
+			uint64_t max = UINT64_MAX;
+
+			switch (opt->type) {
+			case CFGT_UINT8:  max = UINT8_MAX;  break;
+			case CFGT_UINT16: max = UINT16_MAX; break;
+			case CFGT_UINT32: max = UINT32_MAX; break;
+			default:          break;
+			}
+
+			if (u64 > max) {
+				cfg_error(cfg, _("integer value for option '%s' is out of range"), opt->name);
+				return NULL;
+			}
+
+			switch (opt->type) {
+			case CFGT_UINT8:  val->u8  = (uint8_t)u64;  break;
+			case CFGT_UINT16: val->u16 = (uint16_t)u64; break;
+			case CFGT_UINT32: val->u32 = (uint32_t)u64; break;
+			default:          val->u64 = u64;           break;
+			}
+		}
 		break;
 
 	case CFGT_FLOAT:
@@ -2556,6 +2745,181 @@ DLLIMPORT int cfg_setuint64(cfg_t *cfg, const char *name, uint64_t value)
 	return cfg_setnuint64(cfg, name, value, 0);
 }
 
+DLLIMPORT int cfg_opt_setnint8(cfg_opt_t *opt, int8_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_INT8) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->i8 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnint8(cfg_t *cfg, const char *name, int8_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnint8(opt, value, index);
+}
+
+DLLIMPORT int cfg_setint8(cfg_t *cfg, const char *name, int8_t value)
+{
+	return cfg_setnint8(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnint16(cfg_opt_t *opt, int16_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_INT16) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->i16 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnint16(cfg_t *cfg, const char *name, int16_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnint16(opt, value, index);
+}
+
+DLLIMPORT int cfg_setint16(cfg_t *cfg, const char *name, int16_t value)
+{
+	return cfg_setnint16(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnint32(cfg_opt_t *opt, int32_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_INT32) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->i32 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnint32(cfg_t *cfg, const char *name, int32_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnint32(opt, value, index);
+}
+
+DLLIMPORT int cfg_setint32(cfg_t *cfg, const char *name, int32_t value)
+{
+	return cfg_setnint32(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnuint8(cfg_opt_t *opt, uint8_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_UINT8) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->u8 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnuint8(cfg_t *cfg, const char *name, uint8_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnuint8(opt, value, index);
+}
+
+DLLIMPORT int cfg_setuint8(cfg_t *cfg, const char *name, uint8_t value)
+{
+	return cfg_setnuint8(cfg, name, value, 0);
+}
+
+DLLIMPORT int cfg_opt_setnuint16(cfg_opt_t *opt, uint16_t value, unsigned int index)
+{
+	cfg_value_t *val;
+
+	if (!opt || opt->type != CFGT_UINT16) {
+		errno = EINVAL;
+		return CFG_FAIL;
+	}
+
+	val = cfg_opt_getval(opt, index);
+	if (!val)
+		return CFG_FAIL;
+
+	val->u16 = value;
+	opt->flags |= CFGF_MODIFIED;
+
+	return CFG_SUCCESS;
+}
+
+DLLIMPORT int cfg_setnuint16(cfg_t *cfg, const char *name, uint16_t value, unsigned int index)
+{
+	cfg_opt_t *opt;
+
+	opt = cfg_getopt(cfg, name);
+	if (opt && opt->validcb2 && (*opt->validcb2)(cfg, opt, (void *)&value) != 0)
+		return CFG_FAIL;
+
+	return cfg_opt_setnuint16(opt, value, index);
+}
+
+DLLIMPORT int cfg_setuint16(cfg_t *cfg, const char *name, uint16_t value)
+{
+	return cfg_setnuint16(cfg, name, value, 0);
+}
+
 DLLIMPORT int cfg_opt_setnfloat(cfg_opt_t *opt, double value, unsigned int index)
 {
 	cfg_value_t *val;
@@ -2680,8 +3044,28 @@ static int cfg_addlist_internal(cfg_opt_t *opt, unsigned int nvalues, va_list ap
 			result = cfg_opt_setnint(opt, va_arg(ap, int), opt->nvalues);
 			break;
 
+		case CFGT_INT8:
+			result = cfg_opt_setnint8(opt, (int8_t)va_arg(ap, int), opt->nvalues);
+			break;
+
+		case CFGT_INT16:
+			result = cfg_opt_setnint16(opt, (int16_t)va_arg(ap, int), opt->nvalues);
+			break;
+
+		case CFGT_INT32:
+			result = cfg_opt_setnint32(opt, va_arg(ap, int32_t), opt->nvalues);
+			break;
+
 		case CFGT_INT64:
 			result = cfg_opt_setnint64(opt, va_arg(ap, int64_t), opt->nvalues);
+			break;
+
+		case CFGT_UINT8:
+			result = cfg_opt_setnuint8(opt, (uint8_t)va_arg(ap, int), opt->nvalues);
+			break;
+
+		case CFGT_UINT16:
+			result = cfg_opt_setnuint16(opt, (uint16_t)va_arg(ap, int), opt->nvalues);
 			break;
 
 		case CFGT_UINT32:
@@ -2873,8 +3257,28 @@ DLLIMPORT int cfg_opt_nprint_var(cfg_opt_t *opt, unsigned int index, FILE *fp)
 		fprintf(fp, "%ld", cfg_opt_getnint(opt, index));
 		break;
 
+	case CFGT_INT8:
+		fprintf(fp, "%" PRId8, cfg_opt_getnint8(opt, index));
+		break;
+
+	case CFGT_INT16:
+		fprintf(fp, "%" PRId16, cfg_opt_getnint16(opt, index));
+		break;
+
+	case CFGT_INT32:
+		fprintf(fp, "%" PRId32, cfg_opt_getnint32(opt, index));
+		break;
+
 	case CFGT_INT64:
 		fprintf(fp, "%" PRId64, cfg_opt_getnint64(opt, index));
+		break;
+
+	case CFGT_UINT8:
+		fprintf(fp, "%" PRIu8, cfg_opt_getnuint8(opt, index));
+		break;
+
+	case CFGT_UINT16:
+		fprintf(fp, "%" PRIu16, cfg_opt_getnuint16(opt, index));
 		break;
 
 	case CFGT_UINT32:
