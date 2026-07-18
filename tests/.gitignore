@@ -2,6 +2,7 @@
 .libs
 annotate
 check_confuse
+comment_parsing
 empty_string
 env
 ignore_parm

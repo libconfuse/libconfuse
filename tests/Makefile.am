@@ -25,6 +25,7 @@ TESTS            += setmulti_reset
 TESTS            += print_filter
 TESTS            += modified_flag
 TESTS            += rawsec
+TESTS            += comment_parsing
 
 check_PROGRAMS    = $(TESTS)
 

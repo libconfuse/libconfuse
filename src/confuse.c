@@ -1439,6 +1439,20 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			return STATE_EOF;
 		}
 
+		/*
+		 * A comment may appear between any two tokens, see issue #150.
+		 * Handle it once here (capture when CFGF_COMMENTS is set, else
+		 * skip); the unknown-option discard states (>= 10) do their own.
+		 */
+		if (tok == CFGT_COMMENT && state < 10) {
+			if (is_set(CFGF_COMMENTS, cfg->flags)) {
+				if (comment)
+					free(comment);
+				comment = strdup(cfg_yylval);
+			}
+			continue;
+		}
+
 		switch (state) {
 		case 0:	/* expecting an option name */
 			if (opt && is_set(CFGF_DEPRECATED, opt->flags))
@@ -1457,15 +1471,6 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 			case CFGT_STR:
 				break;
-
-			case CFGT_COMMENT:
-				if (!is_set(CFGF_COMMENTS, cfg->flags))
-					continue;
-
-				if (comment)
-					free(comment);
-				comment = strdup(cfg_yylval);
-				continue;
 
 			default:
 				cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
