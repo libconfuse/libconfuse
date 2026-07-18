@@ -7,6 +7,7 @@ TAGLINKS =
 
 PROJECT_NAME  = "libConfuse"
 PROJECT_BRIEF = "Small configuration file parser library for C"
+PROJECT_LOGO  = doc/img/icon-256.png
 
 # C library: the public API lives in confuse.h, documented in confuse.c.
 # README.md becomes the docs landing page (same as on GitHub).

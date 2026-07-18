@@ -1,5 +1,5 @@
 EXTRA_DIST        = codedocs.css tutorial.md $(TUTORIAL_CSOURCES) \
-		    Doxyfile.in Doxyfile
+		    Doxyfile.in Doxyfile img
 
 # Tutorial code listings, embedded in tutorial.md via Doxygen @include.
 TUTORIAL_CSOURCES = listing1.c listing2.c listing3.c listing4.c \

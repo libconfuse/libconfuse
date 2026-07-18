@@ -1,6 +1,10 @@
-libConfuse
-==========
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/libconfuse/libconfuse/master/doc/img/logo-2x.png" alt="libConfuse: if you can't convince, confuse." width="460">
+
 [![Badge][]][ISC] [![Release Badge][]][Release] [![GitHub Status][]][GitHub] [![Coverity Status][]][Coverity Scan] [![CodeDocs Status][]][CodeDocs]
+
+</div>
 
 libConfuse is a configuration file parser library written in C.  It
 supports sections and (lists of) values, as well as other features such
@@ -84,8 +88,6 @@ software under the terms of the [ISC license][1].  It was previously
 called libcfg, but the name was changed to not confuse with other
 similar libraries.  It is currently developed and maintained at GitHub.
 Please use the [issue tracker][2] to report bugs and feature requests.
-
-_If you can't convince, confuse._
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
 [2]:                https://github.com/libconfuse/libconfuse/issues
