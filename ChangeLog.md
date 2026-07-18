@@ -23,8 +23,12 @@ All relevant changes to the project are documented in this file.
 * Issue #158: `cfg_addtsec()` returns the existing section when the
   title already exists, matching the documented behavior
 * Issue #163: heap overflow in `cfg_tilde_expand()`, found by Han Zheng
+* Issue #179: `cfg_addlist()` now preserves default list values when
+  appending, by Yi Chen
 * Issue #180: `isspace()` argument fix, could crash the lexer, by
   Thomas Klausner
+* Issue #182: guard against stack exhaustion from deeply nested
+  sections, by Yi Chen
 * Fix null termination when expanding environment variables, by
   Igor Ponomarenko
 * Only apply search path logic to relative pathnames, absolute paths
