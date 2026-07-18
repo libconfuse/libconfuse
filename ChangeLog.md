@@ -16,6 +16,7 @@ All relevant changes to the project are documented in this file.
 * Add support for fixed-width and unsigned integer types,
   `CFG_INT8/16/32/64` and `CFG_UINT8/16/32/64`, alongside the
   platform-width `CFG_INT`, issue #11
+* Update doxygen documentation and sync with modern doxygen
 * Automatic large file support (LFS), by Mike Frysinger
 * Georgian translation, by Temuri Doghonadze
 
