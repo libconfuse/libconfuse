@@ -21,6 +21,8 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
+> _If you can't convince, confuse._
+
 > [!IMPORTANT]
 > Please ensure you download a <ins>versioned archive</ins> from the
 > official [releases page][3].

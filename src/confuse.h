@@ -19,20 +19,6 @@
  *
  */
 
-/**
- * \mainpage libConfuse Documentation
- *
- * \section intro
- *
- * Copyright &copy; 2002-2017 Martin Hedenfalk &lt;martin@bzero.se&gt;
- *
- * The latest versions of this manual and the libConfuse software are
- * available at http://www.nongnu.org/confuse/
- *
- *
- * <em>If you can't convince, confuse.</em>
- */
-
 #ifndef CONFUSE_H_
 #define CONFUSE_H_
 
