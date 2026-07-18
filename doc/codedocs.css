@@ -1,0 +1,12 @@
+/*
+ * Extra stylesheet layered on top of the Doxygen/CodeDocs theme via
+ * HTML_EXTRA_STYLESHEET.  It caps the content column width so the
+ * Markdown pages (mainpage, tutorial, ...) are readable on wide
+ * screens instead of running edge to edge, similar to GitHub.
+ */
+div.contents,
+div.header {
+	max-width: 60em;
+	margin-left: auto;
+	margin-right: auto;
+}

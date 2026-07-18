@@ -22,3 +22,6 @@ SOURCE_BROWSER = YES
 # Hide the internal __CFG_* helper macros and the build-only DLLIMPORT/__export
 # markers; only the public CFG_* API is documented.
 EXCLUDE_SYMBOLS = __CFG_* DLLIMPORT __export
+
+# Cap the content column width on wide screens, see doc/codedocs.css.
+HTML_EXTRA_STYLESHEET = doc/codedocs.css
