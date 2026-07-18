@@ -21,26 +21,26 @@
 #include <stdio.h>
 
 #ifdef HAVE_FUNOPEN
+#include <errno.h>
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 
 struct ops {
 	char   *buf;
-	size_t  len, pos;
+	size_t  len;		/* capacity of buf                    */
+	size_t  size;		/* bytes of valid data, limits reads  */
+	size_t  pos;		/* current read/write position        */
 };
 
 typedef struct ops ops_t;
 
 static int readfn(void *arg, char *buf, int len)
 {
-	int sz;
 	ops_t *ops = (ops_t *)arg;
+	size_t avail = ops->size > ops->pos ? ops->size - ops->pos : 0;
 
-	sz = (int)(ops->len - ops->pos);
-	if (sz < 0)
-		sz = 0;
-	if (len > sz)
-		len = sz;
+	if ((size_t)len > avail)
+		len = (int)avail;
 
 	memcpy(buf, &ops->buf[ops->pos], len);
 	ops->pos += len;
@@ -50,49 +50,51 @@ static int readfn(void *arg, char *buf, int len)
 
 static int writefn(void *arg, const char *buf, int len)
 {
-	int sz;
 	ops_t *ops = (ops_t *)arg;
+	size_t space = ops->len > ops->pos ? ops->len - ops->pos : 0;
 
-	sz = (int)(ops->len - ops->pos);
-	if (sz < 0)
-		sz = 0;
-	if (len > sz)
-		len = sz;
+	if ((size_t)len > space)
+		len = (int)space;
 
 	memcpy(&ops->buf[ops->pos], buf, len);
 	ops->pos += len;
+	if (ops->pos > ops->size)
+		ops->size = ops->pos;
 
 	return len;
 }
 
 static fpos_t seekfn(void *arg, fpos_t offset, int whence)
 {
-	fpos_t pos;
 	ops_t *ops = (ops_t *)arg;
+	fpos_t pos;
 
 	switch (whence) {
 	case SEEK_SET:
 		pos = offset;
 		break;
 
-	case SEEK_END:
-		pos = ops->len + offset;
+	case SEEK_CUR:
+		pos = (fpos_t)ops->pos + offset;
 		break;
 
-	case SEEK_CUR:
-		pos = ops->pos + offset;
+	case SEEK_END:
+		pos = (fpos_t)ops->size + offset;
 		break;
 
 	default:
+		errno = EINVAL;
 		return -1;
 	}
 
 	if (pos < 0 || (size_t)pos > ops->len) {
-		ops->pos = 0;
+		errno = EINVAL;
 		return -1;
 	}
 
-	return 0;
+	ops->pos = (size_t)pos;
+
+	return pos;
 }
 
 static int closefn(void *arg)
@@ -108,10 +110,32 @@ FILE *fmemopen(void *buf, size_t len, const char *type)
 	if (!ops)
 		return NULL;
 
-	memset(ops, 0, sizeof(*ops));
 	ops->buf = buf;
 	ops->len = len;
 	ops->pos = 0;
+
+	/*
+	 * Match glibc: 'w' starts empty, 'r' exposes the whole buffer,
+	 * and 'a' starts at the end of the existing string.
+	 */
+	switch (type ? type[0] : 'r') {
+	case 'w':
+		ops->size = 0;
+		break;
+
+	case 'a': {
+		char *nul = memchr(buf, '\0', len);
+
+		ops->size = nul ? (size_t)(nul - (char *)buf) : len;
+		ops->pos = ops->size;
+		break;
+	}
+
+	case 'r':
+	default:
+		ops->size = len;
+		break;
+	}
 
 	return funopen(ops, readfn, writefn, seekfn, closefn);
 }

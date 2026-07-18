@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef HAVE_FMEMOPEN
+extern FILE *fmemopen(void *buf, size_t size, const char *type);
+#endif
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
