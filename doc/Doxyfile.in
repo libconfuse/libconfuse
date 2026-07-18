@@ -291,6 +291,9 @@ EXTENSION_MAPPING      =
 
 MARKDOWN_SUPPORT       = NO
 
+# 1.9.x escapes links inside markdown headings when it builds heading TOCs
+TOC_INCLUDE_HEADINGS   = 0
+
 # When enabled doxygen tries to link words that correspond to documented
 # classes, or namespaces to their corresponding documentation. Such a link can
 # be prevented in individual cases by putting a % sign in front of the word or
