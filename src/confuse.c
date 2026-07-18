@@ -1627,8 +1627,7 @@ DLLIMPORT int cfg_setmulti(cfg_t *cfg, const char *name, unsigned int nvalues, c
 	return cfg_opt_setmulti(cfg, opt, nvalues, values);
 }
 
-/* searchpath */
-
+/** An entry in the configuration include search path, see cfg_add_searchpath() */
 struct cfg_searchpath_t {
 	char *dir;	        /**< directory to search */
 	cfg_searchpath_t *next; /**< next in list */

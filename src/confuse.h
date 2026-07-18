@@ -76,7 +76,7 @@ enum cfg_type_t {
 	CFGT_UINT8,  /**< 8-bit unsigned integer */
 	CFGT_UINT16  /**< 16-bit unsigned integer */
 };
-typedef enum cfg_type_t cfg_type_t;
+typedef enum cfg_type_t cfg_type_t;	/**< A fundamental option type, one of the CFGT_* values */
 
 /** Flags. */
 #define CFGF_NONE           (0)        /**< no flags */
@@ -104,13 +104,13 @@ typedef enum cfg_type_t cfg_type_t;
 #define CFG_FILE_ERROR -1  /**< Error opening the configuration file */
 #define CFG_PARSE_ERROR 1  /**< Error parsing the configuration */
 
-typedef union cfg_value_t cfg_value_t;
-typedef union cfg_simple_t cfg_simple_t;
-typedef struct cfg_opt_t cfg_opt_t;
-typedef struct cfg_t cfg_t;
-typedef struct cfg_defvalue_t cfg_defvalue_t;
-typedef int cfg_flag_t;
-typedef struct cfg_searchpath_t cfg_searchpath_t;
+typedef union cfg_value_t cfg_value_t;		/**< A fundamental option value */
+typedef union cfg_simple_t cfg_simple_t;	/**< Pointer to a user variable, for CFG_SIMPLE_* options */
+typedef struct cfg_opt_t cfg_opt_t;		/**< Describes a single configuration option */
+typedef struct cfg_t cfg_t;			/**< A configuration context (the file or a section) */
+typedef struct cfg_defvalue_t cfg_defvalue_t;	/**< Holds an option's default value */
+typedef int cfg_flag_t;				/**< Option flags, a bitwise OR of CFGF_* values */
+typedef struct cfg_searchpath_t cfg_searchpath_t; /**< An entry in the include search path */
 
 /** Function prototype used by CFGT_FUNC options.
  *
@@ -288,19 +288,19 @@ union cfg_value_t {
  *  defined with CFG_SIMPLE_*
  */
 union cfg_simple_t {
-	long int *number;
-	int8_t   *i8;
-	int16_t  *i16;
-	int32_t  *i32;
-	int64_t  *i64;
-	uint8_t  *u8;
-	uint16_t *u16;
-	uint32_t *u32;
-	uint64_t *u64;
-	double *fpnumber;
-	cfg_bool_t *boolean;
-	char **string;
-	void **ptr;
+	long int *number;	/**< pointer to a long int, for CFG_SIMPLE_INT */
+	int8_t   *i8;		/**< pointer to an int8_t, for CFG_SIMPLE_INT8 */
+	int16_t  *i16;		/**< pointer to an int16_t, for CFG_SIMPLE_INT16 */
+	int32_t  *i32;		/**< pointer to an int32_t, for CFG_SIMPLE_INT32 */
+	int64_t  *i64;		/**< pointer to an int64_t, for CFG_SIMPLE_INT64 */
+	uint8_t  *u8;		/**< pointer to a uint8_t, for CFG_SIMPLE_UINT8 */
+	uint16_t *u16;		/**< pointer to a uint16_t, for CFG_SIMPLE_UINT16 */
+	uint32_t *u32;		/**< pointer to a uint32_t, for CFG_SIMPLE_UINT32 */
+	uint64_t *u64;		/**< pointer to a uint64_t, for CFG_SIMPLE_UINT64 */
+	double *fpnumber;	/**< pointer to a double, for CFG_SIMPLE_FLOAT */
+	cfg_bool_t *boolean;	/**< pointer to a cfg_bool_t, for CFG_SIMPLE_BOOL */
+	char **string;		/**< pointer to a char *, for CFG_SIMPLE_STR */
+	void **ptr;		/**< pointer to a user value, for CFG_SIMPLE_PTR */
 };
 
 /** Data structure holding the default value given by the
@@ -337,12 +337,12 @@ struct cfg_opt_t {
 	cfg_validate_callback_t  validcb;  /**< Value validating parsing callback function */
 	cfg_validate_callback2_t validcb2; /**< Value validating set callback function */
 	cfg_print_func_t pf;	/**< print callback function */
-	cfg_free_func_t freecb;	/***< user-defined memory release function */
+	cfg_free_func_t freecb;	/**< user-defined memory release function */
 };
 
-extern const char __export confuse_copyright[];
-extern const char __export confuse_version[];
-extern const char __export confuse_author[];
+extern const char __export confuse_copyright[]; /**< libConfuse copyright string */
+extern const char __export confuse_version[];   /**< libConfuse version string */
+extern const char __export confuse_author[];    /**< libConfuse author string */
 
 #define __CFG_STR(_name, _def, _flags, _svalue, _cb) { \
 	.name = _name, \

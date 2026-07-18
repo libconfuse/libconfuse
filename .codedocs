@@ -19,5 +19,6 @@ USE_MDFILE_AS_MAINPAGE = README.md
 EXAMPLE_PATH   = examples doc
 SOURCE_BROWSER = YES
 
-# Hide the internal __CFG_* helper macros; only the public CFG_* API is documented.
-EXCLUDE_SYMBOLS = __CFG_*
+# Hide the internal __CFG_* helper macros and the build-only DLLIMPORT/__export
+# markers; only the public CFG_* API is documented.
+EXCLUDE_SYMBOLS = __CFG_* DLLIMPORT __export
