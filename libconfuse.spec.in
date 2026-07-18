@@ -31,7 +31,7 @@ Group:			%{_group}
 Packager:		Pascal Bleser <guru@unixtech.be>
 License:		ISC
 BuildRoot:		%{_tmppath}/build-%{_name}-%{_version}
-BuildRequires:     xmlto doxygen
+BuildRequires:     doxygen
 Prefix:			%{_prefix}
 %if %_has_distro
 Distribution:  %_distribution

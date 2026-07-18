@@ -11,10 +11,10 @@ PROJECT_BRIEF = "Small configuration file parser library for C"
 # C library: the public API lives in confuse.h, documented in confuse.c.
 # README.md becomes the docs landing page (same as on GitHub).
 OPTIMIZE_OUTPUT_FOR_C  = YES
-INPUT                  = README.md src/confuse.h src/confuse.c
+INPUT                  = README.md doc/tutorial.md src/confuse.h src/confuse.c
 USE_MDFILE_AS_MAINPAGE = README.md
 
-# Render the example programs referenced with @example in confuse.h, and
-# let the reader browse the annotated source.
-EXAMPLE_PATH   = examples
+# Render the example programs referenced with @example in confuse.h and
+# @include in the tutorial, and let the reader browse the annotated source.
+EXAMPLE_PATH   = examples doc
 SOURCE_BROWSER = YES

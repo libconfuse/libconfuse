@@ -21,8 +21,6 @@ The goal is not to be _the_ configuration file parser library with a
 gazillion of features.  Instead, it aims to be easy to use and quick to
 integrate with your code.
 
-> _If you can't convince, confuse._
-
 > [!IMPORTANT]
 > Please ensure you download a <ins>versioned archive</ins> from the
 > official [releases page][3].
@@ -30,9 +28,7 @@ integrate with your code.
 Documentation
 -------------
 
-* [API reference manual](http://www.nongnu.org/confuse/manual/)
-* [Tutorial](http://www.nongnu.org/confuse/tutorial-html/)
-* [Online API docs at CodeDocs.xyz][CodeDocs], regenerated on every commit
+* [API reference and tutorial][CodeDocs], regenerated on every commit
 
 Examples
 --------
@@ -78,10 +74,9 @@ tools:
 * autopoint
 * flex
 
-To build the documentation you also need the following tools:
+To build the documentation you also need the following tool:
 
 * doxygen
-* xmlto
 
 This is an optional step, so you must build it explicitly from
 its directory:
@@ -100,6 +95,8 @@ software under the terms of the [ISC license][1].  It was previously
 called libcfg, but the name was changed to not confuse with other
 similar libraries.  It is currently developed and maintained at GitHub.
 Please use the [issue tracker][2] to report bugs and feature requests.
+
+_If you can't convince, confuse._
 
 [1]:                http://en.wikipedia.org/wiki/ISC_license
 [2]:                https://github.com/libconfuse/libconfuse/issues

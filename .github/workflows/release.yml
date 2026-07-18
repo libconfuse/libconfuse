@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install doxygen xmlto libxml2-utils autopoint zip
+          sudo apt-get -y install doxygen autopoint zip
       - name: Setting release variables ...
         id: build
         run: |

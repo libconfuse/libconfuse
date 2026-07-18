@@ -81,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install tree doxygen xmlto libxml2-utils autopoint gettext
+          sudo apt-get -y install tree doxygen autopoint gettext
       - uses: actions/checkout@v6
       - name: Configure
         run: |
