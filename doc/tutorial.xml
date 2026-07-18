@@ -123,6 +123,15 @@ target = ${USER:-User}
             as in the standard greeting. The value is retrieved with
             <function>cfg_getint()</function>.
         </para>
+        <para>
+            Integer values may be written in different bases: decimal by
+            default, hexadecimal with a <literal>0x</literal> prefix, octal
+            with a leading <literal>0</literal>, and binary with a
+            <literal>0b</literal> prefix. For example
+            <literal>42</literal>, <literal>0x2a</literal>,
+            <literal>052</literal> and <literal>0b101010</literal> all
+            specify the same value.
+        </para>
         <para id="negative-repeat-problem">
             But, wait a moment, what if the user specified a negative value for
             "repeat"?  Or a too large positive value? libConfuse can handle
