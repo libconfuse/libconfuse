@@ -23,16 +23,10 @@ Release Checklist
 * **REMEMBER:** bump ABI version according to below rules
 * Tag
 * Push last commit(s) *and* tags to GitHub
-* Make release
 
-        make distclean
-        ./autogen.sh
-        ./configure
-        make release
-
-* Create new release in GitHub releases page
-* Copy and paste ChangeLog entry, check any stale links!
-* Upload release tarball and MD5 files
+The tag push triggers the `Release General` workflow, which builds the
+distribution tarballs and the Windows ZIP, and creates the GitHub release
+using the top ChangeLog entry as the release notes.
 
 
 Library Versioning

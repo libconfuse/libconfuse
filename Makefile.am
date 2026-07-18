@@ -64,38 +64,3 @@ rpm: Makefile
 
 ## ZIP files are reserved for the Windows distribution of libConfuse
 dist-zip: zip
-
-## Generate MD5 checksum file
-MD5 = md5sum
-md5-dist:
-	@for file in $(DIST_ARCHIVES) $(distdir).zip; do	\
-		$(MD5) $$file > $$file.md5;			\
-	done
-
-## Check if tagged in git
-release-hook:
-	@if [ ! `git tag | grep v$(PACKAGE_VERSION)` ]; then				\
-		echo;									\
-		printf "\e[1m\e[41mCannot find release tag v$(PACKAGE_VERSION)\e[0m\n";	\
-		printf "\e[1m\e[5mDo release anyway?\e[0m "; read yorn;			\
-		if [ "$$yorn" != "y" -a "$$yorn" != "Y" ]; then				\
-			printf "OK, aborting release.\n";				\
-			exit 1;								\
-		fi;									\
-		echo;									\
-	else										\
-		echo;									\
-		printf "\e[1m\e[42mFound GIT release tag v$(PACKAGE_VERSION)\e[0m\n";	\
-		printf "\e[1m\e[44m>>Remember to push tags!\e[0m\n";			\
-		echo;									\
-	fi
-
-## Target to run when building a release
-release: release-hook distcheck dist-zip md5-dist
-	@echo
-	@echo "Resulting release files:"
-	@echo "================================================================="
-	@for file in $(DIST_ARCHIVES) $(distdir).zip; do				\
-		printf "%-32s Distribution tarball\n" $$file;				\
-		printf "%-32s " $$file.md5; cat $$file.md5 | cut -f1 -d' ';		\
-	done
