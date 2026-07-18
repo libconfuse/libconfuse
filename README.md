@@ -18,7 +18,9 @@ integrate with your code.
 Documentation
 -------------
 
-* [API reference and tutorial][CodeDocs], regenerated on every commit
+* [Doxygen Documentation][CodeDocs], regenerated on every commit
+  - [API Reference](https://codedocs.xyz/libconfuse/libconfuse/confuse_8h.html)
+  - [Tutorial](https://codedocs.xyz/libconfuse/libconfuse/tutorial.html)
 * [simple.c](examples/simple.c) and [simple.conf](examples/simple.conf)
   show how to use the "simple" versions of options
 * [cfgtest.c](examples/cfgtest.c) and [test.conf](examples/test.conf)
