@@ -2,14 +2,15 @@
 # Copyright (C) 2002-2003 Martin Hedenfalk
 # This file is distributed under the same license as the confuse package.
 # Chris Leick <c.leick@vollbio.de>, 2009, 2019.
+# Joachim Wiberg <troglobit@gmail.com>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: confuse 3.3-1\n"
+"Project-Id-Version: confuse 3.4\n"
 "Report-Msgid-Bugs-To: https://github.com/libconfuse/libconfuse/issues\n"
 "POT-Creation-Date: 2026-07-18 23:35+0200\n"
-"PO-Revision-Date: 2020-12-26 08:50+0100\n"
-"Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
+"PO-Revision-Date: 2026-07-19 12:18+0200\n"
+"Last-Translator: Joachim Wiberg <troglobit@gmail.com>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -54,10 +55,9 @@ msgid "integer value for option '%s' is out of range"
 msgstr "Ganzzahlwert für Option »%s« ist außerhalb des Abschnitts"
 
 #: src/confuse.c:1350
-#, fuzzy, c-format
-#| msgid "invalid integer value for option '%s'"
+#, c-format
 msgid "negative value for unsigned option '%s'"
-msgstr "ungültiger Ganzzahlwert für Option »%s«"
+msgstr "negativer Wert für vorzeichenlose Option »%s«"
 
 #: src/confuse.c:1402
 #, c-format
@@ -91,7 +91,7 @@ msgstr ""
 #, c-format
 msgid ""
 "too deeply nested sections (max %d), bailing out to avoid stack exhaustion"
-msgstr ""
+msgstr "zu tief verschachtelte Abschnitte (max %d), Abbruch zur Vermeidung von Stapelüberlauf"
 
 #: src/confuse.c:1789
 msgid "premature end of file"
