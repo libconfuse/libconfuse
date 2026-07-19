@@ -19,6 +19,7 @@ All relevant changes to the project are documented in this file.
 * Update doxygen documentation and sync with modern doxygen
 * Automatic large file support (LFS), by Mike Frysinger
 * Georgian translation, by Temuri Doghonadze
+* Updated Swedish, French, and German translations, Joachim Wiberg
 
 ### Fixes
 
