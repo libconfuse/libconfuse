@@ -11,6 +11,7 @@ list_plus_syntax
 malloc.log
 modified_flag
 print_filter
+rawsec
 section_add
 section_getopt
 section_remove
