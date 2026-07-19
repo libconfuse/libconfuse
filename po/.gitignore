@@ -5,6 +5,7 @@ sv.gmo
 remove-potcdate.sed
 fr.gmo
 de.gmo
+ka.gmo
 Makefile.in.in
 Rules-quot
 boldquot.sed
