@@ -14,19 +14,33 @@ Maintenance
 Release Checklist
 -----------------
 
-* Update ChangeLog, follow http://keepachangelog.com/ loosely
-  - Inform users in a plain language of changes and bug fixes
-  - Do *not* copy-paste GIT commit logs!
-  - Order entries according to importance, most relevant first
-* Run unit tests: `make check`
-* Make at least one `-rcN` release and test it in an actual real project
-* **REMEMBER:** bump ABI version according to below rules
-* Tag
-* Push last commit(s) *and* tags to GitHub
+Roughly in the order they need doing:
+
+1. Finalize the ChangeLog entry, follow http://keepachangelog.com/ loosely
+   - Inform users in plain language of changes and bug fixes
+   - Do *not* copy-paste GIT commit logs!
+   - Order entries according to importance, most relevant first
+   - Date-stamp the top `[vX.Y][UNRELEASED]` heading, point its link at the
+     release range (`vX.Y-1...vX.Y`), and open a fresh `[UNRELEASED]` section
+   - The release workflow uses this top entry as the GitHub release notes
+2. Bump the package version in `configure.ac`: `AC_INIT` `X.Y-dev` -> `X.Y`
+   (this also sets the `libconfuse.pc` version through `@VERSION@`)
+3. Bump the library ABI `-version-info` in `src/Makefile.am`, see the rules
+   in *Library Versioning* below
+4. Refresh translations: `make -C po update-po`
+5. Verify the build:
+   - `make check` *and* `make distcheck`
+   - confirm every CI workflow is green: Linux, macOS, MSYS2, ASan, distcheck
+6. Make at least one `-rcN` release and test it in an actual real project
+7. Tag, signed and annotated: `git tag -s -a vX.Y`
+8. Push the last commit(s) *and* the tag to GitHub
 
 The tag push triggers the `Release General` workflow, which builds the
 distribution tarballs and the Windows ZIP, and creates the GitHub release
 using the top ChangeLog entry as the release notes.
+
+Afterwards, bump `configure.ac` to the next `X.Y+1-dev` and open a fresh
+`[UNRELEASED]` section in the ChangeLog so `master` moves on.
 
 
 Library Versioning
