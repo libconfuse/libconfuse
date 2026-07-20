@@ -488,11 +488,15 @@ static char *trim_whitespace(char *str, unsigned int len)
 
 static int qend(cfg_t *cfg, int trim, int ret)
 {
-    char *ptr = cfg_qstring;
+    char *ptr;
 
     BEGIN(INITIAL);
     if (cfg)
 	cfg->line++;
+
+    if (!cfg_qstring)
+	qputc('\0');
+    ptr = cfg_qstring;
 
     if (trim)
 	ptr = trim_whitespace(cfg_qstring, qstring_index);

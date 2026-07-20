@@ -64,6 +64,33 @@ int main(void)
 	fail_unless(cfg_size(cfg, "targets") == 2);
 	cfg_free(cfg);
 
+	/*
+	 * Regression test for issue #187: an empty comment -- no bytes
+	 * after the introducer -- must not crash with CFGF_COMMENTS
+	 * enabled.  The lexer returned CFGT_COMMENT with a NULL value, so
+	 * cfg_parse_internal() then called strdup(NULL).
+	 */
+	{
+		const char *empty[] = {
+			"#", "//", "/**/", "/* */", "###", "////", NULL
+		};
+		int i;
+
+		for (i = 0; empty[i]; i++) {
+			cfg = cfg_init(opts, CFGF_COMMENTS);
+			fail_unless(cfg);
+			fail_unless(cfg_parse_buf(cfg, empty[i]) == CFG_SUCCESS);
+			cfg_free(cfg);
+		}
+	}
+
+	/* An empty comment after a completed value must also be fine */
+	cfg = cfg_init(opts, CFGF_COMMENTS);
+	fail_unless(cfg);
+	fail_unless(cfg_parse_buf(cfg, "foo = \"bar\" #\n") == CFG_SUCCESS);
+	fail_unless(strcmp(cfg_getstr(cfg, "foo"), "bar") == 0);
+	cfg_free(cfg);
+
 	return 0;
 }
 
