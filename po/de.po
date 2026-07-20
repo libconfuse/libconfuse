@@ -91,7 +91,9 @@ msgstr ""
 #, c-format
 msgid ""
 "too deeply nested sections (max %d), bailing out to avoid stack exhaustion"
-msgstr "zu tief verschachtelte Abschnitte (max %d), Abbruch zur Vermeidung von Stapelüberlauf"
+msgstr ""
+"zu tief verschachtelte Abschnitte (max %d), Abbruch zur Vermeidung von "
+"Stapelüberlauf"
 
 #: src/confuse.c:1789
 msgid "premature end of file"

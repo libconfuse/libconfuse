@@ -87,13 +87,16 @@ msgstr "option de configuration obsolète « %s » ignorée"
 #: src/confuse.c:1749
 #, c-format
 msgid "found deprecated option '%s', please update configuration file."
-msgstr "option obsolète « %s » détectée, veuillez mettre à jour le fichier de configuration."
+msgstr ""
+"option obsolète « %s » détectée, veuillez mettre à jour le fichier de "
+"configuration."
 
 #: src/confuse.c:1773
 #, c-format
 msgid ""
 "too deeply nested sections (max %d), bailing out to avoid stack exhaustion"
-msgstr "sections trop imbriquées (max %d), arrêt pour éviter un dépassement de pile"
+msgstr ""
+"sections trop imbriquées (max %d), arrêt pour éviter un dépassement de pile"
 
 #: src/confuse.c:1789
 msgid "premature end of file"

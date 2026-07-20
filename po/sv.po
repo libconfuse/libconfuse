@@ -89,7 +89,9 @@ msgstr "utdaterad flagga '%s' hittad, vänligen uppdatera konfigurationsfilen."
 #, c-format
 msgid ""
 "too deeply nested sections (max %d), bailing out to avoid stack exhaustion"
-msgstr "för djupt nästlade avsnitt (max %d), avbryter för att undvika att stacken tar slut"
+msgstr ""
+"för djupt nästlade avsnitt (max %d), avbryter för att undvika att stacken "
+"tar slut"
 
 #: src/confuse.c:1789
 msgid "premature end of file"
