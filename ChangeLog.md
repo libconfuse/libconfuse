@@ -41,6 +41,8 @@ All relevant changes to the project are documented in this file.
   Thomas Klausner
 * Issue #182: guard against stack exhaustion from deeply nested
   sections, by Yi Chen
+* Issue #187: null dereference on an empty comment (e.g. `#`) with
+  `CFGF_COMMENTS` enabled, found and fixed by Benjamin Ali
 * Fix null termination when expanding environment variables, by
   Igor Ponomarenko
 * Only apply search path logic to relative pathnames, absolute paths
