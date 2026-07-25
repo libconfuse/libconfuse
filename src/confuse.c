@@ -2312,7 +2312,6 @@ DLLIMPORT int cfg_parse(cfg_t *cfg, const char *filename)
 DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 {
 	int ret;
-	char *fn;
 	FILE *fp;
 
 	if (!cfg) {
@@ -2323,12 +2322,10 @@ DLLIMPORT int cfg_parse_buf(cfg_t *cfg, const char *buf)
 	if (!buf)
 		return CFG_SUCCESS;
 
-	fn = strdup("[buf]");
-	if (!fn)
+	if (!cfg->filename)
+		cfg->filename = strdup("[buf]");
+	if (!cfg->filename)
 		return CFG_PARSE_ERROR;
-
-	free(cfg->filename);
-	cfg->filename = fn;
 
 	fp = fmemopen((void *)buf, strlen(buf), "r");
 	if (!fp) {

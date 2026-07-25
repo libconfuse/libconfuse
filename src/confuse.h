@@ -939,6 +939,11 @@ DLLIMPORT int __export cfg_parse(cfg_t *cfg, const char *filename);
  * the position is not reset. The caller is responsible for closing
  * the file.
  *
+ * Diagnostics use cfg->filename for their `file:line` prefix.  Set it,
+ * to a heap-allocated string, before calling to name the source;
+ * ownership transfers to the library, which frees it.  When left unset
+ * it defaults to "FILE".
+ *
  * @param cfg The configuration file context as returned from cfg_init().
  * @param fp An open file stream.
  *
@@ -950,6 +955,12 @@ DLLIMPORT int __export cfg_parse_fp(cfg_t *cfg, FILE *fp);
 
 /** Same as cfg_parse() above, but takes a character buffer as
  * argument.
+ *
+ * Diagnostics use cfg->filename for their `file:line` prefix.  Set it,
+ * to a heap-allocated string, before calling to make errors from an
+ * in-memory buffer point at the real source file; ownership transfers
+ * to the library, which frees it.  When left unset it defaults to
+ * "[buf]".  This mirrors cfg_parse_fp().
  *
  * @param cfg The configuration file context as returned from cfg_init().
  * @param buf A zero-terminated string with configuration directives.

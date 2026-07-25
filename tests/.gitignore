@@ -29,6 +29,7 @@ int_types
 quote_before_print
 single_title_sections
 searchpath
+parse_buf_filename
 *.o
 *.log
 *.trs
