@@ -158,6 +158,18 @@ is: "Hello, Life, Universe, Everything!"
 Again, if no targets were configured, the greeting would have been the
 standard "Hello, World!".
 
+Lists use curly braces by default.  If you prefer JSON-style square
+brackets, pass `CFGF_JSON_LISTS` to `cfg_init()` and both forms work:
+
+```
+targets = [ "Life", "Universe", "Everything" ]
+```
+
+With the flag set, `cfg_print()` writes lists with `[ ]` too.  One
+caveat: a value of a list option that contains a bracket must then be
+quoted (`targets = "foo[0]"`, `[ "[::1]" ]`).  Values inside `{ }` and
+non-list options are unaffected.
+
 
 Using sections
 --------------

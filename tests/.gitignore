@@ -30,6 +30,7 @@ quote_before_print
 single_title_sections
 searchpath
 parse_buf_filename
+json_lists
 *.o
 *.log
 *.trs

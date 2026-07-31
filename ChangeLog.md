@@ -21,6 +21,9 @@ All relevant changes to the project are documented in this file.
 * `cfg_parse_buf()` now keeps a caller-set `cfg->filename` for
   `file:line` diagnostics, defaulting to `[buf]` only when unset, the
   same way `cfg_parse_fp()` handles `FILE`
+* Optional JSON-style `[ ]` list syntax, enable with `CFGF_JSON_LISTS`
+  flag to `cfg_init()`; `cfg_print()` then emits `[ ]` as well.  The
+  default `{ }` syntax is unchanged
 * Georgian translation, by Temuri Doghonadze
 * Updated Swedish, French, and German translations, Joachim Wiberg
 

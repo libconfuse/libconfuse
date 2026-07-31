@@ -68,6 +68,8 @@ extern void cfg_yylex_destroy(void);
 extern int  cfg_lexer_include(cfg_t *cfg, const char *fname);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
+extern void cfg_scan_list_begin(void);
+extern void cfg_scan_list_end(void);
 extern void cfg_raw_begin(void);
 extern char *cfg_raw_end(void);
 extern int  cfg_raw_active(void);
@@ -77,7 +79,7 @@ extern void cfg_raw_seek(size_t pos);
 static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t *force_opt);
 static void cfg_free_opt_array(cfg_opt_t *opts);
 static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
-				cfg_print_filter_func_t fb_pff, int indent);
+				cfg_print_filter_func_t fb_pff, int indent, int json);
 
 #define STATE_CONTINUE 0
 #define STATE_EOF -1
@@ -1761,6 +1763,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 	int ignore = 0;		/* ignore until this token, traverse parser w/o error */
 	int num_values = 0;	/* number of values found for a list option */
+	int list_close = '}';	/* closing token expected for the current list, '}' or ']' */
 	int rc;
 	size_t rawmark = 0;	/* capture offset before a func, for include() expansion */
 
@@ -1899,13 +1902,18 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			if (is_set(CFGF_LIST, opt->flags)) {
 				state = 3;
 				num_values = 0;
+				/* opener read in list mode so '[' is a token;
+				 * every exit from states 2-4 must cfg_scan_list_end() */
+				if (is_set(CFGF_JSON_LISTS, cfg->flags))
+					cfg_scan_list_begin();
 			} else {
 				state = 2;
 			}
 			break;
 
 		case 2:	/* expecting an option value */
-			if (tok == '}' && opt && is_set(CFGF_LIST, opt->flags)) {
+			if (opt && is_set(CFGF_LIST, opt->flags) && tok == list_close) {
+				cfg_scan_list_end();
 				state = 0;
 				if (num_values == 0 && is_set(CFGF_RESET, opt->flags))
 					/* Reset flags was set, and the empty list was
@@ -1940,7 +1948,17 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 			break;
 
 		case 3:	/* expecting an opening brace for a list option */
-			if (tok != '{') {
+			if (tok == '[') {		/* JSON list: keep scanning in list mode */
+				list_close = ']';
+				state = 2;
+				break;
+			}
+
+			cfg_scan_list_end();		/* a { } body or bare value scans as usual */
+			if (tok == '{') {
+				list_close = '}';
+				state = 2;
+			} else {
 				if (tok != CFGT_STR) {
 					cfg_error(cfg, _("unexpected token '%s'"), cfg_yylval);
 					goto error;
@@ -1952,15 +1970,14 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 					goto error;
 				++num_values;
 				state = 0;
-			} else {
-				state = 2;
 			}
 			break;
 
 		case 4:	/* expecting a separator for a list option, or closing (list) brace */
 			if (tok == ',') {
 				state = 2;
-			} else if (tok == '}') {
+			} else if (tok == list_close) {
+				cfg_scan_list_end();
 				state = 0;
 				if (opt && opt->validcb && (*opt->validcb) (cfg, opt) != 0)
 					goto error;
@@ -2178,6 +2195,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 	return STATE_EOF;
 
 error:
+	cfg_scan_list_end();	/* reset scanner if we bailed mid-list */
 	if (opttitle)
 		free(opttitle);
 	if (comment)
@@ -3327,7 +3345,7 @@ static void cfg_indent(FILE *fp, int indent)
 }
 
 static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
-				    cfg_print_filter_func_t pff, int indent)
+				    cfg_print_filter_func_t pff, int indent, int json)
 {
 	if (!opt || !fp) {
 		errno = EINVAL;
@@ -3350,7 +3368,7 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 				fprintf(fp, "%s \"%s\" {\n", opt->name, cfg_title(sec));
 			else
 				fprintf(fp, "%s {\n", opt->name);
-			cfg_print_pff_indent(sec, fp, pff, indent + 1);
+			cfg_print_pff_indent(sec, fp, pff, indent + 1, json);
 			cfg_indent(fp, indent);
 			fprintf(fp, "}\n");
 		}
@@ -3369,7 +3387,7 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 	} else if (opt->type != CFGT_FUNC && opt->type != CFGT_NONE) {
 		if (is_set(CFGF_LIST, opt->flags)) {
 			cfg_indent(fp, indent);
-			fprintf(fp, "%s = {", opt->name);
+			fprintf(fp, "%s = %c", opt->name, json ? '[' : '{');
 
 			if (opt->nvalues) {
 				unsigned int i;
@@ -3387,7 +3405,7 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 				}
 			}
 
-			fprintf(fp, "}");
+			fprintf(fp, "%c", json ? ']' : '}');
 		} else {
 			cfg_indent(fp, indent);
 			/* comment out the option if is not set */
@@ -3413,16 +3431,16 @@ static int cfg_opt_print_pff_indent(cfg_opt_t *opt, FILE *fp,
 
 DLLIMPORT int cfg_opt_print_indent(cfg_opt_t *opt, FILE *fp, int indent)
 {
-	return cfg_opt_print_pff_indent(opt, fp, NULL, indent);
+	return cfg_opt_print_pff_indent(opt, fp, NULL, indent, 0);
 }
 
 DLLIMPORT int cfg_opt_print(cfg_opt_t *opt, FILE *fp)
 {
-	return cfg_opt_print_pff_indent(opt, fp, NULL, 0);
+	return cfg_opt_print_pff_indent(opt, fp, NULL, 0, 0);
 }
 
 static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
-				cfg_print_filter_func_t fb_pff, int indent)
+				cfg_print_filter_func_t fb_pff, int indent, int json)
 {
 	int i, result = CFG_SUCCESS;
 
@@ -3430,7 +3448,7 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 		cfg_print_filter_func_t pff = cfg->pff ? cfg->pff : fb_pff;
 		if (pff && pff(cfg, &cfg->opts[i]))
 			continue;
-		result += cfg_opt_print_pff_indent(&cfg->opts[i], fp, pff, indent);
+		result += cfg_opt_print_pff_indent(&cfg->opts[i], fp, pff, indent, json);
 	}
 
 	return result;
@@ -3438,12 +3456,12 @@ static int cfg_print_pff_indent(cfg_t *cfg, FILE *fp,
 
 DLLIMPORT int cfg_print_indent(cfg_t *cfg, FILE *fp, int indent)
 {
-	return cfg_print_pff_indent(cfg, fp, NULL, indent);
+	return cfg_print_pff_indent(cfg, fp, NULL, indent, is_set(CFGF_JSON_LISTS, cfg->flags));
 }
 
 DLLIMPORT int cfg_print(cfg_t *cfg, FILE *fp)
 {
-	return cfg_print_pff_indent(cfg, fp, NULL, 0);
+	return cfg_print_pff_indent(cfg, fp, NULL, 0, is_set(CFGF_JSON_LISTS, cfg->flags));
 }
 
 DLLIMPORT cfg_print_func_t cfg_opt_set_print_func(cfg_opt_t *opt, cfg_print_func_t pf)

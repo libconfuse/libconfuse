@@ -97,6 +97,7 @@ typedef enum cfg_type_t cfg_type_t;	/**< A fundamental option type, one of the C
 #define CFGF_MODIFIED       (1 << 12) /**< option has been changed from its default value */
 #define CFGF_KEYSTRVAL      (1 << 13) /**< section has free-form key=value string options created when parsing file */
 #define CFGF_USE_INCLUDE_FUNCTION (1 << 14) /**< add an include() function to the section's options */
+#define CFGF_JSON_LISTS (1 << 15) /**< accept and print JSON-style [ ] as an alternative to { } for lists */
 
 /* Return codes from cfg_parse(), cfg_parse_boolean(), and cfg_set*() functions. */
 #define CFG_SUCCESS     0  /**< Success, all OK (POSIX '0') */

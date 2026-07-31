@@ -59,6 +59,7 @@ extern YYSTYPE cfg_yylval;
  */
 #define CFG_QSTRING_BUFSIZ 32
 char *cfg_qstring = NULL;
+static int saved_state;	/* start condition to resume after a string/comment */
 static size_t qstring_index = 0;
 static size_t qstring_len = 0;
 static void qputc(char ch);
@@ -88,6 +89,8 @@ static void cfg_raw_append(const char *s, int n);
 
 void cfg_scan_fp_begin(FILE *fp);
 void cfg_scan_fp_end(void);
+void cfg_scan_list_begin(void);
+void cfg_scan_list_end(void);
 
 %}
 
@@ -98,6 +101,7 @@ void cfg_scan_fp_end(void);
 %x comment
 %x dq_str
 %x sq_str
+%s list
 
 %%
 
@@ -135,11 +139,12 @@ void cfg_scan_fp_end(void);
  /* handle C-style strings
   */
 "\""    {
+    saved_state = YY_START;
     qstring_index = 0;
     BEGIN(dq_str);
 }
 <dq_str>\"  { /* saw closing quote - all done */
-    BEGIN(INITIAL);
+    BEGIN(saved_state);
     qputc('\0');
     cfg_yylval = cfg_qstring;
     return CFGT_STR;
@@ -224,11 +229,12 @@ void cfg_scan_fp_end(void);
 
     /* single-quoted string ('...') */
 "\'" {
+    saved_state = YY_START;
     qstring_index = 0;
     BEGIN(sq_str);
 }
 <sq_str>\' { /* saw closing quote - all done */
-    BEGIN(INITIAL);
+    BEGIN(saved_state);
     qputc('\0');
     cfg_yylval = cfg_qstring;
     return CFGT_STR;
@@ -310,7 +316,13 @@ $\{[^}]*\} {
   * a slash can't be followed by another slash (c++
   * comment) or an asterisk (C multi-line comment)
   */
-(\/[^ #\"\'\t\n\r={}()+,\/*]|[^ #\"\'\t\n\r={}()+,\*])+ {
+<list>"["   { cfg_yylval = yytext; return '['; }
+<list>"]"   { cfg_yylval = yytext; return ']'; }
+<INITIAL>(\/[^ #\"\'\t\n\r={}()+,\/*]|[^ #\"\'\t\n\r={}()+,\*])+ {
+    cfg_yylval = yytext;
+    return CFGT_STR;
+ }
+<list>(\/[^ #\"\'\t\n\r={}()+,\[\]\/*]|[^ #\"\'\t\n\r={}()+,\[\]\*])+ {
     cfg_yylval = yytext;
     return CFGT_STR;
  }
@@ -461,6 +473,7 @@ static void qput(cfg_t *cfg, char skip)
 
 static void qbeg(int state)
 {
+    saved_state = YY_START;
     BEGIN(state);
     qstring_index = 0;
     if (cfg_qstring)
@@ -490,7 +503,7 @@ static int qend(cfg_t *cfg, int trim, int ret)
 {
     char *ptr;
 
-    BEGIN(INITIAL);
+    BEGIN(saved_state);
     if (cfg)
 	cfg->line++;
 
@@ -519,6 +532,17 @@ static int qstr(cfg_t *cfg, char skip, int ret)
 void cfg_scan_fp_begin(FILE *fp)
 {
     cfg_yypush_buffer_state(cfg_yy_create_buffer(fp, YY_BUF_SIZE));
+}
+
+void cfg_scan_list_begin(void)
+{
+    BEGIN(list);
+}
+
+void cfg_scan_list_end(void)
+{
+    saved_state = INITIAL;
+    BEGIN(INITIAL);
 }
 
 void cfg_scan_fp_end(void)

@@ -28,6 +28,7 @@ TESTS            += rawsec
 TESTS            += comment_parsing
 TESTS            += int_types
 TESTS            += parse_buf_filename
+TESTS            += json_lists
 
 check_PROGRAMS    = $(TESTS)
 
