@@ -2,7 +2,7 @@
 # The bundled autogen.sh script does this and also calls automake.
 AC_PREREQ([2.69])
 
-AC_INIT([libConfuse], [3.4-dev], [https://github.com/libconfuse/libconfuse/issues], [confuse])
+AC_INIT([libConfuse], [3.4-rc1], [https://github.com/libconfuse/libconfuse/issues], [confuse])
 AC_CONFIG_AUX_DIR([support])
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign dist-xz])
