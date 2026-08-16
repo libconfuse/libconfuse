@@ -3,7 +3,7 @@ Change Log
 
 All relevant changes to the project are documented in this file.
 
-[v3.4][] - 2026-08-01
+[v3.4][] - 2026-08-16
 ---------------------
 
 ### Changes
