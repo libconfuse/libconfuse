@@ -64,7 +64,7 @@ const char confuse_author[] = "Martin Hedenfalk <martin@bzero.se>";
 char *cfg_yylval = NULL;
 
 extern int  cfg_yylex(cfg_t *cfg);
-extern void cfg_yylex_destroy(void);
+extern int  cfg_yylex_destroy(void);
 extern int  cfg_lexer_include(cfg_t *cfg, const char *fname);
 extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
