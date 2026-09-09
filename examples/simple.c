@@ -42,7 +42,8 @@ int main(void)
 	server = strdup("gazonk");
 
 	cfg = cfg_init(opts, 0);
-	cfg_parse(cfg, "simple.conf");
+	if (cfg_parse(cfg, "simple.conf") != CFG_SUCCESS)
+		return 1;
 
 	printf("verbose: %s\n", verbose ? "true" : "false");
 	printf("server: %s\n", server);
