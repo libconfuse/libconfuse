@@ -1,5 +1,7 @@
 #define _GNU_SOURCE
 #include "check_confuse.h"
+#include <errno.h>
+#include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -193,6 +195,51 @@ void single_float_test(void)
 	fail_unless(cfg_getfloat(cfg, "float") == 4.2);
 }
 
+void single_numeric_errno_test(void)
+{
+	cfg_opt_t *integer = cfg_getopt(cfg, "integer");
+	cfg_opt_t *floating = cfg_getopt(cfg, "float");
+	char overflow[3 * sizeof(long) + 3];
+	char *value;
+
+	/* A prior range error must not reject a valid conversion. */
+	errno = ERANGE;
+	fail_unless(cfg_setopt(cfg, integer, "17") != NULL);
+	fail_unless(cfg_getint(cfg, "integer") == 17);
+	errno = ERANGE;
+	fail_unless(cfg_setopt(cfg, floating, "1.25") != NULL);
+	fail_unless(cfg_getfloat(cfg, "float") == 1.25);
+
+	/* Real range errors still fail, and a subsequent valid value succeeds. */
+	snprintf(overflow, sizeof(overflow), "%ld0", LONG_MAX);
+	errno = 0;
+	fail_unless(cfg_setopt(cfg, integer, overflow) == NULL);
+	fail_unless(cfg_getint(cfg, "integer") == 17);
+	fail_unless(cfg_setopt(cfg, integer, "-17") != NULL);
+	fail_unless(cfg_getint(cfg, "integer") == -17);
+	errno = 0;
+	fail_unless(cfg_setopt(cfg, floating, "1e99999") == NULL);
+	fail_unless(cfg_getfloat(cfg, "float") == 1.25);
+	fail_unless(cfg_setopt(cfg, floating, "-1.25") != NULL);
+	fail_unless(cfg_getfloat(cfg, "float") == -1.25);
+
+	/* The same conversion path is used by the public setters and parser. */
+	value = "42";
+	errno = ERANGE;
+	fail_unless(cfg_setmulti(cfg, "integer", 1, &value) == CFG_SUCCESS);
+	fail_unless(cfg_getint(cfg, "integer") == 42);
+	value = "2.5";
+	errno = ERANGE;
+	fail_unless(cfg_setmulti(cfg, "float", 1, &value) == CFG_SUCCESS);
+	fail_unless(cfg_getfloat(cfg, "float") == 2.5);
+	errno = ERANGE;
+	fail_unless(cfg_parse_buf(cfg, "integer = 23") == CFG_SUCCESS);
+	fail_unless(cfg_getint(cfg, "integer") == 23);
+	errno = ERANGE;
+	fail_unless(cfg_parse_buf(cfg, "float = 3.5") == CFG_SUCCESS);
+	fail_unless(cfg_getfloat(cfg, "float") == 3.5);
+}
+
 void single_bool_test(void)
 {
 	char *buf;
@@ -349,6 +396,7 @@ int main(void)
 	single_string_test();
 	single_integer_test();
 	single_float_test();
+	single_numeric_errno_test();
 	single_bool_test();
 	single_section_test();
 	single_ptr_test();
