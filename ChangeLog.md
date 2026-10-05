@@ -3,6 +3,21 @@ Change Log
 
 All relevant changes to the project are documented in this file.
 
+[v3.4.1][UNRELEASED]
+--------------------
+
+### Fixes
+
+* Issue #189: the `simple.c` example ignored the `cfg_parse()` return
+  value and printed half-populated values on a parse error, reported by
+  attila-v
+* Fix `cfg_yylex_destroy()` declaration to match the flex-generated
+  definition, the mismatch traps at runtime on WebAssembly, PR #188 by
+  Bradley McCrorey
+* Reset `errno` before converting `CFG_INT` and `CFG_FLOAT` values, a
+  stale `ERANGE` from an earlier call could reject a valid setting as
+  out of range, PR #191 by fhgffy
+
 [v3.4][] - 2026-08-16
 ---------------------
 
@@ -442,7 +457,7 @@ v1.2.2 - 2002-11-27
 * updated the manual
 
 
-[UNRELEASED]: https://github.com/libconfuse/libconfuse/compare/v3.3...HEAD
+[UNRELEASED]: https://github.com/libconfuse/libconfuse/compare/v3.4...HEAD
 [v3.4]:   https://github.com/libconfuse/libconfuse/compare/v3.3...v3.4
 [v3.3]:   https://github.com/libconfuse/libconfuse/compare/v3.2.2...v3.3
 [v3.2.2]: https://github.com/libconfuse/libconfuse/compare/v3.2.1...v3.2.2
