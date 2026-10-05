@@ -1265,6 +1265,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 			}
 
 			radix = cfg_int_radix(value, &str);
+			errno = 0;
 			i = strtol(str, &endptr, radix);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid integer value for option '%s'"), opt->name);
@@ -1399,6 +1400,7 @@ DLLIMPORT cfg_value_t *cfg_setopt(cfg_t *cfg, cfg_opt_t *opt, const char *value)
 				errno = EINVAL;
 				return NULL;
 			}
+			errno = 0;
 			f = strtod(value, &endptr);
 			if (*endptr != '\0') {
 				cfg_error(cfg, _("invalid floating point value for option '%s'"), opt->name);
