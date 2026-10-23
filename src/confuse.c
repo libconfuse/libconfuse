@@ -70,6 +70,7 @@ extern void cfg_scan_fp_begin(FILE *fp);
 extern void cfg_scan_fp_end(void);
 extern void cfg_scan_list_begin(void);
 extern void cfg_scan_list_end(void);
+extern void cfg_lexer_include_stack_reset(cfg_t *cfg);
 extern void cfg_raw_begin(void);
 extern char *cfg_raw_end(void);
 extern int  cfg_raw_active(void);
@@ -2198,6 +2199,7 @@ static int cfg_parse_internal(cfg_t *cfg, int level, int force_state, cfg_opt_t 
 
 error:
 	cfg_scan_list_end();	/* reset scanner if we bailed mid-list */
+	cfg_lexer_include_stack_reset(cfg);	/* close leaked include files, unwind stack */
 	if (opttitle)
 		free(opttitle);
 	if (comment)

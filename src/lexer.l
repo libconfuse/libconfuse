@@ -91,6 +91,7 @@ void cfg_scan_fp_begin(FILE *fp);
 void cfg_scan_fp_end(void);
 void cfg_scan_list_begin(void);
 void cfg_scan_list_end(void);
+void cfg_lexer_include_stack_reset(cfg_t *cfg);
 
 %}
 
@@ -543,6 +544,33 @@ void cfg_scan_list_end(void)
 {
     saved_state = INITIAL;
     BEGIN(INITIAL);
+}
+
+/* Reset the include stack after a parse error: close any files still
+ * open on the stack, free the saved filenames and unwind to the initial
+ * scanner state.  Without this, every aborted parse leaks one fd and one
+ * stack slot; after MAX_INCLUDE_DEPTH aborted parses include() stays
+ * broken for the lifetime of the process, across cfg_t instances. */
+void cfg_lexer_include_stack_reset(cfg_t *cfg)
+{
+    int had_includes = cfg_include_stack_ptr > 0;
+
+    while (cfg_include_stack_ptr > 0) {
+        --cfg_include_stack_ptr;
+        /* every stack slot's FILE* was fopen'd by cfg_lexer_include(),
+         * including the innermost one (which is also the current cfg_yyin) */
+        if (cfg_include_stack[cfg_include_stack_ptr].fp)
+            fclose(cfg_include_stack[cfg_include_stack_ptr].fp);
+        free(cfg_include_stack[cfg_include_stack_ptr].filename);
+        cfg_include_stack[cfg_include_stack_ptr].fp = NULL;
+        cfg_include_stack[cfg_include_stack_ptr].filename = NULL;
+    }
+    if (had_includes) {
+        /* cfg->filename points at the innermost include's name, malloc'd
+         * by cfg_lexer_include() -- only then is it ours to free */
+        free(cfg->filename);
+        cfg->filename = NULL;
+    }
 }
 
 void cfg_scan_fp_end(void)
