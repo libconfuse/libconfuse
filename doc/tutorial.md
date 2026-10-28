@@ -47,6 +47,19 @@ the second parameter to the `CFG_STR()` macro specified the default value.
 Thus, if no `target` option was specified in the configuration file, the
 hello program would have printed the standard greeting "Hello, World".
 
+### Quoted strings on one line
+
+Quoted strings may span several lines by default.  Applications that do
+not need this can pass `CFGF_NO_MULTILINE` to `cfg_init()`.  An unescaped
+physical newline inside a single- or double-quoted string then produces
+an "unterminated string constant" error on that line.  This helps identify
+a missing closing quote before later configuration lines are consumed as
+part of the string.  The flag also applies inside sections and lists.
+
+Explicit backslash-newline continuations still join lines, and escape
+sequences such as `\n` in double-quoted strings keep their usual meaning.
+Newlines introduced by environment variable values are also unaffected.
+
 ### Environment variables in values
 
 What else can we do in the configuration file?  We can set the value to an

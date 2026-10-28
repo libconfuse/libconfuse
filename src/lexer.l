@@ -154,6 +154,10 @@ void cfg_scan_list_end(void);
     char *e;
     const size_t len = strlen(yytext) - 1;
     const char end_symbol = yytext[len];
+    if ((cfg->flags & CFGF_NO_MULTILINE) && strchr(yytext, '\n')) {
+        cfg_error(cfg, _("unterminated string constant"));
+        return 0;
+    }
     yytext[len] = 0;
     e = strchr(yytext+2, ':');
     if(e && e[1] == '-')
@@ -170,7 +174,11 @@ void cfg_scan_list_end(void);
         *e = ':';
     yytext[len] = end_symbol;
 }
-<dq_str>\n   {
+<dq_str,sq_str>\n   {
+    if (cfg->flags & CFGF_NO_MULTILINE) {
+        cfg_error(cfg, _("unterminated string constant"));
+        return 0;
+    }
     qputc('\n');
     cfg->line++;
 }
@@ -238,10 +246,6 @@ void cfg_scan_list_end(void);
     qputc('\0');
     cfg_yylval = cfg_qstring;
     return CFGT_STR;
-}
-<sq_str>\n   {
-    qputc('\n');
-    cfg->line++;
 }
 <sq_str>\\\n { /* allow continuing on next line */
     /* no-op */

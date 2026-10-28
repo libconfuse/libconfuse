@@ -29,6 +29,7 @@ TESTS            += comment_parsing
 TESTS            += int_types
 TESTS            += parse_buf_filename
 TESTS            += json_lists
+TESTS            += singleline_strings
 
 check_PROGRAMS    = $(TESTS)
 
