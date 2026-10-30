@@ -63,10 +63,10 @@ static int saved_state;	/* start condition to resume after a string/comment */
 static size_t qstring_index = 0;
 static size_t qstring_len = 0;
 static void qputc(char ch);
-static void qput(cfg_t *cfg, char skip);
+static void qput(char skip);
 static void qbeg(int state);
-static int  qend(cfg_t *cfg, int trim, int ret);
-static int  qstr(cfg_t *cfg, char skip, int ret);
+static int  qend(int trim, int ret);
+static int  qstr(char skip, int ret);
 
 #define MAX_INCLUDE_DEPTH 10
 struct {
@@ -115,8 +115,8 @@ void cfg_scan_list_end(void);
   * Note: Comments with lots of leading #### or //// are fully
   *       consumed and are not included in CFGT_COMMENT yylval
   */
-"#"{1,}.*   return qstr(cfg, '#', CFGT_COMMENT);
-"/"{2,}.*   return qstr(cfg, '/', CFGT_COMMENT);
+"#"{1,}.*   return qstr('#', CFGT_COMMENT);
+"/"{2,}.*   return qstr('/', CFGT_COMMENT);
 
  /* special keywords/symbols
   */
@@ -131,10 +131,10 @@ void cfg_scan_list_end(void);
  /* handle multi-line C-style comments
   */
 "/*"                    qbeg(comment);
-<comment>[^*\n]*        qput(NULL, 0);  /* anything that's not a '*' */
-<comment>"*"+[^*/\n]*   qput(NULL, 0);  /* '*'s not followed by '/'s */
-<comment>\n             qput(cfg, 0);
-<comment>[ \t]*"*"+"/"  return qend(cfg, 1, CFGT_COMMENT);
+<comment>[^*\n]*        qput(0);  /* anything that's not a '*' */
+<comment>"*"+[^*/\n]*   qput(0);  /* '*'s not followed by '/'s */
+<comment>\n             { qput(0); cfg->line++; }
+<comment>[ \t]*"*"+"/"  return qend(1, CFGT_COMMENT);
 
  /* handle C-style strings
   */
@@ -455,12 +455,9 @@ static void qputc(char ch)
     cfg_qstring[qstring_index++] = ch;
 }
 
-static void qput(cfg_t *cfg, char skip)
+static void qput(char skip)
 {
     char *cp;
-
-    if (cfg)
-	cfg->line++;
 
     cp = yytext;
 
@@ -499,13 +496,11 @@ static char *trim_whitespace(char *str, unsigned int len)
     return str;
 }
 
-static int qend(cfg_t *cfg, int trim, int ret)
+static int qend(int trim, int ret)
 {
     char *ptr;
 
     BEGIN(saved_state);
-    if (cfg)
-	cfg->line++;
 
     if (!cfg_qstring)
 	qputc('\0');
@@ -521,12 +516,12 @@ static int qend(cfg_t *cfg, int trim, int ret)
     return ret;
 }
 
-static int qstr(cfg_t *cfg, char skip, int ret)
+static int qstr(char skip, int ret)
 {
     qbeg(comment);
-    qput(cfg, skip);
+    qput(skip);
 
-    return qend(cfg, 1, ret);
+    return qend(1, ret);
 }
 
 void cfg_scan_fp_begin(FILE *fp)

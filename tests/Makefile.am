@@ -1,4 +1,5 @@
 EXTRA_DIST        = annotate.conf a.conf b.conf rawinc.conf spdir check_confuse.h
+EXTRA_DIST       += comment_lines.conf
 
 TESTS             = keyval
 TESTS            += suite_single
