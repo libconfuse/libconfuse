@@ -336,7 +336,7 @@ void cfg_dummy_function(void)
     /* please compiler :-)
      * otherwise "defined but not used" warning
      */
-    yyunput(0, NULL);
+    unput(0);
 }
 
 static void cfg_raw_append(const char *s, int n)
